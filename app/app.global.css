@@ -1,0 +1,88 @@
+@import "~bootstrap/dist/css/bootstrap.css";
+
+
+/*Targeting all tables*/
+
+.table-container {
+  margin-top: 2%;
+}
+
+.drop-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.reactable-page-button {
+  font-weight: 400;
+  line-height: 1.25;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  border: 1px solid transparent;
+  padding: .5rem 1rem;
+  font-size: 1rem;
+  border-radius: .25rem;
+}
+
+.reactable-next-page {
+  font-weight: 400;
+  line-height: 1.25;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  border: 1px solid transparent;
+  padding: .5rem 1rem;
+  font-size: 1rem;
+  border-radius: .25rem;
+}
+
+.reactable-previous-page {
+  font-weight: 400;
+  line-height: 1.25;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  border: 1px solid transparent;
+  padding: .5rem 1rem;
+  font-size: 1rem;
+  border-radius: .25rem;
+}
+
+.reactable-next-page:hover {
+  text-decoration: none;
+  color: #333;
+  background-color: #DDD;
+}
+
+.reactable-previous-page:hover {
+  text-decoration: none;
+  color: #333;
+  background-color: #DDD;
+}
+
+.reactable-page-button:hover {
+  text-decoration: none;
+  color: #333;
+  background-color: #DDD;
+}
+
+.reactable-current-page {
+  background-color: #DDD;
+  cursor: default;
+}

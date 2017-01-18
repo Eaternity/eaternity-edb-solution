@@ -1,0 +1,43 @@
+{
+  "parser": "babel-eslint",
+  "extends": ["standard", "standard-react"],
+  "env": {
+    "browser": true,
+    "node": true,
+    "jest": true
+  },
+  "rules": {
+    "consistent-return": "off",
+    "comma-dangle": "off",
+    "generator-star-spacing": ["error", {"before": true, "after": true}],
+    "space-before-function-paren": ["error", "always"],
+    "import/first": 1,
+    "import/default": 0,
+    "import/named": 0,
+    "import/no-unresolved": 0,
+    "import/no-extraneous-dependencies": 0,
+    "no-use-before-define": 1,
+    "promise/param-names": 2,
+    "promise/always-return": 0,
+    "promise/catch-or-return": 0,
+    "promise/no-native": 0,
+    "react/jsx-no-bind": "off",
+    "react/jsx-filename-extension": ["error", { "extensions": [".js", ".jsx"] }],
+    "react/prefer-stateless-function": 1,
+    "flowtype-errors/show-errors": 2
+  },
+  "plugins": [
+    "flowtype-errors",
+    "standard",
+    "import",
+    "promise",
+    "react"
+  ],
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "webpack.config.eslint.js"
+      }
+    }
+  }
+}
