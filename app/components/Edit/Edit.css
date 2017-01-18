@@ -1,0 +1,17 @@
+.container {
+  margin-top: 2%;
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+.editBtnGroup {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.popoverBtn {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
