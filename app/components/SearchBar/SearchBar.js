@@ -6,17 +6,14 @@ import searchIcon from './search.png'
 import styles from './SearchBar.css'
 
 class SearchBar extends Component {
-  static propTypes = {
-    actions: PropTypes.object.isRequired,
-    editedProduct: PropTypes.object.isRequired,
-    dataDir: PropTypes.string.isRequired
+  constructor (props) {
+    super(props)
+    this.state = {
+      dropdownOpen: false
+    }
   }
 
-  state = {
-    dropdownOpen: false
-  }
-
-  handleChooseDir = () => {
+  handleChooseDir () {
     ipcRenderer.send('choose-data-dir')
     ipcRenderer.on('data-dir-choosen', (event, choosenDir) => {
       if (choosenDir) {
@@ -28,12 +25,12 @@ class SearchBar extends Component {
     })
   }
 
-  handleKeyUp = (e) => {
-    const searchInput = e.target.value
+  handleKeyUp (event) {
+    const searchInput = event.target.value
     this.props.actions.updateSearchInput(searchInput)
   }
 
-  handlePlusClick = () => {
+  handlePlusClick () {
     console.log('clicked')
     // this.props.actions.setEditedProductToNew()
     // this.props.actions.changeLocation(`/edit/${this.props.editedProduct.id}`)
@@ -76,6 +73,12 @@ class SearchBar extends Component {
       </Navbar>
     )
   }
+}
+
+SearchBar.propTypes = {
+  actions: PropTypes.object.isRequired,
+  editedProduct: PropTypes.object.isRequired,
+  dataDir: PropTypes.string.isRequired
 }
 
 export default SearchBar
