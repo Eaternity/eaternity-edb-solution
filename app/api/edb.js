@@ -1,31 +1,41 @@
-/* @flow */
-
-/*
-  This is were classic asynchronous api/http calls would go. I used electron-json-storage to create a similar situation. electron-json-storage is not be necessary to run the app...
-*/
-
-import jsonStore from 'electron-json-storage'
-import pify from 'pify'
-
-const storage = pify(jsonStore)
+import ipcRenderer from 'electron'
 
 const edbApi = {
   fetchAllProducts: () => {
-    return storage.get('validatedProducts')
+    ipcRenderer.send('fetch-all-products')
+    return new Promise((resolve, reject) => {
+      ipcRenderer.on('all-products-fetched', (products) => {
+        resolve(products)
+      })
+    })
   },
 
-  // saveProduct: products => {
-  //   //storage has no method to set a single product...
-  //   return storage.set('products', products)
-  // },
-
   fetchAllFAOs: () => {
-    return storage.get('faos')
+    ipcRenderer.send('fetch-all-faos')
+    return new Promise((resolve, reject) => {
+      ipcRenderer.on('all-faos-fetched', (faos) => {
+        resolve(faos)
+      })
+    })
   },
 
   fetchAllNutrients: () => {
-    return storage.get('nutrients')
-  }
-}
+    ipcRenderer.send('fetch-all-nutrients')
+    return new Promise((resolve, reject) => {
+      ipcRenderer.on('all-nutrients-fetched', (nutrients) => {
+        resolve(nutrients)
+      })
+    })
+  },
 
+  saveProduct: product => {
+    ipcRenderer.send('save-product', product)
+    return new Promise((resolve, reject) => {
+      ipcRenderer.on('all-nutrients-fetched', (nutrients) => {
+        resolve(nutrients)
+      })
+    })
+  }
+
+}
 export default edbApi
