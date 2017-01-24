@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from 'electron'
-import './utils/ipc.js'
+import './utils/ipc-main'
 
 let mainWindow = null
 
