@@ -11,7 +11,7 @@ const storage = pify(jsonStore)
 
 const edbApi = {
   fetchAllProducts: () => {
-    return storage.get('products')
+    return storage.get('validatedProducts')
   },
 
   // saveProduct: products => {

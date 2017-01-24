@@ -1,4 +1,3 @@
-/* @flow */
 import React from 'react'
 import * as dataActions from '../store/data/actions'
 import * as viewActions from '../store/view/actions'
@@ -8,13 +7,13 @@ import { push } from 'react-router-redux'
 import { getVisibleProducts } from '../store/selectors/product'
 import Home from '../components/Home/Home'
 
-const HomeContainer = (props: Object) => {
+const HomeContainer = props => {
   return (
     <Home {...props} />
   )
 }
 
-const mapStateToProps = (state: Object) => {
+const mapStateToProps = state => {
   return {
     products: getVisibleProducts(state),
     faos: state.data.faos,
@@ -35,6 +34,7 @@ const mapDispatchToProps = dispatch => ({
     selectProduct: dataActions.selectProduct,
     setEditedProductToNew: dataActions.setEditedProductToNew,
     toggleTableVisibility: viewActions.toggleTableVisibility,
+    toggleProductVisibility: viewActions.toggleProductVisibility,
     updateSearchInput: viewActions.updateSearchInput,
     clearSearchInput: viewActions.clearSearchInput,
     changeLocation: push

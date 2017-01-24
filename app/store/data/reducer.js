@@ -1,4 +1,3 @@
-/* @flow */
 import * as actionTypes from './action-types'
 
 const initialState = {
@@ -10,7 +9,7 @@ const initialState = {
   errorMessages: []
 }
 
-const data = (state: Object = initialState, action: Object) => {
+const data = (state = initialState, action) => {
   switch (action.type) {
 
     case actionTypes.CHANGE_DATADIR:

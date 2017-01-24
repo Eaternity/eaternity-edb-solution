@@ -1,13 +1,13 @@
-/* @flow */
 import React, { PropTypes } from 'react'
 import SearchBar from '../SearchBar/SearchBar'
 import NavGroup from '../NavGroup/NavGroup'
 import ProductTable from '../ProductTable/ProductTable'
 import FaoTable from '../FaoTable/FaoTable'
 import NutrientTable from '../NutrientTable/NutrientTable'
+import InvalidTable from '../InvalidTable/InvalidTable'
 import styles from './Home.css'
 
-const Home = (props: Object) => {
+const Home = props => {
   const renderTable = (table) => {
     switch (table) {
       case 'products':
@@ -18,14 +18,18 @@ const Home = (props: Object) => {
 
       case 'fao':
         return <FaoTable
-          changeDataDir={props.actions.changeDataDir}
           faos={props.faos}
           searchInput={props.searchInput} />
 
       case 'nutrition':
         return <NutrientTable
-          changeDataDir={props.actions.changeDataDir}
           nutrients={props.nutrients}
+          searchInput={props.searchInput} />
+
+      case 'invalid':
+        return <InvalidTable
+          actions={props.actions}
+          products={props.products}
           searchInput={props.searchInput} />
 
       default:
@@ -53,7 +57,7 @@ Home.propTypes = {
   faos: PropTypes.array.isRequired,
   nutrients: PropTypes.array.isRequired,
   actions: PropTypes.object.isRequired,
-  visibleTable: PropTypes.oneOf(['products', 'fao', 'nutrition']).isRequired,
+  visibleTable: PropTypes.oneOf(['products', 'fao', 'nutrition', 'invalid']).isRequired,
   searchInput: PropTypes.string.isRequired
 }
 

@@ -1,11 +1,11 @@
-/* @flow */
 import React, { PropTypes } from 'react'
 import { Button, Nav, Navbar, NavbarBrand } from 'reactstrap'
 import ConfirmRejectModal from '../ConfirmRejectModal/ConfirmRejectModal'
 import logo from './logo.png'
 import styles from './EditBar.css'
 
-const EditBar = (props: Object) => {
+const EditBar = props => {
+  console.log(props.toggleBackModal)
   return (
     <Navbar color='faded' light>
       <NavbarBrand>

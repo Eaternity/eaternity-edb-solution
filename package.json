@@ -1,11 +1,11 @@
 {
-  "name": "EDB_editor",
-  "productName": "EDB_editor",
+  "name": "EDB-solution",
+  "productName": "EDB-solution",
   "version": "1.0.1",
   "description": "Electron application for editing of eaternity database json files. Based on elecron-react-boilerplate",
   "main": "./app/main.js",
   "scripts": {
-    "reinstall": "rimraf ./node_modules && yarn install",
+    "reinstall": "yarn add rimraf && rimraf ./node_modules && yarn install",
     "test": "cross-env NODE_ENV=test jest",
     "lint": "eslint --ignore-path .gitignore --format=node_modules/eslint-formatter-pretty app test *.js",
     "hot-server": "cross-env NODE_ENV=development node --max_old_space_size=2096 -r babel-register server.js",
@@ -165,7 +165,7 @@
     "react-router": "^3.0.0",
     "react-router-redux": "^4.0.7",
     "reactable": "^0.14.1",
-    "reactstrap": "^4.0.1",
+    "reactstrap": "3.9.5",
     "redux": "^3.6.0",
     "redux-saga": "^0.14.0",
     "reselect": "^2.5.4",

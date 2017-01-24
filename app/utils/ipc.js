@@ -4,6 +4,8 @@ import jsonStorage from 'electron-json-storage'
 import fs from 'fs'
 import path from 'path'
 import jsonfile from 'jsonfile'
+import validateProduct from './validate'
+import fix from './fix'
 
 // Create a persistent storage object similar to locaStorage. Pify promisifies
 // it to allow promise, await/async syntax
@@ -49,14 +51,31 @@ ipcMain.on('choose-data-dir', event => {
     if (!dataDirs) return
 
     const choosenDir = dataDirs[0]
+    const prodFilenames = fs.readdirSync(`${choosenDir}/prods`)
+    const nutrChangeFilenames = fs.readdirSync(`${choosenDir}/nutr-change`)
 
-    const products = loadJsonFiles(choosenDir, 'prods')
+    const unvalidatedProducts = loadJsonFiles(choosenDir, 'prods')
     const nutrients = loadJsonFiles(choosenDir, 'nutrs')
     const faos = loadFAOFiles(choosenDir)
-    const allData = {products, faos, nutrients}
+
+    // validate and fix products here
+    const validationResults = unvalidatedProducts.map(product => {
+      return validateProduct(prodFilenames, nutrients, nutrChangeFilenames, product)
+    })
+
+    // fix products
+    const validatedProducts = validationResults.map(result => {
+      const product = unvalidatedProducts.filter(prod => {
+        return prod.filename === result.file
+      })[0]
+      return fix(unvalidatedProducts, nutrients, nutrChangeFilenames, result, product)
+    })
+
+    jsonfile.writeFileSync(`${choosenDir}/prods.all.json`, validatedProducts)
+
+    const allData = {validatedProducts, faos, nutrients}
 
     // Why are those still Promises??? Read up on async/await
-
     Promise.all(Object.keys(allData).map(key => {
       return setToStorage(key, allData[key])
     }))
