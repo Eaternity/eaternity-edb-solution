@@ -23,7 +23,6 @@ class Edit extends Component {
   }
 
   toggleBackModal = () => {
-    console.log('toggle')
     this.setState({
       backModalOpen: !this.state.backModalOpen
     })

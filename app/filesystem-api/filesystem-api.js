@@ -1,7 +1,6 @@
 // Use ipc to commuticate with the main process and get filesystem access. All
 //  filesystem operations in ipcMain are implemented synchronously so it will
-//  take some ms for the data to come back. The api uses promises to account
-//  for that... Does this make sense?!
+//  take some ms for the data to come back. The api uses promises to introduce asynchronicity
 
 import { ipcRenderer } from 'electron'
 
@@ -15,28 +14,28 @@ const fileSystemApi = {
     })
   },
 
-  fetchAllProducts: () => {
-    ipcRenderer.send('fetch-all-products')
-    return new Promise((resolve, reject) => {
-      ipcRenderer.on('all-products-fetched', (products) => {
+  fetchAllProducts: dataDir => {
+    return new Promise(resolve => {
+      ipcRenderer.send('fetch-all-products', dataDir)
+      ipcRenderer.on('all-products-fetched', (_, products) => {
         resolve(products)
       })
     })
   },
 
-  fetchAllFAOs: () => {
-    ipcRenderer.send('fetch-all-faos')
+  fetchAllFAOs: dataDir => {
     return new Promise((resolve, reject) => {
-      ipcRenderer.on('all-faos-fetched', (faos) => {
+      ipcRenderer.send('fetch-all-faos', dataDir)
+      ipcRenderer.on('all-faos-fetched', (_, faos) => {
         resolve(faos)
       })
     })
   },
 
-  fetchAllNutrients: () => {
-    ipcRenderer.send('fetch-all-nutrients')
+  fetchAllNutrients: dataDir => {
     return new Promise((resolve, reject) => {
-      ipcRenderer.on('all-nutrients-fetched', (nutrients) => {
+      ipcRenderer.send('fetch-all-nutrients', dataDir)
+      ipcRenderer.on('all-nutrients-fetched', (_, nutrients) => {
         resolve(nutrients)
       })
     })

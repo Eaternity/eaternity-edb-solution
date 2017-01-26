@@ -5,7 +5,6 @@ import logo from './logo.png'
 import styles from './EditBar.css'
 
 const EditBar = props => {
-  console.log(props.toggleBackModal)
   return (
     <Navbar color='faded' light>
       <NavbarBrand>

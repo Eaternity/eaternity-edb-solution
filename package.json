@@ -167,7 +167,7 @@
     "reactable": "^0.14.1",
     "reactstrap": "3.9.5",
     "redux": "^3.6.0",
-    "redux-saga": "^0.14.0",
+    "redux-saga": "^0.14.3",
     "reselect": "^2.5.4",
     "source-map-support": "^0.4.6"
   },

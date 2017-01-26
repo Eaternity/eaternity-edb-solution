@@ -18,11 +18,13 @@ const Home = props => {
 
       case 'fao':
         return <FaoTable
+          actions={props.actions}
           faos={props.faos}
           searchInput={props.searchInput} />
 
       case 'nutrition':
         return <NutrientTable
+          actions={props.actions}
           nutrients={props.nutrients}
           searchInput={props.searchInput} />
 

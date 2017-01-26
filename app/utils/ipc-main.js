@@ -1,35 +1,11 @@
 import { ipcMain, dialog } from 'electron'
-// import fs from 'fs'
-// import path from 'path'
+import fs from 'fs'
+import path from 'path'
 import jsonfile from 'jsonfile'
-// import validateProduct from './validate'
-// import fix from './fix'
+import ProductValidator from './validator.js'
 
 // set indentation for jsonfile
 jsonfile.spaces = 2
-
-// const loadJsonFiles = (_dataDir, folder) => {
-//   const fullPath = `${_dataDir}/${folder}`
-//   const allFiles = fs.readdirSync(fullPath)
-//   const jsonData = allFiles
-//     .filter(filename => {
-//       return path.extname(filename) === '.json' &&
-//       !(filename === 'prod.schema.json')
-//     })
-//     .map(filename => {
-//       return {
-//         filename,
-//         ...jsonfile.readFileSync(`${fullPath}/${filename}`)
-//       }
-//     })
-//
-//   return jsonData
-// }
-//
-// const loadFAOFiles = (_dataDir) => {
-//   const fullPath = `${_dataDir}/fao-product-list.json`
-//   return jsonfile.readFileSync(fullPath)
-// }
 
 // choose the _data directory
 ipcMain.on('choose-data-dir', event => {
@@ -43,22 +19,37 @@ ipcMain.on('choose-data-dir', event => {
 
 // load and send all products
 ipcMain.on('fetch-all-products', (event, dataDir) => {
-  console.log('fetch-all-products triggered')
-  // const validationResults = validateProduct(dataDir)
-  // const fixedProducts = fix(dataDir, validationResults)
-  // event.sender.send('all-products-fetched', fixedProducts)
+  const productValidator = new ProductValidator()
+
+  const fixedProducts = productValidator
+    .setDataDir(dataDir)
+    .validateAllProducts()
+    .fixAllProducts()
+    .fixedProducts
+
+  event.sender.send('all-products-fetched', fixedProducts)
 })
 
 // load and send all nutrients
 ipcMain.on('fetch-all-nutrients', (event, dataDir) => {
-  console.log('fetch-all-nutrients triggered')
-  // const allNutrients = loadJsonFiles(dataDir, 'nutrs')
-  // event.sender.send('all-nutrients-fetched', allNutrients)
+  const nutrientFileNames = fs.readdirSync(`${dataDir}/nutrs`)
+    .filter(filename => {
+      // json fiels only...
+      const extension = path.extname(filename)
+      return extension === '.json'
+    })
+
+  const allNutrients = nutrientFileNames
+    .map(filename => {
+      return jsonfile.readFileSync(`${dataDir}/nutrs/${filename}`)
+    })
+
+  event.sender.send('all-nutrients-fetched', allNutrients)
 })
 
 // load and send all faos
 ipcMain.on('fetch-all-faos', (event, dataDir) => {
-  console.log('fetch-all-faos triggered')
-  // const allFaos = loadFAOFiles(dataDir)
-  // event.sender.send('all-faos-fetched', allFaos)
+  const allFAOs = jsonfile.readFileSync(`${dataDir}/fao-product-list.json`)
+
+  event.sender.send('all-faos-fetched', allFAOs)
 })

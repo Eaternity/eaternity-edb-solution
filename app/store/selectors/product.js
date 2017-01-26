@@ -5,6 +5,7 @@ import { createSelector } from 'reselect'
 
 const getVisibilityFilter = state => state.view.productFilter
 const getProducts = state => state.data.products
+const getDataDir = state => state.data.dataDir
 
 export const getVisibleProducts = createSelector(
   [ getVisibilityFilter, getProducts ],
@@ -46,8 +47,9 @@ export const getVisibleProducts = createSelector(
   }
 )
 
-// Export selector for saga
+// Export selectors for saga
 // export { getProducts }
+export { getDataDir }
 
 // Get the highest id of all products so new products can get maxId + 1
 // export const maxIdSelector = createSelector(
