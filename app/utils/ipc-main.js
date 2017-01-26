@@ -53,3 +53,17 @@ ipcMain.on('fetch-all-faos', (event, dataDir) => {
 
   event.sender.send('all-faos-fetched', allFAOs)
 })
+
+// save a single product
+ipcMain.on('save-product', (event, product) => {
+  // validate product
+  const productValidator = new ProductValidator()
+  const validatedProduct = productValidator(product)
+
+  if (validatedProduct.validationSummary.isValid) {
+    delete validatedProduct.validationSummary
+    delete validatedProduct.filename
+  }
+
+  // save to single products
+})
