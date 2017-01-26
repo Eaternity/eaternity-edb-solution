@@ -27,20 +27,13 @@ export const getVisibleProducts = createSelector(
 
       case 'SHOW_INVALID':
         return products
-          .filter(product => !product.validationResult.isValid)
+          .filter(product => product.validationSummary.isValid === false)
           .map(product => {
-            const summary = product.validationResult.summary
-            let brokenLinks = []
-            if (summary.hasNutritionId && !summary.linkedNutritionFileExists) {
-              brokenLinks = brokenLinks.concat(['nutrition-id'])
-            } else if (summary.hasNutritionChangeId && !summary.linkedNutritionChangeFilesExist) {
-              brokenLinks = brokenLinks.concat(['nutr-change-id'])
-            }
             return {
               id: product.id,
               name: product.name,
-              missingFields: summary.missingFields.join(', '),
-              brokenLinks: brokenLinks.join(', ')
+              missingFields: product.validationSummary.missingFields.join(', '),
+              brokenLinks: product.validationSummary.brokenLinks.join(', ')
             }
           })
     }

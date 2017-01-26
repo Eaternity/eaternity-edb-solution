@@ -225,13 +225,13 @@ class ProductValidator {
       return !this.mandatoryFields.includes(field)
     })
 
-    let brokenLinks = ''
+    let brokenLinks = []
     if (validationSummary.hasNutritionId &&
       !validationSummary.linkedNutritionFileExists) {
-      brokenLinks = brokenLinks.concat(['nutrition-id'])
+      brokenLinks = [...brokenLinks, 'nutrition-id']
     } else if (validationSummary.hasNutritionChangeId &&
       !validationSummary.linkedNutritionChangeFilesExist) {
-      brokenLinks = brokenLinks.concat(['nutr-change-id'])
+      brokenLinks = [...brokenLinks, 'nutr-change-id']
     }
 
     const hasBrokenLinks = brokenLinks.length > 0
