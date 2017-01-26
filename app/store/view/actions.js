@@ -1,17 +1,24 @@
 import * as actions from './action-types'
 
-export const toggleProductVisibility = () => ({
-  type: actions.TOOGLE_PRODUCT_VISIBILITY
-})
+export const toggleProductVisibility = payload => {
+  return {
+    type: actions.TOOGLE_PRODUCT_VISIBILITY,
+    payload
+  }
+}
 
-export const toggleTableVisibility = (table) => ({
-  type: actions.TOOGLE_TABLE_VISIBILITY,
-  table
-})
+export const toggleTableVisibility = payload => {
+  return {
+    type: actions.TOOGLE_TABLE_VISIBILITY,
+    payload
+  }
+}
 
-export const updateSearchInput = (inputValue) => ({
-  type: actions.UPDATE_SEARCH_INPUT,
-  inputValue
-})
+export const updateSearchInput = payload => {
+  return {
+    type: actions.UPDATE_SEARCH_INPUT,
+    payload
+  }
+}
 
 export const clearSearchInput = () => ({type: actions.CLEAR_SEARCH_INPUT})

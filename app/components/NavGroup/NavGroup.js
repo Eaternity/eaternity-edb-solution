@@ -2,9 +2,15 @@ import React, { PropTypes } from 'react'
 import { Button, ButtonGroup } from 'reactstrap'
 import styles from './NavGroup.css'
 
-const NavGroup = (props) => {
-  const handleClick = (e) => {
-    props.actions.toggleTableVisibility(e.target.id)
+const NavGroup = props => {
+  const handleClick = event => {
+    const tableType = event.target.id
+    if (tableType === 'invalid') {
+      props.actions.toggleProductVisibility('SHOW_INVALID')
+    } else {
+      props.actions.toggleProductVisibility('SHOW_SUBSET')
+    }
+    props.actions.toggleTableVisibility(tableType)
     props.actions.clearSearchInput()
   }
 
@@ -35,7 +41,15 @@ const NavGroup = (props) => {
           size='sm' >
           Nutrition
         </Button>{' '}
-      </ButtonGroup>
+        <Button
+          onClick={(e) => handleClick(e)}
+          id='invalid'
+          outline
+          color='danger'
+          size='sm' >
+        Invalid products
+      </Button>
+      </ButtonGroup>{' '}
     </div>
   )
 }

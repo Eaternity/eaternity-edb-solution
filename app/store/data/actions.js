@@ -1,8 +1,8 @@
 import * as actions from './action-types'
 
-export const changeDataDir = dir => {
+export const setDataDir = payload => {
   return {
-    type: actions.CHANGE_DATADIR, dir
+    type: actions.SET_DATA_DIR, payload
   }
 }
 

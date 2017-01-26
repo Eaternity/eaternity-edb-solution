@@ -1,7 +1,5 @@
 import { fork } from 'redux-saga/effects'
-import { fetchProductsSaga } from './product'
-import { fetchFAOsSaga } from './fao'
-import { fetchNutrientsSaga } from './nutrient'
+import { fetchProductsSaga, fetchNutrientsSaga, fetchFAOsSaga } from './filesystem'
 
 function * rootSaga () {
   yield [
