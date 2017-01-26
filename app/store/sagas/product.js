@@ -1,12 +1,12 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
 // import { getProducts } from '../selectors/product'
-import edbApi from '../../api/edb'
+import fileSystemApi from '../../filesystem-api/filesystem-api'
 import * as actionTypes from '../data/action-types'
 
 // worker saga: fires on PRODUCT_FETCH_ALL_REQUESTED
 function * fetchAllProducts () {
   try {
-    const products = yield call(edbApi.fetchAllProducts)
+    const products = yield call(fileSystemApi.fetchAllProducts)
     yield put({type: actionTypes.PRODUCT_FETCH_ALL_SUCCEEDED, products})
   } catch (err) {
     yield put({type: actionTypes.PRODUCT_FETCH_ALL_FAILED, message: err.message})

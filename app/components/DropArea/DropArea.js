@@ -1,6 +1,6 @@
 import React from 'react'
-import { ipcRenderer } from 'electron'
 import { Button } from 'reactstrap'
+import fileSystemApi from '../../filesystem-api/filesystem-api'
 import styles from './DropArea.css'
 
 const DropArea = (props) => {
@@ -19,15 +19,13 @@ const DropArea = (props) => {
   }
 
   const handleChooseDir = () => {
-    ipcRenderer.send('choose-data-dir')
-    ipcRenderer.on('data-dir-choosen', (event, choosenDir) => {
-      if (choosenDir) {
-        props.actions.changeDataDir(choosenDir)
+    fileSystemApi.chooseDataDir()
+      .then(dataDir => {
+        props.actions.setDataDir(dataDir)
         props.actions.fetchAllProducts()
         props.actions.fetchAllFAOs()
         props.actions.fetchAllNutrients()
-      }
-    })
+      })
   }
 
   return (

@@ -1,10 +1,10 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
-import edbApi from '../../api/edb'
+import fileSystemApi from '../../filesystem-api/filesystem-api'
 import * as actionTypes from '../data/action-types'
 
 function * fetchAllNutrients () {
   try {
-    const nutrients = yield call(edbApi.fetchAllNutrients)
+    const nutrients = yield call(fileSystemApi.fetchAllNutrients)
     yield put({type: actionTypes.NUTRIENT_FETCH_ALL_SUCCEEDED, nutrients})
   } catch (err) {
     yield put({type: actionTypes.NUTRIENT_FETCH_ALL_FAILED, message: err.message})

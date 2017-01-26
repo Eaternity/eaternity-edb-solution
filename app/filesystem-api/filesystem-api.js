@@ -1,6 +1,20 @@
-import ipcRenderer from 'electron'
+// Use ipc to commuticate with the main process and get filesystem access. All
+//  filesystem operations in ipcMain are implemented synchronously so it will
+//  take some ms for the data to come back. The api uses promises to account
+//  for that... Does this make sense?!
 
-const edbApi = {
+import { ipcRenderer } from 'electron'
+
+const fileSystemApi = {
+  chooseDataDir: () => {
+    return new Promise((resolve, reject) => {
+      ipcRenderer.send('choose-data-dir')
+      ipcRenderer.on('data-dir-choosen', (_, choosenDir) => {
+        if (choosenDir) resolve(choosenDir)
+      })
+    })
+  },
+
   fetchAllProducts: () => {
     ipcRenderer.send('fetch-all-products')
     return new Promise((resolve, reject) => {
@@ -38,4 +52,4 @@ const edbApi = {
   }
 
 }
-export default edbApi
+export default fileSystemApi
