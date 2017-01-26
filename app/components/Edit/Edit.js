@@ -1,4 +1,3 @@
-/* @flow */
 import React, { Component, PropTypes } from 'react'
 import { ipcRenderer } from 'electron'
 import { Button, Card, CardBlock, CardTitle, CardSubtitle, Col, Input, Form, FormGroup, Label, Popover, PopoverTitle, PopoverContent } from 'reactstrap'
@@ -7,18 +6,14 @@ import EditBar from '../EditBar/EditBar'
 import styles from './Edit.css'
 
 class Edit extends Component {
-  static propTypes = {
-    dataDir: PropTypes.string.isRequired,
-    products: PropTypes.array.isRequired,
-    editedProduct: PropTypes.object.isRequired,
-    actions: PropTypes.object.isRequired
-  }
-
-  state = {
-    fieldname: '',
-    saveModalOpen: false,
-    backModalOpen: false,
-    popoverOpen: false
+  constructor (props) {
+    super(props)
+    this.state = {
+      fieldname: '',
+      saveModalOpen: false,
+      backModalOpen: false,
+      popoverOpen: false
+    }
   }
 
   toggleSaveModal = () => {
@@ -55,13 +50,13 @@ class Edit extends Component {
     this.props.actions.changeLocation('/')
   }
 
-  handleInputChange = (e: Object) => {
-    this.props.actions.updateEditedProduct(e.target.id, e.target.value)
+  handleInputChange (event) {
+    this.props.actions.updateEditedProduct(event.target.id, event.target.value)
   }
 
-  handleFieldnameInput = (e: Object) => {
+  handleFieldnameInput (event) {
     this.setState({
-      fieldname: e.target.value
+      fieldname: event.target.value
     })
   }
 
@@ -214,6 +209,13 @@ class Edit extends Component {
       </div>
     )
   }
+}
+
+Edit.propTypes = {
+  dataDir: PropTypes.string.isRequired,
+  products: PropTypes.array.isRequired,
+  editedProduct: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired
 }
 
 export default Edit

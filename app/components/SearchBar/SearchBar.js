@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
-import { ipcRenderer } from 'electron'
-import { Button, Col, Input, InputGroup, InputGroupAddon, Nav, Navbar, NavbarBrand } from 'reactstrap'
+import { Col, Container, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupAddon, Nav, Navbar, NavItem, Row } from 'reactstrap'
+import fileSystemApi from '../../filesystem-api/filesystem-api'
+import menu from './menu.png'
 import logo from './logo.png'
 import searchIcon from './search.png'
 import styles from './SearchBar.css'
@@ -17,14 +18,15 @@ class SearchBar extends Component {
   }
 
   handleChooseDir = () => {
-    ipcRenderer.send('choose-data-dir')
-    ipcRenderer.on('data-dir-choosen', (event, choosenDir) => {
-      if (choosenDir) {
-        this.props.actions.changeDataDir(choosenDir)
-        this.props.actions.fetchAllProducts()
-        this.props.actions.fetchAllFAOs()
-        this.props.actions.fetchAllNutrients()
-      }
+    fileSystemApi.chooseDataDir()
+      .then(dataDir => {
+        this.props.actions.setDataDir(dataDir)
+      })
+  }
+
+  toggleDropdown = () => {
+    this.setState({
+      dropdownOpen: !this.state.dropdownOpen
     })
   }
 
@@ -34,46 +36,64 @@ class SearchBar extends Component {
   }
 
   handlePlusClick = () => {
-    console.log('clicked')
-    // this.props.actions.setEditedProductToNew()
-    // this.props.actions.changeLocation(`/edit/${this.props.editedProduct.id}`)
+    this.props.actions.setEditedProductToNew()
+    this.props.actions.changeLocation(`/edit/${this.props.editedProduct.id}`)
   }
 
   render () {
     return (
-      <Navbar color='faded' light>
-        <NavbarBrand>
-          <img className={styles.logo} src={logo} alt='logo' />
-        </NavbarBrand>
-        <Nav navbar >
-          <Col sm='7' >
-            <InputGroup>
-              <InputGroupAddon>
-                <img className={styles.search} src={searchIcon} alt='searchIcon' />
-              </InputGroupAddon>
-              <Input
-                onKeyUp={(e) => this.handleKeyUp(e)}
-                placeholder='search...' />
-            </InputGroup>
-          </Col>
-        </Nav>
-        <Nav navbar>
-          <Button
-            onClick={() => this.handleChooseDir()}
-            outline
-            color='success'
-            size='sm' >
-            Choose data dir
-          </Button>{' '}
-          <Button
-            onClick={() => this.handlePlusClick()}
-            outline
-            color='success'
-            size='sm' >
-            Add new product
-          </Button>
-        </Nav>
-      </Navbar>
+      <div>
+        <Navbar color='faded'>
+          <Container>
+            <Row>
+              <Col sm='2'>
+                <Nav navbar>
+                  <NavItem>
+                    <img className={styles.logo} src={logo} alt='logo' />
+                  </NavItem>
+                </Nav>
+              </Col>
+              <Col sm='8'>
+                <Nav navbar>
+                  <NavItem>
+                    <InputGroup>
+                      <InputGroupAddon>
+                        <img className={styles.search} src={searchIcon} alt='searchIcon' />
+                      </InputGroupAddon>
+                      <Input
+                        onKeyUp={(e) => this.handleKeyUp(e)}
+                        placeholder='search for ...' />
+                    </InputGroup>
+                  </NavItem>
+                </Nav>
+              </Col>
+              <Col sm='2'>
+                <Nav navbar>
+                  <NavItem>
+                    <Dropdown
+                      isOpen={this.state.dropdownOpen} toggle={this.toggleDropdown}>
+                      <DropdownToggle>
+                        <img className={styles.menu} src={menu} alt='menuIcon' />
+                      </DropdownToggle>
+                      <DropdownMenu right>
+                        <DropdownItem
+                          onClick={() => this.handleChooseDir()}>
+                          Choose data directory
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => this.handlePlusClick()}
+                          disabled={!this.props.dataDir}>
+                          Add new product
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </NavItem>
+                </Nav>
+              </Col>
+            </Row>
+          </Container>
+        </Navbar>
+      </div>
     )
   }
 }
