@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
-import { ipcRenderer } from 'electron'
 import { Col, Container, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupAddon, Nav, Navbar, NavItem, Row } from 'reactstrap'
+import fileSystemApi from '../../filesystem-api/filesystem-api'
 import menu from './menu.png'
 import logo from './logo.png'
 import searchIcon from './search.png'
@@ -18,15 +18,10 @@ class SearchBar extends Component {
   }
 
   handleChooseDir = () => {
-    ipcRenderer.send('choose-data-dir')
-    ipcRenderer.on('data-dir-choosen', (event, choosenDir) => {
-      if (choosenDir) {
-        this.props.actions.changeDataDir(choosenDir)
-        this.props.actions.fetchAllProducts()
-        this.props.actions.fetchAllFAOs()
-        this.props.actions.fetchAllNutrients()
-      }
-    })
+    fileSystemApi.chooseDataDir()
+      .then(dataDir => {
+        this.props.actions.setDataDir(dataDir)
+      })
   }
 
   toggleDropdown = () => {

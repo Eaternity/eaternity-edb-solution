@@ -30,7 +30,7 @@ const mapDispatchToProps = dispatch => ({
     fetchAllProducts: dataActions.fetchAllProducts,
     fetchAllFAOs: dataActions.fetchAllFAOs,
     fetchAllNutrients: dataActions.fetchAllNutrients,
-    changeDataDir: dataActions.changeDataDir,
+    setDataDir: dataActions.setDataDir,
     selectProduct: dataActions.selectProduct,
     setEditedProductToNew: dataActions.setEditedProductToNew,
     toggleTableVisibility: viewActions.toggleTableVisibility,
