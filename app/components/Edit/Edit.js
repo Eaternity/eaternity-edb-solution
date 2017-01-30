@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react'
-import { ipcRenderer } from 'electron'
 import { Button, Card, CardBlock, CardTitle, CardSubtitle, Col, Input, Form, FormGroup, Label, Popover, PopoverTitle, PopoverContent } from 'reactstrap'
 import ConfirmRejectModal from '../ConfirmRejectModal/ConfirmRejectModal'
 import EditBar from '../EditBar/EditBar'
@@ -36,18 +35,14 @@ class Edit extends Component {
 
   handleSaveConfirmClick = () => {
     this.props.actions.mergeEditedToProducts()
-    ipcRenderer.send(
-      'save-products',
-      this.props.dataDir,
-      this.props.products,
-      this.props.editedProduct
-    )
-    ipcRenderer.on('products-saved', () => this.toggleSaveModal())
+    this.props.actions.saveAllProducts()
+    this.toggleSaveModal()
   }
 
   handleBackConfirmClick = () => {
     this.props.actions.clearSearchInput()
     this.props.actions.changeLocation('/')
+    this.toggleBackModal()
   }
 
   handleInputChange (event) {
@@ -213,7 +208,6 @@ class Edit extends Component {
 
 Edit.propTypes = {
   dataDir: PropTypes.string.isRequired,
-  products: PropTypes.array.isRequired,
   editedProduct: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired
 }

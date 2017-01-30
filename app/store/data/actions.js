@@ -13,6 +13,12 @@ export const fetchAllProducts = () => {
   }
 }
 
+export const saveAllProducts = () => {
+  return {
+    type: actions.PRODUCT_SAVE_ALL_REQUESTED
+  }
+}
+
 export const selectProduct = id => {
   return {
     type: actions.SELECT_PRODUCT,
@@ -33,12 +39,6 @@ export const mergeEditedToProducts = () => {
     type: actions.MERGE_EDITED_TO_PRODUCTS
   }
 }
-
-// export const saveProduct = () => {
-//   return {
-//     type: actions.PRODUCT_SAVE_REQUESTED
-//   }
-// }
 
 export const setEditedProductToNew = () => {
   return {
