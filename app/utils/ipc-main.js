@@ -19,22 +19,28 @@ ipcMain.on('choose-data-dir', event => {
 
 // load and send all products
 ipcMain.on('fetch-all-products', (event, dataDir) => {
-  const productValidator = new ProductValidator()
+  try {
+    const productValidator = new ProductValidator()
+    const fixedProducts = productValidator
+      .setDataDir(dataDir)
+      .validateAllProducts()
+      .fixAllProducts()
+      // HACK: saving fixed products array here although only fetch-all-products
+      // was listened for...
+      .saveFixedProducts()
+      .fixedProducts
 
-  const fixedProducts = productValidator
-    .setDataDir(dataDir)
-    .validateAllProducts()
-    .fixAllProducts()
-    .fixedProducts
-
-  event.sender.send('all-products-fetched', fixedProducts)
+    event.sender.send('all-products-fetched', fixedProducts)
+  } catch (err) {
+    event.sender.send('error', err)
+  }
 })
 
 // load and send all nutrients
 ipcMain.on('fetch-all-nutrients', (event, dataDir) => {
   const nutrientFileNames = fs.readdirSync(`${dataDir}/nutrs`)
     .filter(filename => {
-      // json fiels only...
+      // json files only...
       const extension = path.extname(filename)
       return extension === '.json'
     })
@@ -54,16 +60,19 @@ ipcMain.on('fetch-all-faos', (event, dataDir) => {
   event.sender.send('all-faos-fetched', allFAOs)
 })
 
-// save a single product
-ipcMain.on('save-product', (event, product) => {
-  // validate product
+// HACK: save all products is triggered when a single product was edited or
+// added and saved. This ensures that all new products are validated and/or
+// fixed upon save and show up in the invalid product view when invalid
+ipcMain.on('save-all-products', (event, dataDir, products) => {
+  // validate, fix and save products
   const productValidator = new ProductValidator()
-  const validatedProduct = productValidator(product)
+  const fixedProducts = productValidator
+    .setDataDir(dataDir)
+    .validateAllProducts(products)
+    .fixAllProducts()
+    .saveFixedProducts()
+    .fixedProducts
 
-  if (validatedProduct.validationSummary.isValid) {
-    delete validatedProduct.validationSummary
-    delete validatedProduct.filename
-  }
-
-  // save to single products
+  // send fixed products back so they can be put to the redux store. This
+  event.sender.send('all-products-saved', fixedProducts)
 })

@@ -65,7 +65,22 @@ class ProductValidator {
   }
 
   saveFixedProducts () {
+    // TODO: Save single products to original location! First figure out a way
+    // to conserve order of keys...
+    // this.fixedProducts.forEach(product => {
+    //   const filename = product.filename
+    //
+    //   // remove filename and validationSummary fields
+    //   delete product.filename
+    //   delete product.validationSummary
+    //
+    //   jsonfile.writeFileSync(`${this.dataDir}/prods/${filename}`)
+    // })
+
+    // save array of products
     jsonfile.writeFileSync(`${this.dataDir}/prods.all.json`, this.fixedProducts)
+
+    return this
   }
 
   // method to validate a product
@@ -101,13 +116,9 @@ class ProductValidator {
       validationSummary = Object.assign(validationSummary, {
         parentProduct: parentName[0]
       })
-    } else {
-      validationSummary = Object.assign(validationSummary, {
-        parentProduct: ''
-      })
     }
 
-      // does a nutrient-id field exist? Is there a corresponding file?
+    // does a nutrient-id field exist? Is there a corresponding file?
     const hasNutritionId = this.product.hasOwnProperty('nutrition-id')
 
     if (hasNutritionId) {
@@ -132,6 +143,7 @@ class ProductValidator {
     // Is there a corresponding nutr-change file for each?
     const hasNutritionChangeId = this.product.hasOwnProperty('processes') &&
       this.product.processes[0].hasOwnProperty('nutr-change-id')
+
     const allNutritionChangeIds = this.nutrChangeFilenames.map(filename => {
       return filename.split('-')[0]
     })
@@ -179,8 +191,10 @@ class ProductValidator {
           return product.filename === validationSummaryParent.parentProduct
         })[0]
 
-        this.validateProduct(parentProduct)
-        const validatedParentProduct = this.validatedProduct
+        // calling this.validateProduct(parentProduct) is essential because it
+        // sets the parent product as this.validatedProduct in each recursive
+        // call...
+        const validatedParentProduct = this.validateProduct(parentProduct).validatedProduct
 
         const fieldExistsInParent = parentProduct.hasOwnProperty(missingField)
 
@@ -205,11 +219,14 @@ class ProductValidator {
 
   fixProduct (validatedProduct = this.validatedProduct) {
     let validationSummary = validatedProduct.validationSummary
+    let isValid = true
+    let brokenLinks = []
     const fieldsFromParent = this.getFieldsFromParent(validatedProduct)
 
-    // get only keys for validation summary
+    // check for unresolvable fields
     const unresolvableFields = fieldsFromParent
       .filter(field => {
+        // get only keys for validation summary
         const key = Object.keys(field)[0]
         return field[key] === 'NOT_RESOLVABLE'
       })
@@ -221,11 +238,17 @@ class ProductValidator {
         return field[key] !== 'NOT_RESOLVABLE'
       })
 
-    let isValid = unresolvableFields.every(field => {
-      return !this.mandatoryFields.includes(field)
+    // Array.some() resolves to true if the callback returns true for any
+    // of the arrays elements...
+    const hasUnresolvableMandatoryFields = unresolvableFields.some(field => {
+      return this.mandatoryFields.includes(field)
     })
 
-    let brokenLinks = []
+    if (hasUnresolvableMandatoryFields) {
+      isValid = false
+    }
+
+    // check for broken links
     if (validationSummary.hasNutritionId &&
       !validationSummary.linkedNutritionFileExists) {
       brokenLinks = [...brokenLinks, 'nutrition-id']
@@ -255,9 +278,10 @@ class ProductValidator {
   }
 
   validateAllProducts (prods = this.prods) {
+    this.prods = prods
+
     this.validatedProducts = prods.map(product => {
-      this.validateProduct(product)
-      return this.validatedProduct
+      return this.validateProduct(product).validatedProduct
     })
 
     return this
@@ -265,8 +289,7 @@ class ProductValidator {
 
   fixAllProducts (validatedProducts = this.validatedProducts) {
     this.fixedProducts = validatedProducts.map(validatedProduct => {
-      this.fixProduct(validatedProduct)
-      return this.fixedProduct
+      return this.fixProduct(validatedProduct).fixedProduct
     })
 
     return this

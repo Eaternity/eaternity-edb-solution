@@ -33,7 +33,7 @@ const DropArea = (props) => {
       className={styles.droparea}
       onDragOver={(e) => handleDragOver(e)}
       onDrop={(e) => handleDrop(e)}>
-      <h3> Nothing here yet...</h3>
+      <h3>Nothing here yet...</h3>
       <p>Choose data folder or drop it here!</p>
       <Button
         onClick={() => handleChooseDir()}

@@ -42,7 +42,7 @@ export const getVisibleProducts = createSelector(
 
 // Export selectors for saga
 // export { getProducts }
-export { getDataDir }
+export { getDataDir, getProducts }
 
 // Get the highest id of all products so new products can get maxId + 1
 // export const maxIdSelector = createSelector(
