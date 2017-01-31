@@ -5,14 +5,17 @@ import EditBar from '../EditBar/EditBar'
 import styles from './Edit.css'
 
 class Edit extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      fieldname: '',
-      saveModalOpen: false,
-      backModalOpen: false,
-      popoverOpen: false
-    }
+  static propTypes = {
+    dataDir: PropTypes.string.isRequired,
+    editedProduct: PropTypes.object.isRequired,
+    actions: PropTypes.object.isRequired
+  }
+
+  state = {
+    fieldname: '',
+    saveModalOpen: false,
+    backModalOpen: false,
+    popoverOpen: false
   }
 
   toggleSaveModal = () => {
@@ -45,11 +48,11 @@ class Edit extends Component {
     this.toggleBackModal()
   }
 
-  handleInputChange (event) {
+  handleInputChange = event => {
     this.props.actions.updateEditedProduct(event.target.id, event.target.value)
   }
 
-  handleFieldnameInput (event) {
+  handleFieldnameInput = event => {
     this.setState({
       fieldname: event.target.value
     })
@@ -69,45 +72,65 @@ class Edit extends Component {
       const renderInputs = () => {
         switch (key) {
           case 'filename':
-            return <Input
-              type='text'
-              id={key}
-              readOnly
-              value={this.props.editedProduct[key]} />
+            return <div />
+
+          case 'validationSummary':
+            return <div />
 
           case 'id':
-            return <Input
-              type='text'
-              id={key}
-              readOnly
-              value={this.props.editedProduct[key]} />
+            // id is read only!
+            return (
+              <div>
+                <Label for={key} sm={4}>
+                  {key}
+                </Label>
+                <Col sm={8}>
+                  <Input
+                    type='text'
+                    id={key}
+                    readOnly
+                    value={this.props.editedProduct[key]} />
+                </Col>
+              </div>
+            )
 
           case 'processes':
-            return <Input
-              type='text'
-              id={key}
-              readOnly
-              value={'processes array not editable'} />
+            return (
+              <div>
+                <Label for={key} sm={4}>
+                  {key}
+                </Label>
+                <Col sm={8}>
+                  <Input
+                    type='text'
+                    id={key}
+                    readOnly
+                    value='Processes array not editable... Sorry!' />
+                </Col>
+              </div>
+            )
 
           default:
-            return <Input
-              type='text'
-              id={key}
-              onKeyUp={(e) => this.handleInputChange(e)}
-              placeholder={this.props.editedProduct[key]} />
+            return (
+              <div>
+                <Label for={key} sm={4}>
+                  {key}
+                </Label>
+                <Col sm={8}>
+                  <Input
+                    type='text'
+                    id={key}
+                    onChange={this.handleInputChange}
+                    value={this.props.editedProduct[key]} />
+                </Col>
+              </div>
+            )
         }
       }
 
       return (
         <FormGroup key={key} row>
-          <Label
-            for={key}
-            sm={4}>
-            {key}
-          </Label>
-          <Col sm={8}>
-            {renderInputs()}
-          </Col>
+          {renderInputs()}
         </FormGroup>
       )
     })
@@ -148,7 +171,7 @@ class Edit extends Component {
                   <PopoverContent>
                     <Input
                       type='text'
-                      onKeyUp={(e) => this.handleFieldnameInput(e)}
+                      onKeyUp={this.handleFieldnameInput}
                       placeholder='fieldname' />
                   </PopoverContent>
                   <PopoverContent className={styles.popoverBtn}>
@@ -204,12 +227,6 @@ class Edit extends Component {
       </div>
     )
   }
-}
-
-Edit.propTypes = {
-  dataDir: PropTypes.string.isRequired,
-  editedProduct: PropTypes.object.isRequired,
-  actions: PropTypes.object.isRequired
 }
 
 export default Edit
