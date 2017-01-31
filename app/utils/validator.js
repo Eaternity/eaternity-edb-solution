@@ -7,6 +7,56 @@ jsonfile.spaces = 2
 
 class ProductValidator {
   constructor () {
+    this.orderedKeys = [
+      'id',
+      'name',
+      'co2-value',
+      'tags',
+      'specification',
+      'synonyms',
+      'name-english',
+      'name-french',
+      'nutrition-id',
+      'alternatives',
+      'standard-origin',
+      'origins',
+      'production-names',
+      'production-values',
+      'production-methods',
+      'processing-names',
+      'processing-values',
+      'processing-methods',
+      'conservation-names',
+      'conservation-values',
+      'preservation-methods',
+      'packaging-names',
+      'packaging-values',
+      'packaging-methods',
+      'season-begin',
+      'season-end',
+      'combined-product',
+      'density',
+      'unit-weight',
+      'quantity-comments',
+      'quantity-references',
+      'consistency',
+      'foodwaste',
+      'foodwaste-comment',
+      'co2-calculation',
+      'calculation-process-documentation',
+      'info-text',
+      'references',
+      'other-references',
+      'comments',
+      'co2-calculation-parameters',
+      'references-parameters',
+      'data-quality',
+      'author',
+      'delete',
+      'filename', // delete later
+      'validationSummary' // delete later
+    ]
+
     this.mandatoryFields = [
       'name',
       'id',
@@ -64,7 +114,27 @@ class ProductValidator {
     return this
   }
 
-  saveFixedProducts () {
+  orderProduct (product = this.product) {
+    const orderedPairs = this.orderedKeys
+      .filter(key => !!product[key])
+      .map(key => ({[key]: product[key]}))
+
+    this.orderedProduct = Object.assign({}, ...orderedPairs)
+
+    return this
+  }
+
+  orderFixedProducts (fixedProducts = this.fixedProducts) {
+    this.orderedFixedProducts = fixedProducts.map(product => {
+      // delete product.filename
+      // delete product.validationSummary
+      return this.orderProduct(product).orderedProduct
+    })
+
+    return this
+  }
+
+  saveOrderedFixedProducts () {
     // TODO: Save single products to original location! First figure out a way
     // to conserve order of keys...
     // this.fixedProducts.forEach(product => {
@@ -74,11 +144,12 @@ class ProductValidator {
     //   delete product.filename
     //   delete product.validationSummary
     //
-    //   jsonfile.writeFileSync(`${this.dataDir}/prods/${filename}`)
+    //   const orderedProduct = this.orderProduct(product).orderedProduct
+    //
+    //   jsonfile.writeFileSync(`${this.dataDir}/prods/${filename}`, orderedProduct)
     // })
-
-    // save array of products
-    jsonfile.writeFileSync(`${this.dataDir}/prods.all.json`, this.fixedProducts)
+    jsonfile.writeFileSync(`${this.dataDir}/prods.all.json`,
+      this.orderedFixedProducts)
 
     return this
   }

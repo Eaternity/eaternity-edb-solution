@@ -21,16 +21,20 @@ ipcMain.on('choose-data-dir', event => {
 ipcMain.on('fetch-all-products', (event, dataDir) => {
   try {
     const productValidator = new ProductValidator()
-    const fixedProducts = productValidator
+    const orderedFixedProducts = productValidator
       .setDataDir(dataDir)
       .validateAllProducts()
       .fixAllProducts()
+      .orderFixedProducts()
       // HACK: saving fixed products array here although only fetch-all-products
       // was listened for...
-      .saveFixedProducts()
-      .fixedProducts
+      .saveOrderedFixedProducts()
+      .orderedFixedProducts
 
-    event.sender.send('all-products-fetched', fixedProducts)
+    // all arguments to event.sender.sedn will be serialized to json internally!
+    // https://github.com/electron/electron/blob/master/docs/api/ipc-renderer.md
+    // So the order get lost in ipc... Reorder on the other side!!!
+    event.sender.send('all-products-fetched', orderedFixedProducts)
   } catch (err) {
     event.sender.send('error', err)
   }
@@ -66,13 +70,20 @@ ipcMain.on('fetch-all-faos', (event, dataDir) => {
 ipcMain.on('save-all-products', (event, dataDir, products) => {
   // validate, fix and save products
   const productValidator = new ProductValidator()
-  const fixedProducts = productValidator
+
+  const orderedFixedProducts = productValidator
     .setDataDir(dataDir)
     .validateAllProducts(products)
     .fixAllProducts()
-    .saveFixedProducts()
-    .fixedProducts
+    .orderFixedProducts()
+    // HACK: saving fixed products array here although only fetch-all-products
+    // was listened for...
+    .saveOrderedFixedProducts()
+    .orderedFixedProducts
 
-  // send fixed products back so they can be put to the redux store. This
-  event.sender.send('all-products-saved', fixedProducts)
+  // send fixed products back so they can be put to the redux store.
+  // All arguments to event.sender.sedn will be serialized to json internally!
+  // https://github.com/electron/electron/blob/master/docs/api/ipc-renderer.md
+  // So the order get lost in ipc... Reorder on the other side!!!
+  event.sender.send('all-products-saved', orderedFixedProducts)
 })

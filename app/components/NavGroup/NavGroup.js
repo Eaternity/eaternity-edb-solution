@@ -45,7 +45,7 @@ const NavGroup = props => {
           onClick={(e) => handleClick(e)}
           id='invalid'
           outline
-          color='danger'
+          color='warning'
           size='sm' >
         Invalid products
       </Button>

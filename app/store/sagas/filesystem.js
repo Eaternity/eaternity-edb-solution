@@ -5,17 +5,28 @@
 // (select) data from the store, fire other actions etc...
 
 import { call, put, select, takeLatest } from 'redux-saga/effects'
-import { getDataDir, getProducts } from '../selectors/product'
+import { getDataDir, getProducts, getOrderedKeys } from '../selectors/selector'
 import fileSystemApi from '../../filesystem-api/filesystem-api'
 import * as actionTypes from '../data/action-types'
-
-// worker sagas...
 
 // fires on PRODUCT_FETCH_ALL_REQUESTED
 function * fetchAllProducts () {
   try {
     const dataDir = yield select(getDataDir)
-    const products = yield call(fileSystemApi.fetchAllProducts, dataDir)
+    const orderedKeys = yield select(getOrderedKeys)
+    const unorderedProds = yield call(fileSystemApi.fetchAllProducts, dataDir)
+
+    // This is essentially the orderProduct() method from validator.js... I
+    // guess I could use the validator here again but feel that this would be
+    // messy... Could/Should use Json UI schema instead!
+    const products = unorderedProds.map(product => {
+      const orderedPairs = orderedKeys
+        .filter(key => !!product[key])
+        .map(key => ({[key]: product[key]}))
+
+      return Object.assign({}, ...orderedPairs)
+    })
+
     yield put({type: actionTypes.PRODUCT_FETCH_ALL_SUCCEEDED, products})
   } catch (err) {
     yield put({type: actionTypes.PRODUCT_FETCH_ALL_FAILED, message: err.message})
@@ -63,7 +74,6 @@ function * saveAllProducts () {
   }
 }
 
-// sagas
 export function * fetchProductsSaga () {
   yield takeLatest(actionTypes.PRODUCT_FETCH_ALL_REQUESTED, fetchAllProducts)
 }

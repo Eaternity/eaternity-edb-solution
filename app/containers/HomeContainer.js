@@ -4,7 +4,7 @@ import * as viewActions from '../store/view/actions'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { push } from 'react-router-redux'
-import { getVisibleProducts } from '../store/selectors/product'
+import { getVisibleProducts } from '../store/selectors/selector'
 import Home from '../components/Home/Home'
 
 const HomeContainer = props => {
@@ -21,7 +21,8 @@ const mapStateToProps = state => {
     dataDir: state.data.dataDir,
     editedProduct: state.data.editedProduct,
     searchInput: state.view.searchInput,
-    visibleTable: state.view.visibleTable
+    visibleTable: state.view.visibleTable,
+    orderedKeys: state.view.orderedKeys
   }
 }
 
