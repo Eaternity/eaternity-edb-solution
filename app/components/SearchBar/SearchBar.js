@@ -21,6 +21,9 @@ class SearchBar extends Component {
     fileSystemApi.chooseDataDir()
       .then(dataDir => {
         this.props.actions.setDataDir(dataDir)
+        this.props.actions.fetchAllProducts()
+        this.props.actions.fetchAllFAOs()
+        this.props.actions.fetchAllNutrients()
       })
   }
 
