@@ -1,6 +1,7 @@
-/*
-Trying to make preselection/ filtering of products more effective... See https://github.com/reactjs/reselect, this is too much for me ;-)
-*/
+// Trying to make preselection/ filtering of products more effective... See
+// https://github.com/reactjs/reselect I think this is very important with
+// bigger datasets to optimize performance... Not so much here... It's hard to
+// understand for me ;-)
 import { createSelector } from 'reselect'
 
 const getVisibilityFilter = state => state.view.productFilter
@@ -17,11 +18,13 @@ export const getVisibleProducts = createSelector(
       case 'SHOW_SUBSET':
         return products.map(product => {
           return {
-            Product: product.name,
-            Id: product.id,
-            'Co2-value': product['co2-value'],
-            Synonyms: product.synonyms,
-            Tags: product.tags
+            id: product.id,
+            name: product.name,
+            specification: product.specification
+              ? `(${product.specification})` : '',
+            'co2-value': product['co2-value'],
+            synonyms: product.synonyms ? product.synonyms.join(', ') : '',
+            tags: product.tags
           }
         })
 
