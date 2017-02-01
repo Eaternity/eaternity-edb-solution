@@ -8,6 +8,7 @@ class Edit extends Component {
   static propTypes = {
     dataDir: PropTypes.string.isRequired,
     editedProduct: PropTypes.object.isRequired,
+    orderedKeys: PropTypes.array.isRequired,
     actions: PropTypes.object.isRequired
   }
 
@@ -68,7 +69,7 @@ class Edit extends Component {
   }
 
   renderFormGroup = () => {
-    return Object.keys(this.props.editedProduct).map(key => {
+    return this.props.orderedKeys.map(key => {
       const renderInputs = () => {
         switch (key) {
           case 'filename':
@@ -121,7 +122,7 @@ class Edit extends Component {
                     type='text'
                     id={key}
                     onChange={this.handleInputChange}
-                    value={this.props.editedProduct[key]} />
+                    value={this.props.editedProduct[key] || ''} />
                 </Col>
               </div>
             )
