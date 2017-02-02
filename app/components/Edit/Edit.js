@@ -111,8 +111,6 @@ class Edit extends Component {
 
           case 'validationSummary':
             return <div />
-          case 'synonyms':
-            return <div />
 
           case 'id':
             // id is read only!
@@ -174,6 +172,23 @@ class Edit extends Component {
               </div>
             )
 
+          case 'synonyms':
+            return (
+              <div>
+                <Label for={key} sm={4}>
+                  {key}
+                </Label>
+                <Col sm={8}>
+                  <ChipInput
+                    defaultValue={this.props.editedProduct.synonyms}
+                    onChange={(synonyms) => this.handleSynonymChange(synonyms)}
+                    fullWidthInput={true}
+                    style={{ width: '100%' }}
+                  />
+                </Col>
+              </div>
+            )
+
           default:
             return (
               <div>
@@ -212,21 +227,6 @@ class Edit extends Component {
             <Form>
               {this.renderFormGroup()}
             </Form>
-            <div>
-              <Label for='Synonyms (German)' sm={4}>
-                Synonyms (German)
-              </Label>
-              <Col sm={8}>
-                <ChipInput
-                  defaultValue={this.props.editedProduct.synonyms}
-                  onChange={(synonyms) => this.handleSynonymChange(synonyms)}
-                  fullWidthInput={true}
-                  style={{
-                    width: '100%'
-                  }}
-                />
-              </Col>
-            </div>
           </CardBlock>
           <CardBlock>
             <div className={styles.editBtnGroup}>
