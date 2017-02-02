@@ -3,6 +3,8 @@ import { Button, Card, CardBlock, CardTitle, CardSubtitle, Col, Input, Form, For
 import Autosuggest from 'react-autosuggest'
 import ConfirmRejectModal from '../ConfirmRejectModal/ConfirmRejectModal'
 import EditBar from '../EditBar/EditBar'
+import ChipInput from 'material-ui-chip-input'
+
 import styles from './Edit.css'
 import autosuggest from './autosuggest.css'
 
@@ -96,6 +98,10 @@ class Edit extends Component {
     })
   }
 
+  handleSynonymChange = synonyms => {
+    this.props.actions.updateEditedProduct('synonyms', synonyms)
+  }
+
   renderFormGroup = () => {
     return this.props.orderedKeys.map(key => {
       const renderInputs = () => {
@@ -104,6 +110,8 @@ class Edit extends Component {
             return <div />
 
           case 'validationSummary':
+            return <div />
+          case 'synonyms':
             return <div />
 
           case 'id':
@@ -204,6 +212,21 @@ class Edit extends Component {
             <Form>
               {this.renderFormGroup()}
             </Form>
+            <div>
+              <Label for='Synonyms (German)' sm={4}>
+                Synonyms (German)
+              </Label>
+              <Col sm={8}>
+                <ChipInput
+                  defaultValue={this.props.editedProduct.synonyms}
+                  onChange={(synonyms) => this.handleSynonymChange(synonyms)}
+                  fullWidthInput={true}
+                  style={{
+                    width: '100%'
+                  }}
+                />
+              </Col>
+            </div>
           </CardBlock>
           <CardBlock>
             <div className={styles.editBtnGroup}>
