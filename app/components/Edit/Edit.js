@@ -36,8 +36,8 @@ class Edit extends Component {
 
   getSuggestionValue = suggestion => suggestion.id.toString()
 
-  // Autosuggest will call this function every time you need to update suggestions.
-  // You already implemented this logic above, so just use it.
+  // Autosuggest will call this function every time you need to update
+  // suggestions
   handleSuggestionFetch = ({ value }) => {
     this.setState({
       suggestions: this.getSuggestions(value)
@@ -60,7 +60,7 @@ class Edit extends Component {
   // Use your imagination to render suggestions.
   renderSuggestion = suggestion => (
     <div>
-      {suggestion.name}
+      {`Name: ${suggestion.name} | Id: ${suggestion.id}`}
     </div>
   )
 

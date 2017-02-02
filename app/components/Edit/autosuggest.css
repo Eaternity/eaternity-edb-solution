@@ -1,17 +1,24 @@
+.container {
+}
+
 .suggestionsList {
   list-style-type: none;
 }
 
 .input {
   width: 100%;
-  outline: none;
   margin: 0;
+  border: 1px solid lightgrey;
+  border-radius: 3px;
   outline: none;
-  box-shadow: none;
-  border: 1px, solid, grey;
-  padding: 1%;
+  padding-top: 1.1%;
+  padding-bottom: 1.1%;
+  padding-left: 2%;
 }
 
 .input:focus {
-  border: 1px, solid, blue;
+  border: 1px solid #2f9bf4;
+}
+
+.suggestion {
 }
