@@ -6233,6 +6233,20 @@ react-addons-transition-group@^15.4.1:
   version "15.4.1"
   resolved "https://registry.yarnpkg.com/react-addons-transition-group/-/react-addons-transition-group-15.4.1.tgz#27d92717089c5e2db202e654a85b76a41b703acc"
 
+react-autosuggest@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/react-autosuggest/-/react-autosuggest-8.0.0.tgz#dca8211f07d0f6956f41b7904eef18bf3437c725"
+  dependencies:
+    react-autowhatever "^7.0.0"
+    shallow-equal "^1.0.0"
+
+react-autowhatever@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/react-autowhatever/-/react-autowhatever-7.0.0.tgz#7ea19f8024183acf1568fc8e4b76c0d0cc250d00"
+  dependencies:
+    react-themeable "^1.1.0"
+    section-iterator "^2.0.0"
+
 react-deep-force-update@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/react-deep-force-update/-/react-deep-force-update-1.0.1.tgz#f911b5be1d2a6fe387507dd6e9a767aa2924b4c7"
@@ -6271,6 +6285,12 @@ react-router@^3.0.0:
     invariant "^2.2.1"
     loose-envify "^1.2.0"
     warning "^3.0.0"
+
+react-themeable@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/react-themeable/-/react-themeable-1.1.0.tgz#7d4466dd9b2b5fa75058727825e9f152ba379a0e"
+  dependencies:
+    object-assign "^3.0.0"
 
 react-transform-catch-errors@^1.0.2:
   version "1.0.2"
@@ -6733,6 +6753,10 @@ sax@^1.1.4, sax@~1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.1.tgz#7b8e656190b228e81a66aea748480d828cd2d37a"
 
+section-iterator@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/section-iterator/-/section-iterator-2.0.0.tgz#bf444d7afeeb94ad43c39ad2fb26151627ccba2a"
+
 seek-bzip@^1.0.3:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/seek-bzip/-/seek-bzip-1.0.5.tgz#cfe917cb3d274bcffac792758af53173eb1fabdc"
@@ -6808,6 +6832,10 @@ sha.js@^2.3.6:
   resolved "https://registry.yarnpkg.com/sha.js/-/sha.js-2.4.5.tgz#27d171efcc82a118b99639ff581660242b506e7c"
   dependencies:
     inherits "^2.0.1"
+
+shallow-equal@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/shallow-equal/-/shallow-equal-1.0.0.tgz#508d1838b3de590ab8757b011b25e430900945f7"
 
 shelljs@0.7.0:
   version "0.7.0"

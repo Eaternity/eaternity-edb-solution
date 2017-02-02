@@ -1,14 +1,17 @@
 import React, { Component, PropTypes } from 'react'
 import { Button, Card, CardBlock, CardTitle, CardSubtitle, Col, Input, Form, FormGroup, Label, Popover, PopoverTitle, PopoverContent } from 'reactstrap'
+import Autosuggest from 'react-autosuggest'
 import ConfirmRejectModal from '../ConfirmRejectModal/ConfirmRejectModal'
 import EditBar from '../EditBar/EditBar'
 import styles from './Edit.css'
+import autosuggest from './autosuggest.css'
 
 class Edit extends Component {
   static propTypes = {
     dataDir: PropTypes.string.isRequired,
     editedProduct: PropTypes.object.isRequired,
     orderedKeys: PropTypes.array.isRequired,
+    products: PropTypes.array.isRequired,
     actions: PropTypes.object.isRequired
   }
 
@@ -16,7 +19,36 @@ class Edit extends Component {
     fieldname: '',
     saveModalOpen: false,
     backModalOpen: false,
-    popoverOpen: false
+    popoverOpen: false,
+    suggestions: [], // for autosuggest
+    value: '' // for autosuggest
+  }
+
+  // Teach Autosuggest how to calculate suggestions for any given input value.
+  getSuggestions = value => {
+    const inputValue = value.trim().toLowerCase()
+    const inputLength = inputValue.length
+
+    return inputLength === 0 ? [] : this.props.products.filter(product =>
+      product.name.toLowerCase().slice(0, inputLength) === inputValue
+    )
+  }
+
+  getSuggestionValue = suggestion => suggestion.id.toString()
+
+  // Autosuggest will call this function every time you need to update
+  // suggestions
+  handleSuggestionFetch = ({ value }) => {
+    this.setState({
+      suggestions: this.getSuggestions(value)
+    })
+  }
+
+  // Autosuggest will call this function every time you need to clear suggestions.
+  handleSuggestionClear = () => {
+    this.setState({
+      suggestions: []
+    })
   }
 
   toggleSaveModal = () => {
@@ -24,6 +56,13 @@ class Edit extends Component {
       saveModalOpen: !this.state.saveModalOpen
     })
   }
+
+  // Use your imagination to render suggestions.
+  renderSuggestion = suggestion => (
+    <div>
+      {`Name: ${suggestion.name} | Id: ${suggestion.id}`}
+    </div>
+  )
 
   toggleBackModal = () => {
     this.setState({
@@ -51,6 +90,12 @@ class Edit extends Component {
 
   handleInputChange = event => {
     this.props.actions.updateEditedProduct(event.target.id, event.target.value)
+  }
+
+  handleAutosuggestInputChange = (event, { newValue }) => {
+    this.setState({
+      value: newValue
+    })
   }
 
   handleFieldnameInput = event => {
@@ -107,6 +152,33 @@ class Edit extends Component {
                     id={key}
                     readOnly
                     value='Processes array not editable... Sorry!' />
+                </Col>
+              </div>
+            )
+
+          case 'linked-id':
+            // Autosuggest will pass through all these props to the input
+            // element
+            const inputProps = {
+              placeholder: 'Search for product name...',
+              value: this.state.value,
+              onChange: this.handleAutosuggestInputChange
+            }
+            return (
+              <div>
+                <Label for={key} sm={4}>
+                  {key}
+                </Label>
+                <Col sm={8}>
+                  <Autosuggest
+                    id={key}
+                    theme={autosuggest}
+                    suggestions={this.state.suggestions}
+                    inputProps={inputProps}
+                    onSuggestionsFetchRequested={this.handleSuggestionFetch}
+                    onSuggestionsClearRequested={this.handleSuggestionClear}
+                    getSuggestionValue={this.getSuggestionValue}
+                    renderSuggestion={this.renderSuggestion} />
                 </Col>
               </div>
             )

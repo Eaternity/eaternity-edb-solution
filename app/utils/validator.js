@@ -10,6 +10,7 @@ class ProductValidator {
     this.orderedKeys = [
       'id',
       'name',
+      'linked-id', // added by mcmunder
       'co2-value',
       'tags',
       'specification',
