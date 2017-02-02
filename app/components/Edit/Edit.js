@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { Button, Card, CardBlock, CardTitle, CardSubtitle, Col, Input, Form, FormGroup, Label, Popover, PopoverTitle, PopoverContent } from 'reactstrap'
+import Autosuggest from 'react-autosuggest'
 import ConfirmRejectModal from '../ConfirmRejectModal/ConfirmRejectModal'
 import EditBar from '../EditBar/EditBar'
 import styles from './Edit.css'
@@ -8,6 +9,8 @@ class Edit extends Component {
   static propTypes = {
     dataDir: PropTypes.string.isRequired,
     editedProduct: PropTypes.object.isRequired,
+    orderedKeys: PropTypes.array.isRequired,
+    products: PropTypes.array.isRequired,
     actions: PropTypes.object.isRequired
   }
 
@@ -68,7 +71,7 @@ class Edit extends Component {
   }
 
   renderFormGroup = () => {
-    return Object.keys(this.props.editedProduct).map(key => {
+    return this.props.orderedKeys.map(key => {
       const renderInputs = () => {
         switch (key) {
           case 'filename':
@@ -110,6 +113,32 @@ class Edit extends Component {
               </div>
             )
 
+          case 'linked-id':
+            // Autosuggest will pass through all these props to the input
+            // element
+            const inputProps = {
+              placeholder: 'Search for product name...',
+              value: this.props.editedProduct[key] || '',
+              onChange: this.handleInputChange
+            }
+            return (
+              <div>
+                <Label for={key} sm={4}>
+                  {key}
+                </Label>
+                <Col sm={8}>
+                  <Autosuggest
+                    id={key}
+                    suggestions={this.props.products}
+                    inputProps={inputProps}
+                    onSuggestionsFetchRequested={this.handleSuggestionFetch}
+                    onSuggestionsClearRequested={this.handleSuggestionClear}
+                    getSuggestionValue={this.getSuggestionValue}
+                    renderSuggestion={this.renderSuggestion} />
+                </Col>
+              </div>
+            )
+
           default:
             return (
               <div>
@@ -121,7 +150,7 @@ class Edit extends Component {
                     type='text'
                     id={key}
                     onChange={this.handleInputChange}
-                    value={this.props.editedProduct[key]} />
+                    value={this.props.editedProduct[key] || ''} />
                 </Col>
               </div>
             )

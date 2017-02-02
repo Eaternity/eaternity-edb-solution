@@ -49,7 +49,7 @@ const NavGroup = props => {
           size='sm' >
         Invalid products
       </Button>
-      </ButtonGroup>{' '}
+      </ButtonGroup>
     </div>
   )
 }
