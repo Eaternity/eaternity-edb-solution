@@ -4,6 +4,7 @@ import Autosuggest from 'react-autosuggest'
 import ConfirmRejectModal from '../ConfirmRejectModal/ConfirmRejectModal'
 import EditBar from '../EditBar/EditBar'
 import styles from './Edit.css'
+import autosuggest from './autosuggest.css'
 
 class Edit extends Component {
   static propTypes = {
@@ -18,7 +19,36 @@ class Edit extends Component {
     fieldname: '',
     saveModalOpen: false,
     backModalOpen: false,
-    popoverOpen: false
+    popoverOpen: false,
+    suggestions: [], // for autosuggest
+    value: '' // for autosuggest
+  }
+
+  // Teach Autosuggest how to calculate suggestions for any given input value.
+  getSuggestions = value => {
+    const inputValue = value.trim().toLowerCase()
+    const inputLength = inputValue.length
+
+    return inputLength === 0 ? [] : this.props.products.filter(product =>
+      product.name.toLowerCase().slice(0, inputLength) === inputValue
+    )
+  }
+
+  getSuggestionValue = suggestion => suggestion.id.toString()
+
+  // Autosuggest will call this function every time you need to update suggestions.
+  // You already implemented this logic above, so just use it.
+  handleSuggestionFetch = ({ value }) => {
+    this.setState({
+      suggestions: this.getSuggestions(value)
+    })
+  }
+
+  // Autosuggest will call this function every time you need to clear suggestions.
+  handleSuggestionClear = () => {
+    this.setState({
+      suggestions: []
+    })
   }
 
   toggleSaveModal = () => {
@@ -26,6 +56,13 @@ class Edit extends Component {
       saveModalOpen: !this.state.saveModalOpen
     })
   }
+
+  // Use your imagination to render suggestions.
+  renderSuggestion = suggestion => (
+    <div>
+      {suggestion.name}
+    </div>
+  )
 
   toggleBackModal = () => {
     this.setState({
@@ -53,6 +90,12 @@ class Edit extends Component {
 
   handleInputChange = event => {
     this.props.actions.updateEditedProduct(event.target.id, event.target.value)
+  }
+
+  handleAutosuggestInputChange = (event, { newValue }) => {
+    this.setState({
+      value: newValue
+    })
   }
 
   handleFieldnameInput = event => {
@@ -118,8 +161,8 @@ class Edit extends Component {
             // element
             const inputProps = {
               placeholder: 'Search for product name...',
-              value: this.props.editedProduct[key] || '',
-              onChange: this.handleInputChange
+              value: this.state.value,
+              onChange: this.handleAutosuggestInputChange
             }
             return (
               <div>
@@ -129,7 +172,8 @@ class Edit extends Component {
                 <Col sm={8}>
                   <Autosuggest
                     id={key}
-                    suggestions={this.props.products}
+                    theme={autosuggest}
+                    suggestions={this.state.suggestions}
                     inputProps={inputProps}
                     onSuggestionsFetchRequested={this.handleSuggestionFetch}
                     onSuggestionsClearRequested={this.handleSuggestionClear}

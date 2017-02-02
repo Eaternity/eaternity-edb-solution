@@ -1,0 +1,17 @@
+.suggestionsList {
+  list-style-type: none;
+}
+
+.input {
+  width: 100%;
+  outline: none;
+  margin: 0;
+  outline: none;
+  box-shadow: none;
+  border: 1px, solid, grey;
+  padding: 1%;
+}
+
+.input:focus {
+  border: 1px, solid, blue;
+}

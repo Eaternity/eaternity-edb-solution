@@ -8,7 +8,7 @@ import InvalidTable from '../InvalidTable/InvalidTable'
 import styles from './Home.css'
 
 const Home = props => {
-  const renderTable = (table) => {
+  const renderTable = table => {
     switch (table) {
       case 'products':
         return <ProductTable

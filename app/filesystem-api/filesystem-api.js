@@ -1,6 +1,7 @@
 // Use ipc to commuticate with the main process and get filesystem access. All
-//  filesystem operations in ipcMain are implemented synchronously so it will
-//  take some ms for the data to come back. The api uses promises to introduce asynchronicity
+// filesystem operations in ipcMain are implemented synchronously so it will
+// take some ms for the data to come back. The api uses promises to introduce
+// asynchronicity
 
 import { ipcRenderer } from 'electron'
 
