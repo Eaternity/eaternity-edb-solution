@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react'
-import { Button, Card, CardBlock, CardTitle, CardSubtitle, Col, Input, Form, FormGroup, Label, Popover, PopoverTitle, PopoverContent } from 'reactstrap'
+import { Button, Card, CardBlock, CardTitle, CardSubtitle, Col, Input, Form, FormGroup, Label } from 'reactstrap'
 import Autosuggest from 'react-autosuggest'
 import ConfirmRejectModal from '../ConfirmRejectModal/ConfirmRejectModal'
 import EditBar from '../EditBar/EditBar'
@@ -16,10 +16,8 @@ class Edit extends Component {
   }
 
   state = {
-    fieldname: '',
     saveModalOpen: false,
     backModalOpen: false,
-    popoverOpen: false,
     suggestions: [], // for autosuggest
     value: '' // for autosuggest
   }
@@ -60,7 +58,7 @@ class Edit extends Component {
   // Use your imagination to render suggestions.
   renderSuggestion = suggestion => (
     <div>
-      {`Name: ${suggestion.name} | Id: ${suggestion.id}`}
+      {`${suggestion.name} (id: ${suggestion.id})`}
     </div>
   )
 
@@ -95,21 +93,6 @@ class Edit extends Component {
   handleAutosuggestInputChange = (event, { newValue }) => {
     this.setState({
       value: newValue
-    })
-  }
-
-  handleFieldnameInput = event => {
-    this.setState({
-      fieldname: event.target.value
-    })
-  }
-
-  handleCreateFieldClick = () => {
-    const fieldname = this.state.fieldname
-    this.props.actions.updateEditedProduct(fieldname, '')
-    this.togglePopover()
-    this.setState({
-      fieldname: ''
     })
   }
 
@@ -224,39 +207,6 @@ class Edit extends Component {
           </CardBlock>
           <CardBlock>
             <div className={styles.editBtnGroup}>
-              <Col sm={2}>
-                <Button
-                  onClick={() => this.togglePopover()}
-                  outline
-                  id='addField'
-                  color='warning'
-                  block >
-                  Add field
-                </Button>
-                <Popover
-                  placement='top'
-                  isOpen={this.state.popoverOpen}
-                  target='addField'
-                  toggle={this.togglePopover}>
-                  <PopoverTitle>
-                    Enter field name
-                  </PopoverTitle>
-                  <PopoverContent>
-                    <Input
-                      type='text'
-                      onKeyUp={this.handleFieldnameInput}
-                      placeholder='fieldname' />
-                  </PopoverContent>
-                  <PopoverContent className={styles.popoverBtn}>
-                    <Button
-                      onClick={() => this.handleCreateFieldClick()}
-                      size='sm'
-                      color='success'>
-                      Create field
-                    </Button>
-                  </PopoverContent>
-                </Popover>
-              </Col>
               <Col sm={3}>
                 <Button
                   onClick={() => this.toggleSaveModal()}
