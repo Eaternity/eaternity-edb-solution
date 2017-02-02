@@ -30,7 +30,7 @@ class Edit extends Component {
     const inputLength = inputValue.length
 
     return inputLength === 0 ? [] : this.props.products.filter(product =>
-      product.name.toLowerCase().slice(0, inputLength) === inputValue
+      product.name !== null && product.name !== undefined && product.name.toLowerCase().slice(0, inputLength) === inputValue
     )
   }
 
