@@ -9,6 +9,12 @@ import rootSaga from './store/sagas/sagas'
 import routes from './routes'
 import rootReducer from './store/reducers'
 import './app.global.css'
+import injectTapEventPlugin from 'react-tap-event-plugin'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+
+// Needed for onTouchTap for Material-UI
+// http://stackoverflow.com/a/34015469/988941
+injectTapEventPlugin()
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -39,8 +45,10 @@ const history = syncHistoryWithStore(hashHistory, store)
 sagaMiddleware.run(rootSaga)
 
 ReactDOM.render(
-  <Provider store={store}>
-    <Router history={history} routes={routes} />
-  </Provider>,
+  <MuiThemeProvider>
+    <Provider store={store}>
+      <Router history={history} routes={routes} />
+    </Provider>
+  </MuiThemeProvider>,
   document.getElementById('root')
 )

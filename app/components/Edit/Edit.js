@@ -3,6 +3,8 @@ import { Button, Card, CardBlock, CardTitle, CardSubtitle, Col, Input, Form, For
 import Autosuggest from 'react-autosuggest'
 import ConfirmRejectModal from '../ConfirmRejectModal/ConfirmRejectModal'
 import EditBar from '../EditBar/EditBar'
+import ChipInput from 'material-ui-chip-input'
+
 import styles from './Edit.css'
 import autosuggest from './autosuggest.css'
 
@@ -166,6 +168,23 @@ class Edit extends Component {
                     onSuggestionsClearRequested={this.handleSuggestionClear}
                     getSuggestionValue={this.getSuggestionValue}
                     renderSuggestion={this.renderSuggestion} />
+                </Col>
+              </div>
+            )
+
+          case 'synonyms':
+            return (
+              <div>
+                <Label for={key} sm={4}>
+                  {key}
+                </Label>
+                <Col sm={8}>
+                  <ChipInput
+                    defaultValue={this.props.editedProduct.synonyms}
+                    onChange={(synonyms) => this.handleSynonymChange(synonyms)}
+                    fullWidthInput
+                    style={{ width: '100%' }}
+                  />
                 </Col>
               </div>
             )
