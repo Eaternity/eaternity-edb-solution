@@ -1,7 +1,6 @@
-// @flow
 import React, { PropTypes } from 'react'
 
-const App = (props: Object) => {
+const App = props => {
   return (
     <div>
       {props.children}
@@ -10,7 +9,7 @@ const App = (props: Object) => {
 }
 
 App.propTypes = {
-  children: PropTypes.element.isRequired
+  children: PropTypes.element
 }
 
 export default App

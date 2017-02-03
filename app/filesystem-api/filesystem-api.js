@@ -54,7 +54,6 @@ const fileSystemApi = {
     // why the hell does sagas call() method accept arguments as an array?!!
     const dataDir = args[0]
     const products = args[1]
-    console.log(dataDir)
     ipcRenderer.send('save-all-products', dataDir, products)
     return new Promise(resolve => {
       ipcRenderer.on('all-products-saved', (_, products) => {
