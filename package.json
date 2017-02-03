@@ -158,7 +158,6 @@
     "jsonfile": "^2.4.0",
     "material-ui": "^0.16.7",
     "material-ui-chip-input": "^0.12.2",
-    "pify": "^2.3.0",
     "react": "^15.3.2",
     "react-addons-css-transition-group": "^15.4.1",
     "react-addons-transition-group": "^15.4.1",

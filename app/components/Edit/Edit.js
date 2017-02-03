@@ -182,7 +182,7 @@ class Edit extends Component {
                   <ChipInput
                     defaultValue={this.props.editedProduct.synonyms}
                     onChange={(synonyms) => this.handleSynonymChange(synonyms)}
-                    fullWidthInput={true}
+                    fullWidthInput
                     style={{ width: '100%' }}
                   />
                 </Col>
