@@ -167,7 +167,6 @@
     "react-redux": "^5.0.1",
     "react-router": "^3.0.0",
     "react-router-redux": "^4.0.7",
-    "react-typeahead": "^2.0.0-alpha.5",
     "react-tap-event-plugin": "^2.0.1",
     "reactable": "^0.14.1",
     "reactstrap": "3.9.5",
