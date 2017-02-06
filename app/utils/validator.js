@@ -19,20 +19,14 @@ class ProductValidator {
       'name-french',
       'nutrition-id',
       'alternatives',
-      'standard-origin',
-      'origins',
       'production-names',
       'production-values',
-      'production-methods',
       'processing-names',
       'processing-values',
-      'processing-methods',
       'conservation-names',
       'conservation-values',
-      'preservation-methods',
       'packaging-names',
       'packaging-values',
-      'packaging-methods',
       'season-begin',
       'season-end',
       'combined-product',
@@ -40,7 +34,6 @@ class ProductValidator {
       'unit-weight',
       'quantity-comments',
       'quantity-references',
-      'consistency',
       'foodwaste',
       'foodwaste-comment',
       'co2-calculation',
@@ -106,6 +99,9 @@ class ProductValidator {
     this.nutrs = this.nutrsFilenames.map(filename => {
       return jsonfile.readFileSync(`${this.dataDir}/nutrs/${filename}`)
     })
+    this.nutrChange = this.nutrChangeFilenames.map(filename => {
+      return jsonfile.readFileSync(`${this.dataDir}/nutr-change/${filename}`)
+    })
 
     return this
   }
@@ -164,8 +160,8 @@ class ProductValidator {
       parentProduct: '',
       hasNutritionId: false,
       hasNutritionChangeId: false,
-      linkedNutritionFileExists: false,
-      linkedNutritionChangeFilesExist: false,
+      linkedNutritionIdExists: false,
+      linkedNutritionChangeIdsExist: false,
       missingFields: []
     }
 
@@ -195,14 +191,14 @@ class ProductValidator {
 
     if (hasNutritionId) {
       const nutritionId = product['nutrition-id']
-      const linkedNutritionFileExists = this.nutrs.some(nutrObj => {
+      const linkedNutritionIdExists = this.nutrs.some(nutrObj => {
         return nutrObj.id === nutritionId
       })
 
-      if (linkedNutritionFileExists) {
+      if (linkedNutritionIdExists) {
         validationSummary = Object.assign(validationSummary, {
           hasNutritionId,
-          linkedNutritionFileExists
+          linkedNutritionIdExists
         })
       } else {
         validationSummary = Object.assign(validationSummary, {
@@ -212,29 +208,28 @@ class ProductValidator {
     }
 
     // does processes field exist and does it contain nutr-change-id field(s)?
-    // Is there a corresponding nutr-change file for each?
+    // For each id, is there a nutr-change file with this id?
     const hasNutritionChangeId = this.product.hasOwnProperty('processes') &&
       this.product.processes[0].hasOwnProperty('nutr-change-id')
 
-    const allNutritionChangeIds = this.nutrChangeFilenames.map(filename => {
-      return filename.split('-')[0]
-    })
-
     if (hasNutritionChangeId) {
       const processes = this.product.processes
-      const nutritionChangeIds = processes.map(processesObj => {
+      const allNutritionChangeIds = processes.map(processesObj => {
         return processesObj['nutr-change-id']
       })
 
-      const linkedNutritionChangeFilesExist = nutritionChangeIds
+      const linkedNutritionChangeIdsExist = allNutritionChangeIds
           .every(nutritionChangeId => {
-            return allNutritionChangeIds.includes(nutritionChangeId.toString())
+            return this.nutrChange.some(nutrChangeObj => {
+              // console.log(nutrChangeObj.id, nutritionChangeId)
+              return nutrChangeObj.id === nutritionChangeId
+            })
           })
 
-      if (linkedNutritionChangeFilesExist) {
+      if (linkedNutritionChangeIdsExist) {
         validationSummary = Object.assign(validationSummary, {
           hasNutritionChangeId,
-          linkedNutritionChangeFilesExist
+          linkedNutritionChangeIdsExist
         })
       } else {
         validationSummary = Object.assign(validationSummary, {
@@ -322,10 +317,10 @@ class ProductValidator {
 
     // check for broken links
     if (validationSummary.hasNutritionId &&
-      !validationSummary.linkedNutritionFileExists) {
+      !validationSummary.linkedNutritionIdExists) {
       brokenLinks = [...brokenLinks, 'nutrition-id']
     } else if (validationSummary.hasNutritionChangeId &&
-      !validationSummary.linkedNutritionChangeFilesExist) {
+      !validationSummary.linkedNutritionChangeIdsExist) {
       brokenLinks = [...brokenLinks, 'nutr-change-id']
     }
 
@@ -350,8 +345,6 @@ class ProductValidator {
   }
 
   validateAllProducts (prods = this.prods) {
-    this.prods = prods
-
     this.validatedProducts = prods.map(product => {
       return this.validateProduct(product).validatedProduct
     })
@@ -361,6 +354,7 @@ class ProductValidator {
 
   fixAllProducts (validatedProducts = this.validatedProducts) {
     this.fixedProducts = validatedProducts.map(validatedProduct => {
+      // console.log(this.fixProduct(validatedProduct).fixedProduct)
       return this.fixProduct(validatedProduct).fixedProduct
     })
 
