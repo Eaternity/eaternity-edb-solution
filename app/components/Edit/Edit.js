@@ -21,7 +21,8 @@ class Edit extends Component {
     saveModalOpen: false,
     backModalOpen: false,
     suggestions: [], // for autosuggest
-    value: '' // for autosuggest
+    autosuggestId: '',
+    autosuggestValue: ''
   }
 
   // Teach Autosuggest how to calculate suggestions for any given input value.
@@ -88,14 +89,19 @@ class Edit extends Component {
     this.toggleBackModal()
   }
 
-  handleInputChange = event => {
-    this.props.actions.updateEditedProduct(event.target.id, event.target.value)
-  }
+  handleInputChange = (event, { newValue }) => {
+    // HACK: How to get the id when autosuggest is clicked??? Here I get it
+    // from previous input into the search field and "cache" it...
+    if (event.target.id) {
+      this.setState({
+        autosuggestId: event.target.id
+      })
+    }
 
-  handleAutosuggestInputChange = (event, { newValue }) => {
     this.setState({
-      value: newValue
+      autosuggestValue: newValue
     })
+    this.props.actions.updateEditedProduct(this.state.autosuggestId, newValue)
   }
 
   handleSynonymChange = synonyms => {
@@ -149,9 +155,11 @@ class Edit extends Component {
             // Autosuggest will pass through all these props to the input
             // element
             const inputProps = {
+              id: 'linked-id',
               placeholder: 'Search for product name...',
-              value: this.state.value,
-              onChange: this.handleAutosuggestInputChange
+              value: this.props.editedProduct[key] ||
+                this.state.autosuggestValue,
+              onChange: this.handleInputChange
             }
             return (
               <div>
