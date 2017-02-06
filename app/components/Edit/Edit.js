@@ -89,7 +89,11 @@ class Edit extends Component {
     this.toggleBackModal()
   }
 
-  handleInputChange = (event, { newValue }) => {
+  handleInputChange = event => {
+    this.props.actions.updateEditedProduct(event.target.id, event.target.value)
+  }
+
+  handleAutosuggestInputChange = (event, { newValue }) => {
     // HACK: How to get the id when autosuggest is clicked??? Here I get it
     // from previous input into the search field and "cache" it...
     if (event.target.id) {
@@ -159,7 +163,7 @@ class Edit extends Component {
               placeholder: 'Search for product name...',
               value: this.props.editedProduct[key] ||
                 this.state.autosuggestValue,
-              onChange: this.handleInputChange
+              onChange: this.handleAutosuggestInputChange
             }
             return (
               <div>
