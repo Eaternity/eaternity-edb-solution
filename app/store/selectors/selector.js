@@ -25,7 +25,8 @@ export const getVisibleProducts = createSelector(
               ? `(${product.specification})` : '',
             'co2-value': product['co2-value'],
             synonyms: product.synonyms ? product.synonyms.join(', ') : '',
-            tags: product.tags
+            tags: product.tags,
+            references: product.references
           }
         })
 

@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react'
-import { Col, Container, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupAddon, Nav, Navbar, NavItem, Row } from 'reactstrap'
+import { Col, Container, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupButton, Nav, Navbar, NavItem, Row } from 'reactstrap'
 import fileSystemApi from '../../filesystem-api/filesystem-api'
 import menu from './menu.png'
 import logo from './logo.png'
-import searchIcon from './search.png'
+// import searchIcon from './search.png'
 import styles from './SearchBar.css'
 
 class SearchBar extends Component {
@@ -14,7 +14,48 @@ class SearchBar extends Component {
   }
 
   state = {
-    dropdownOpen: false
+    searchDropdownOpen: false,
+    dataDirDropdownOpen: false,
+    searchFor: 'all fields'
+  }
+
+  toggleSearchDropdown = () => {
+    this.setState({
+      searchDropdownOpen: !this.state.searchDropdownOpen
+    })
+  }
+
+  toggleDataDirDropdown = () => {
+    this.setState({
+      dataDirDropdownOpen: !this.state.dataDirDropdownOpen
+    })
+  }
+
+  handleSearchAll = () => {
+    this.props.actions.setSearchFilter([
+      'Id',
+      'Name',
+      'Synonyms',
+      'Tags',
+      'Co2-value'
+    ])
+
+    this.setState({
+      searchFor: 'search all fields'
+    })
+  }
+
+  handleSearchRefs = () => {
+    this.props.actions.setSearchFilter(['Refs'])
+
+    this.setState({
+      searchFor: 'search for references'
+    })
+  }
+
+  handleKeyUp = (e) => {
+    const searchInput = e.target.value
+    this.props.actions.updateSearchInput(searchInput)
   }
 
   handleChooseDir = () => {
@@ -25,17 +66,6 @@ class SearchBar extends Component {
         this.props.actions.fetchAllFAOs()
         this.props.actions.fetchAllNutrients()
       })
-  }
-
-  toggleDropdown = () => {
-    this.setState({
-      dropdownOpen: !this.state.dropdownOpen
-    })
-  }
-
-  handleKeyUp = (e) => {
-    const searchInput = e.target.value
-    this.props.actions.updateSearchInput(searchInput)
   }
 
   handlePlusClick = () => {
@@ -60,12 +90,27 @@ class SearchBar extends Component {
                 <Nav navbar>
                   <NavItem>
                     <InputGroup>
-                      <InputGroupAddon>
-                        <img className={styles.search} src={searchIcon} alt='searchIcon' />
-                      </InputGroupAddon>
+                      <InputGroupButton>
+                        <Dropdown
+                          isOpen={this.state.searchDropdownOpen} toggle={this.toggleSearchDropdown} >
+                          <DropdownToggle caret>
+                            Search for
+                          </DropdownToggle>
+                          <DropdownMenu right>
+                            <DropdownItem
+                              onClick={() => this.handleSearchAll()}>
+                              All fields
+                            </DropdownItem>
+                            <DropdownItem
+                              onClick={() => this.handleSearchRefs()}>
+                              References
+                            </DropdownItem>
+                          </DropdownMenu>
+                        </Dropdown>
+                      </InputGroupButton>
                       <Input
                         onKeyUp={(e) => this.handleKeyUp(e)}
-                        placeholder='search for ...' />
+                        placeholder={this.state.searchFor} />
                     </InputGroup>
                   </NavItem>
                 </Nav>
@@ -74,7 +119,7 @@ class SearchBar extends Component {
                 <Nav navbar>
                   <NavItem>
                     <Dropdown
-                      isOpen={this.state.dropdownOpen} toggle={this.toggleDropdown}>
+                      isOpen={this.state.dataDirDropdownOpen} toggle={this.toggleDataDirDropdown}>
                       <DropdownToggle>
                         <img className={styles.menu} src={menu} alt='menuIcon' />
                       </DropdownToggle>

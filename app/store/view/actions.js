@@ -22,3 +22,10 @@ export const updateSearchInput = payload => {
 }
 
 export const clearSearchInput = () => ({type: actions.CLEAR_SEARCH_INPUT})
+
+export const setSearchFilter = payload => {
+  return {
+    type: actions.SET_SEARCH_FILTER,
+    payload
+  }
+}

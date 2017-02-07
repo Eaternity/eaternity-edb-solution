@@ -4,10 +4,18 @@ const initialState = {
   productFilter: 'SHOW_SUBSET',
   visibleTable: 'products',
   searchInput: '',
+  searchFilter: [
+    'Id',
+    'Name',
+    'Synonyms',
+    'Tags',
+    'Co2-value'
+  ],
   orderedKeys: [
     'id',
     'name',
     'linked-id', // added by mcmunder
+    'fao-product-id', // added by mcmunder
     'co2-value',
     'tags',
     'specification',
@@ -44,6 +52,9 @@ const initialState = {
     'data-quality',
     'author',
     'delete',
+    'allergenes', // added by mcmunder
+    'processes', // added by mcmunder
+    'waste-id', // added by mcmunder
     'filename', // delete later
     'validationSummary' // delete later
   ]
@@ -63,6 +74,9 @@ const view = (state = initialState, action) => {
 
     case actions.CLEAR_SEARCH_INPUT:
       return Object.assign({}, state, {searchInput: ''})
+
+    case actions.SET_SEARCH_FILTER:
+      return Object.assign({}, state, {searchFilter: action.payload})
 
     default:
       return state

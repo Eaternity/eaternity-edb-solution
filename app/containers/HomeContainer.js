@@ -21,6 +21,7 @@ const mapStateToProps = state => {
     dataDir: state.data.dataDir,
     editedProduct: state.data.editedProduct,
     searchInput: state.view.searchInput,
+    searchFilter: state.view.searchFilter,
     visibleTable: state.view.visibleTable,
     orderedKeys: state.view.orderedKeys
   }
@@ -37,6 +38,7 @@ const mapDispatchToProps = dispatch => ({
     toggleTableVisibility: viewActions.toggleTableVisibility,
     toggleProductVisibility: viewActions.toggleProductVisibility,
     updateSearchInput: viewActions.updateSearchInput,
+    setSearchFilter: viewActions.setSearchFilter,
     clearSearchInput: viewActions.clearSearchInput,
     changeLocation: push
   }, dispatch)

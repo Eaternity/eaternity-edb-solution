@@ -14,8 +14,8 @@ const Home = props => {
         return <ProductTable
           actions={props.actions}
           products={props.products}
-          searchInput={props.searchInput} />
-
+          searchInput={props.searchInput}
+          searchFilter={props.searchFilter} />
       case 'fao':
         return <FaoTable
           actions={props.actions}
@@ -59,8 +59,14 @@ Home.propTypes = {
   faos: PropTypes.array.isRequired,
   nutrients: PropTypes.array.isRequired,
   actions: PropTypes.object.isRequired,
-  visibleTable: PropTypes.oneOf(['products', 'fao', 'nutrition', 'invalid']).isRequired,
-  searchInput: PropTypes.string.isRequired
+  visibleTable: PropTypes.oneOf([
+    'products',
+    'fao',
+    'nutrition',
+    'invalid'
+  ]).isRequired,
+  searchInput: PropTypes.string.isRequired,
+  searchFilter: PropTypes.array.isRequired
 }
 
 export default Home
