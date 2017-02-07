@@ -201,6 +201,153 @@ class Edit extends Component {
               </div>
             )
 
+          case 'references':
+            return (
+              <div>
+                <Label for={key} sm={4}>
+                  {key}
+                </Label>
+                <Col sm={8}>
+                  <Input
+                    type='textarea'
+                    id={key}
+                    onChange={this.handleInputChange}
+                    value={this.props.editedProduct[key] || ''} />
+                </Col>
+              </div>
+            )
+
+          case 'comments':
+            return (
+              <div>
+                <Label for={key} sm={4}>
+                  {key}
+                </Label>
+                <Col sm={8}>
+                  <Input
+                    type='textarea'
+                    id={key}
+                    onChange={this.handleInputChange}
+                    value={this.props.editedProduct[key] || ''} />
+                </Col>
+              </div>
+            )
+
+          case 'co2-calculation':
+            return (
+              <div>
+                <Label for={key} sm={4}>
+                  {key}
+                </Label>
+                <Col sm={8}>
+                  <Input
+                    type='textarea'
+                    id={key}
+                    onChange={this.handleInputChange}
+                    value={this.props.editedProduct[key] || ''} />
+                </Col>
+              </div>
+            )
+
+          case 'other-references':
+            return (
+              <div>
+                <Label for={key} sm={4}>
+                  {key}
+                </Label>
+                <Col sm={8}>
+                  <Input
+                    type='textarea'
+                    id={key}
+                    onChange={this.handleInputChange}
+                    value={this.props.editedProduct[key] || ''} />
+                </Col>
+              </div>
+            )
+
+          case 'info-text':
+            return (
+              <div>
+                <Label for={key} sm={4}>
+                  {key}
+                </Label>
+                <Col sm={8}>
+                  <Input
+                    type='textarea'
+                    id={key}
+                    onChange={this.handleInputChange}
+                    value={this.props.editedProduct[key] || ''} />
+                </Col>
+              </div>
+            )
+
+          case 'quantity-references':
+            return (
+              <div>
+                <Label for={key} sm={4}>
+                  {key}
+                </Label>
+                <Col sm={8}>
+                  <Input
+                    type='textarea'
+                    id={key}
+                    onChange={this.handleInputChange}
+                    value={this.props.editedProduct[key] || ''} />
+                </Col>
+              </div>
+            )
+
+          case 'quantity-comments':
+            return (
+              <div>
+                <Label for={key} sm={4}>
+                  {key}
+                </Label>
+                <Col sm={8}>
+                  <Input
+                    type='textarea'
+                    id={key}
+                    onChange={this.handleInputChange}
+                    value={this.props.editedProduct[key] || ''} />
+                </Col>
+              </div>
+            )
+
+          case 'foodwaste-comment':
+            return (
+              <div>
+                <Label for={key} sm={4}>
+                  {key}
+                </Label>
+                <Col sm={8}>
+                  <Input
+                    type='textarea'
+                    id={key}
+                    onChange={this.handleInputChange}
+                    value={this.props.editedProduct[key] || ''} />
+                </Col>
+              </div>
+            )
+
+          case 'delete':
+            return (
+              <div>
+                <Label for={key} sm={4}>
+                  {key}
+                </Label>
+                <Col sm={8}>
+                  <Input
+                    type='select'
+                    id={key}
+                    onChange={this.handleInputChange}
+                    value={String(this.props.editedProduct[key])}>
+                    <option>true</option>
+                    <option>false</option>
+                  </Input>
+                </Col>
+              </div>
+            )
+
           default:
             return (
               <div>
@@ -242,7 +389,22 @@ class Edit extends Component {
           </CardBlock>
           <CardBlock>
             <div className={styles.editBtnGroup}>
-              <Col sm={3}>
+              <Col sm={4}>
+                <Button
+                  outline
+                  color='warning'
+                  onClick={() => this.toggleBackModal()}>
+                  Back
+                </Button>
+                <ConfirmRejectModal
+                  isOpen={this.state.backModalOpen}
+                  toggle={this.toggleBackModal}
+                  onConfirmClick={this.handleBackConfirmClick}
+                  onRejectClick={this.toggleBackModal}
+                  header='Did you save your changes?'
+                  body={'Changes will be lost when you go back to the table view without saving!'}
+                  confirmBtnText='Back to table view'
+                  rejectBtnText='Cancel' />{' '}
                 <Button
                   onClick={() => this.toggleSaveModal()}
                   outline

@@ -11,6 +11,7 @@ class ProductValidator {
       'id',
       'name',
       'linked-id', // added by mcmunder
+      'fao-product-id', // added by mcmunder
       'co2-value',
       'tags',
       'specification',
@@ -47,6 +48,9 @@ class ProductValidator {
       'data-quality',
       'author',
       'delete',
+      'allergenes', // added by mcmunder
+      'processes', // added by mcmunder
+      'waste-id', // added by mcmunder
       'filename', // delete later
       'validationSummary' // delete later
     ]
@@ -111,9 +115,11 @@ class ProductValidator {
     return this
   }
 
-  orderProduct (product = this.product) {
+  orderAndCleanupProduct (product = this.product) {
     const orderedPairs = this.orderedKeys
-      .filter(key => !!product[key])
+      .filter(key => {
+        return product.hasOwnProperty(key) && product[key] !== ''
+      })
       .map(key => ({[key]: product[key]}))
 
     this.orderedProduct = Object.assign({}, ...orderedPairs)
@@ -125,7 +131,7 @@ class ProductValidator {
     this.orderedFixedProducts = fixedProducts.map(product => {
       // delete product.filename
       // delete product.validationSummary
-      return this.orderProduct(product).orderedProduct
+      return this.orderAndCleanupProduct(product).orderedProduct
     })
 
     return this
@@ -134,17 +140,18 @@ class ProductValidator {
   saveOrderedFixedProducts () {
     // TODO: Save single products to original location! First figure out a way
     // to conserve order of keys...
-    // this.fixedProducts.forEach(product => {
-    //   const filename = product.filename
-    //
-    //   // remove filename and validationSummary fields
-    //   delete product.filename
-    //   delete product.validationSummary
-    //
-    //   const orderedProduct = this.orderProduct(product).orderedProduct
-    //
-    //   jsonfile.writeFileSync(`${this.dataDir}/prods/${filename}`, orderedProduct)
-    // })
+    this.orderedFixedProducts.forEach(product => {
+      const filename = product.filename
+
+      // remove filename and validationSummary fields
+      delete product.filename
+      delete product.validationSummary
+
+      const orderedProduct = this.orderProduct(product).orderedProduct
+
+      jsonfile.writeFileSync(`${this.dataDir}/prods/${filename}`, orderedProduct)
+    })
+
     jsonfile.writeFileSync(`${this.dataDir}/prods.all.json`,
       this.orderedFixedProducts)
 
