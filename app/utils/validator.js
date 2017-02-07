@@ -11,6 +11,7 @@ class ProductValidator {
       'id',
       'name',
       'linked-id', // added by mcmunder
+      'fao-product-id', // added by mcmunder
       'co2-value',
       'tags',
       'specification',
@@ -47,6 +48,9 @@ class ProductValidator {
       'data-quality',
       'author',
       'delete',
+      'allergenes', // added by mcmunder
+      'processes', // added by mcmunder
+      'waste-id', // added by mcmunder
       'filename', // delete later
       'validationSummary' // delete later
     ]
