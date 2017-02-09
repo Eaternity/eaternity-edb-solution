@@ -1,5 +1,5 @@
 {
-  "name": "EDB_editor",
+  "name": "Edb-solution",
   "version": "1.0.1",
   "description": "Electron application for editing of eaternity database json files. Based on elecron-react-boilerplate.",
   "main": "./main.js",

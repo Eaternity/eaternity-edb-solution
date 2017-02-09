@@ -46,6 +46,13 @@ export const setEditedProductToNew = () => {
   }
 }
 
+export const setProductType = payload => {
+  return {
+    type: actions.SET_PRODUCT_TYPE,
+    payload
+  }
+}
+
 // FAO
 export const fetchAllFAOs = () => {
   return {

@@ -1,55 +1,30 @@
 import React, { Component, PropTypes } from 'react'
-import { Button, Card, CardBlock, CardTitle, CardSubtitle, Col, Input, Form, FormGroup, Label } from 'reactstrap'
-import Autosuggest from 'react-autosuggest'
+import { Button, Card, CardBlock, CardTitle, CardSubtitle, Col, Form, Input } from 'reactstrap'
+import ChipInput from 'material-ui-chip-input'
 import ConfirmRejectModal from '../ConfirmRejectModal/ConfirmRejectModal'
 import EditBar from '../EditBar/EditBar'
-import ChipInput from 'material-ui-chip-input'
-
+import InputWrapper from '../InputWrapper/InputWrapper'
+import Oracle from '../Oracle/Oracle'
 import styles from './Edit.css'
-import autosuggest from './autosuggest.css'
 
 class Edit extends Component {
   static propTypes = {
     dataDir: PropTypes.string.isRequired,
     editedProduct: PropTypes.object.isRequired,
+    productType: PropTypes.string.isRequired,
     orderedKeys: PropTypes.array.isRequired,
     products: PropTypes.array.isRequired,
+    faos: PropTypes.array.isRequired,
     actions: PropTypes.object.isRequired
   }
 
   state = {
     saveModalOpen: false,
-    backModalOpen: false,
-    suggestions: [], // for autosuggest
-    autosuggestId: '',
-    autosuggestValue: ''
+    backModalOpen: false
   }
 
-  // Teach Autosuggest how to calculate suggestions for any given input value.
-  getSuggestions = value => {
-    const inputValue = value.trim().toLowerCase()
-    const inputLength = inputValue.length
-
-    return inputLength === 0 ? [] : this.props.products.filter(product =>
-      product.name !== null && product.name !== undefined && product.name.toLowerCase().slice(0, inputLength) === inputValue
-    )
-  }
-
-  getSuggestionValue = suggestion => suggestion.id.toString()
-
-  // Autosuggest will call this function every time you need to update
-  // suggestions
-  handleSuggestionFetch = ({ value }) => {
-    this.setState({
-      suggestions: this.getSuggestions(value)
-    })
-  }
-
-  // Autosuggest will call this function every time you need to clear suggestions.
-  handleSuggestionClear = () => {
-    this.setState({
-      suggestions: []
-    })
+  componentWillUpdate = (nextProps, nextState) => {
+    console.log(nextProps)
   }
 
   toggleSaveModal = () => {
@@ -57,13 +32,6 @@ class Edit extends Component {
       saveModalOpen: !this.state.saveModalOpen
     })
   }
-
-  // Use your imagination to render suggestions.
-  renderSuggestion = suggestion => (
-    <div>
-      {`${suggestion.name} (id: ${suggestion.id})`}
-    </div>
-  )
 
   toggleBackModal = () => {
     this.setState({
@@ -78,12 +46,14 @@ class Edit extends Component {
   }
 
   handleSaveConfirmClick = () => {
+    // this.props.actions.setProductType('old')
     this.props.actions.mergeEditedToProducts()
     this.props.actions.saveAllProducts()
     this.toggleSaveModal()
   }
 
   handleBackConfirmClick = () => {
+    this.props.actions.setProductType('old')
     this.props.actions.clearSearchInput()
     this.props.actions.changeLocation('/')
     this.toggleBackModal()
@@ -93,285 +63,134 @@ class Edit extends Component {
     this.props.actions.updateEditedProduct(event.target.id, event.target.value)
   }
 
-  handleAutosuggestInputChange = (event, { newValue }) => {
-    // HACK: How to get the id when autosuggest is clicked??? Here I get it
-    // from previous input into the search field and "cache" it...
-    if (event.target.id) {
-      this.setState({
-        autosuggestId: event.target.id
-      })
-    }
-
-    this.setState({
-      autosuggestValue: newValue
-    })
-    this.props.actions.updateEditedProduct(this.state.autosuggestId, newValue)
-  }
-
   handleSynonymChange = synonyms => {
     this.props.actions.updateEditedProduct('synonyms', synonyms)
   }
 
-  renderFormGroup = () => {
-    return this.props.orderedKeys.map(key => {
-      const renderInputs = () => {
+  renderInputs = () => {
+    const { products, faos, editedProduct, productType, orderedKeys } =
+      this.props
+
+    return orderedKeys
+      .map(key => {
+        const value = editedProduct[key]
+        const defaultInput = (
+          <InputWrapper key={String(key)} fieldName={key}>
+            <Input
+              type='text'
+              id={key}
+              onChange={this.handleInputChange}
+              value={value || ''} />
+          </InputWrapper>
+        )
+        const readOnlyInput = (
+          <InputWrapper key={String(key)} fieldName={key}>
+            <Input
+              type='text'
+              id={key}
+              readOnly
+              value={value || ''} />
+          </InputWrapper>
+        )
+
         switch (key) {
-          case 'filename':
-            return <div />
-
-          case 'validationSummary':
-            return <div />
-
           case 'id':
-            // id is read only!
-            return (
-              <div>
-                <Label for={key} sm={4}>
-                  {key}
-                </Label>
-                <Col sm={8}>
-                  <Input
-                    type='text'
-                    id={key}
-                    readOnly
-                    value={this.props.editedProduct[key]} />
-                </Col>
-              </div>
-            )
+            return readOnlyInput
 
-          case 'processes':
+          case 'name':
+            if (!(productType === 'new')) {
+              return readOnlyInput
+            } else {
+              return defaultInput
+            }
+
+          // render some fileds as textarea. Use swith fallthrough...
+          case 'quantity-comments':
+          case 'quantity-references':
+          case 'foodwaste-comment':
+          case 'co2-calculation':
+          case 'info-text':
+          case 'references':
+          case 'other-references':
+          case 'comments':
             return (
-              <div>
-                <Label for={key} sm={4}>
-                  {key}
-                </Label>
-                <Col sm={8}>
-                  <Input
-                    type='text'
-                    id={key}
-                    readOnly
-                    value='Processes array not editable... Sorry!' />
-                </Col>
-              </div>
+              <InputWrapper key={String(key)} fieldName={key}>
+                <Input
+                  type='textarea'
+                  id={key}
+                  onChange={this.handleInputChange}
+                  value={value || ''} />
+              </InputWrapper>
             )
 
           case 'linked-id':
-            // Autosuggest will pass through all these props to the input
-            // element
-            const inputProps = {
-              id: 'linked-id',
-              placeholder: 'Search for product name...',
-              value: this.props.editedProduct[key] ||
-                this.state.autosuggestValue,
-              onChange: this.handleAutosuggestInputChange
-            }
             return (
-              <div>
-                <Label for={key} sm={4}>
-                  {key}
-                </Label>
-                <Col sm={8}>
-                  <Autosuggest
-                    id={key}
-                    theme={autosuggest}
-                    suggestions={this.state.suggestions}
-                    inputProps={inputProps}
-                    onSuggestionsFetchRequested={this.handleSuggestionFetch}
-                    onSuggestionsClearRequested={this.handleSuggestionClear}
-                    getSuggestionValue={this.getSuggestionValue}
-                    renderSuggestion={this.renderSuggestion} />
-                </Col>
-              </div>
+              <InputWrapper key={String(key)} fieldName={key}>
+                <Oracle
+                  updateEditedProduct={this.props.actions.updateEditedProduct}
+                  id={key}
+                  data={products}
+                  // search is what will be searched for in the data
+                  searchFor='name'
+                  // autocomplete is what will be put in the input when
+                  // suggestion is clicked
+                  autocomplete='id'
+                  additionalRenderedFields={['id']}
+                  value={value || ''}
+                  />
+              </InputWrapper>
+            )
+
+          case 'fao-product-id':
+            return (
+              <InputWrapper key={String(key)} fieldName={key}>
+                <Oracle
+                  updateEditedProduct={this.props.actions.updateEditedProduct}
+                  id={key}
+                  data={faos}
+                  // search is what will be searched for in the data
+                  searchFor='fao-name'
+                  // autocomplete is what will be put in the input when
+                  // suggestion is clicked
+                  autocomplete='fao-code'
+                  additionalRenderedFields={['fao-code']}
+                  value={value || ''}
+                  />
+              </InputWrapper>
             )
 
           case 'synonyms':
             return (
-              <div>
-                <Label for={key} sm={4}>
-                  {key}
-                </Label>
-                <Col sm={8}>
-                  <ChipInput
-                    defaultValue={this.props.editedProduct.synonyms}
-                    onChange={(synonyms) => this.handleSynonymChange(synonyms)}
-                    fullWidthInput
-                    style={{ width: '100%' }}
-                  />
-                </Col>
-              </div>
+              <InputWrapper key={String(key)} fieldName={key}>
+                <ChipInput
+                  hintText='add synonym'
+                  defaultValue={editedProduct.synonyms}
+                  onChange={synonyms => this.handleSynonymChange(synonyms)}
+                  fullWidthInput
+                  style={{ width: '100%' }}
+                 />
+              </InputWrapper>
             )
 
-          case 'references':
+          case 'processes':
             return (
-              <div>
-                <Label for={key} sm={4}>
-                  {key}
-                </Label>
-                <Col sm={8}>
-                  <Input
-                    type='textarea'
-                    id={key}
-                    onChange={this.handleInputChange}
-                    value={this.props.editedProduct[key] || ''} />
-                </Col>
-              </div>
+              <InputWrapper key={String(key)} fieldName={key}>
+                <Input
+                  type='text'
+                  id={key}
+                  readOnly
+                  value='Processes array not editable...' />
+              </InputWrapper>
             )
 
-          case 'comments':
-            return (
-              <div>
-                <Label for={key} sm={4}>
-                  {key}
-                </Label>
-                <Col sm={8}>
-                  <Input
-                    type='textarea'
-                    id={key}
-                    onChange={this.handleInputChange}
-                    value={this.props.editedProduct[key] || ''} />
-                </Col>
-              </div>
-            )
-
-          case 'co2-calculation':
-            return (
-              <div>
-                <Label for={key} sm={4}>
-                  {key}
-                </Label>
-                <Col sm={8}>
-                  <Input
-                    type='textarea'
-                    id={key}
-                    onChange={this.handleInputChange}
-                    value={this.props.editedProduct[key] || ''} />
-                </Col>
-              </div>
-            )
-
-          case 'other-references':
-            return (
-              <div>
-                <Label for={key} sm={4}>
-                  {key}
-                </Label>
-                <Col sm={8}>
-                  <Input
-                    type='textarea'
-                    id={key}
-                    onChange={this.handleInputChange}
-                    value={this.props.editedProduct[key] || ''} />
-                </Col>
-              </div>
-            )
-
-          case 'info-text':
-            return (
-              <div>
-                <Label for={key} sm={4}>
-                  {key}
-                </Label>
-                <Col sm={8}>
-                  <Input
-                    type='textarea'
-                    id={key}
-                    onChange={this.handleInputChange}
-                    value={this.props.editedProduct[key] || ''} />
-                </Col>
-              </div>
-            )
-
-          case 'quantity-references':
-            return (
-              <div>
-                <Label for={key} sm={4}>
-                  {key}
-                </Label>
-                <Col sm={8}>
-                  <Input
-                    type='textarea'
-                    id={key}
-                    onChange={this.handleInputChange}
-                    value={this.props.editedProduct[key] || ''} />
-                </Col>
-              </div>
-            )
-
-          case 'quantity-comments':
-            return (
-              <div>
-                <Label for={key} sm={4}>
-                  {key}
-                </Label>
-                <Col sm={8}>
-                  <Input
-                    type='textarea'
-                    id={key}
-                    onChange={this.handleInputChange}
-                    value={this.props.editedProduct[key] || ''} />
-                </Col>
-              </div>
-            )
-
-          case 'foodwaste-comment':
-            return (
-              <div>
-                <Label for={key} sm={4}>
-                  {key}
-                </Label>
-                <Col sm={8}>
-                  <Input
-                    type='textarea'
-                    id={key}
-                    onChange={this.handleInputChange}
-                    value={this.props.editedProduct[key] || ''} />
-                </Col>
-              </div>
-            )
-
-          case 'delete':
-            return (
-              <div>
-                <Label for={key} sm={4}>
-                  {key}
-                </Label>
-                <Col sm={8}>
-                  <Input
-                    type='select'
-                    id={key}
-                    onChange={this.handleInputChange}
-                    value={String(this.props.editedProduct[key])}>
-                    <option>true</option>
-                    <option>false</option>
-                  </Input>
-                </Col>
-              </div>
-            )
+          // do not show filename field
+          case 'filename':
+            return <div key={String(key)} />
 
           default:
-            return (
-              <div>
-                <Label for={key} sm={4}>
-                  {key}
-                </Label>
-                <Col sm={8}>
-                  <Input
-                    type='text'
-                    id={key}
-                    onChange={this.handleInputChange}
-                    value={this.props.editedProduct[key] || ''} />
-                </Col>
-              </div>
-            )
+            return defaultInput
         }
-      }
-
-      return (
-        <FormGroup key={key} row>
-          {renderInputs()}
-        </FormGroup>
-      )
-    })
+      })
   }
 
   renderEditView = () => {
@@ -384,7 +203,7 @@ class Edit extends Component {
           </CardBlock>
           <CardBlock>
             <Form>
-              {this.renderFormGroup()}
+              {this.renderInputs()}
             </Form>
           </CardBlock>
           <CardBlock>

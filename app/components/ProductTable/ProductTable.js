@@ -15,7 +15,7 @@ const ProductTable = props => {
       props.products.map(product => {
         return (
           <Tr
-            key={product.id}
+            key={String(product.id)}
             className={styles.tableRow}
             onDoubleClick={() => handleEditClick(product.id)} >
             <Td column='Id' data={product.id} />
@@ -26,7 +26,7 @@ const ProductTable = props => {
             <Td column='Tags' data={product.tags} />
             <Td column='Co2-value' data={product['co2-value']} />
             <Td column='Refs' data={product['references']} />
-            <Td column='Actions'>
+            <Td column='Actions' >
               <Button
                 outline
                 color='info'

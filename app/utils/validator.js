@@ -1,6 +1,5 @@
 import fs from 'fs'
 import jsonfile from 'jsonfile'
-import path from 'path'
 
 // set indentation for jsonfile
 jsonfile.spaces = 2
@@ -93,8 +92,9 @@ class ProductValidator {
     this.nutrChangeFilenames = fs.readdirSync(`${this.dataDir}/nutr-change`)
     this.prods = this.prodFilenames
       .filter(filename => {
-        return path.extname(filename) === '.json' &&
-        !(filename === 'prod.schema.json')
+        // http://regexr.com/ is awesome! Thanks Michi!
+        const filenameRegEx = /^\d.+(prod\.json)/g
+        return filenameRegEx.test(filename)
       })
       .map(filename => {
         const product = jsonfile.readFileSync(`${this.dataDir}/prods/${filename}`)
@@ -117,7 +117,7 @@ class ProductValidator {
 
   orderProduct (product = this.product) {
     const orderedPairs = this.orderedKeys
-      .filter(key => !!product[key])
+      .filter(key => !(product[key] === ''))
       .map(key => ({[key]: product[key]}))
 
     this.orderedProduct = Object.assign({}, ...orderedPairs)
@@ -136,19 +136,20 @@ class ProductValidator {
   }
 
   saveOrderedFixedProducts () {
-    // TODO: Save single products to original location! First figure out a way
-    // to conserve order of keys...
-    // this.fixedProducts.forEach(product => {
-    //   const filename = product.filename
-    //
-    //   // remove filename and validationSummary fields
-    //   delete product.filename
-    //   delete product.validationSummary
-    //
-    //   const orderedProduct = this.orderProduct(product).orderedProduct
-    //
-    //   jsonfile.writeFileSync(`${this.dataDir}/prods/${filename}`, orderedProduct)
-    // })
+    // Overwrite original products
+    this.fixedProducts.forEach(product => {
+      const filename = product.filename
+
+      // remove filename and validationSummary fields
+      delete product.filename
+      delete product.validationSummary
+
+      const orderedProduct = this.orderProduct(product).orderedProduct
+
+      jsonfile.writeFileSync(`${this.dataDir}/prods/${filename}`, orderedProduct)
+    })
+
+    // write all products in a single file
     jsonfile.writeFileSync(`${this.dataDir}/prods.all.json`,
       this.orderedFixedProducts)
 

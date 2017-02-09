@@ -13,14 +13,13 @@ const EditContainer = props => {
 }
 
 const mapStateToProps = state => ({
-  dataDir: state.data.dataDir,
-  products: state.data.products,
-  editedProduct: state.data.editedProduct,
+  ...state.data,
   orderedKeys: state.view.orderedKeys
 })
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
+    setProductType: dataActions.setProductType,
     updateEditedProduct: dataActions.updateEditedProduct,
     mergeEditedToProducts: dataActions.mergeEditedToProducts,
     saveAllProducts: dataActions.saveAllProducts,

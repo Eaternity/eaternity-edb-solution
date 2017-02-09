@@ -55,8 +55,7 @@ const initialState = {
     'allergenes', // added by mcmunder
     'processes', // added by mcmunder
     'waste-id', // added by mcmunder
-    'filename', // delete later
-    'validationSummary' // delete later
+    'filename' // delete later
   ]
 }
 

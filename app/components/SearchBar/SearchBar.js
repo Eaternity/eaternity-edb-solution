@@ -59,18 +59,24 @@ class SearchBar extends Component {
   }
 
   handleChooseDir = () => {
+    const { setDataDir, fetchAllProducts, fetchAllFAOs, fetchAllNutrients } =
+      this.props.actions
     fileSystemApi.chooseDataDir()
       .then(dataDir => {
-        this.props.actions.setDataDir(dataDir)
-        this.props.actions.fetchAllProducts()
-        this.props.actions.fetchAllFAOs()
-        this.props.actions.fetchAllNutrients()
+        setDataDir(dataDir)
+        fetchAllProducts()
+        fetchAllFAOs()
+        fetchAllNutrients()
       })
   }
 
-  handlePlusClick = () => {
-    this.props.actions.setEditedProductToNew()
-    this.props.actions.changeLocation(`/edit/${this.props.editedProduct.id}`)
+  handleAddNewProduct = () => {
+    const { setEditedProductToNew, setProductType, changeLocation } =
+      this.props.actions
+
+    setEditedProductToNew()
+    setProductType('new')
+    changeLocation(`/edit/${this.props.editedProduct.id}`)
   }
 
   render () {
@@ -129,7 +135,7 @@ class SearchBar extends Component {
                           Choose data directory
                         </DropdownItem>
                         <DropdownItem
-                          onClick={() => this.handlePlusClick()}
+                          onClick={() => this.handleAddNewProduct()}
                           disabled={!this.props.dataDir}>
                           Add new product
                         </DropdownItem>

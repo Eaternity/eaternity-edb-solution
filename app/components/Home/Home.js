@@ -55,6 +55,7 @@ const Home = props => {
 Home.propTypes = {
   products: PropTypes.array.isRequired,
   editedProduct: PropTypes.object.isRequired,
+  productType: PropTypes.string.isRequired,
   dataDir: PropTypes.string.isRequired,
   faos: PropTypes.array.isRequired,
   nutrients: PropTypes.array.isRequired,
