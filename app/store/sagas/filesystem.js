@@ -29,7 +29,7 @@ function * fetchAllProducts () {
 
     yield put({type: actionTypes.PRODUCT_FETCH_ALL_SUCCEEDED, products})
   } catch (err) {
-    yield put({type: actionTypes.PRODUCT_FETCH_ALL_FAILED, message: err.message})
+    yield put({type: actionTypes.PRODUCT_FETCH_ALL_FAILED, message: err})
   }
 }
 
@@ -40,7 +40,7 @@ function * fetchAllNutrients () {
     const nutrients = yield call(fileSystemApi.fetchAllNutrients, dataDir)
     yield put({type: actionTypes.NUTRIENT_FETCH_ALL_SUCCEEDED, nutrients})
   } catch (err) {
-    yield put({type: actionTypes.NUTRIENT_FETCH_ALL_FAILED, message: err.message})
+    yield put({type: actionTypes.NUTRIENT_FETCH_ALL_FAILED, message: err})
   }
 }
 
@@ -51,7 +51,7 @@ function * fetchAllFAOs () {
     const faos = yield call(fileSystemApi.fetchAllFAOs, dataDir)
     yield put({type: actionTypes.FAO_FETCH_ALL_SUCCEEDED, faos})
   } catch (err) {
-    yield put({type: actionTypes.FAO_FETCH_ALL_FAILED, message: err.message})
+    yield put({type: actionTypes.FAO_FETCH_ALL_FAILED, message: err})
   }
 }
 
@@ -68,9 +68,9 @@ function * saveAllProducts () {
     const products = yield call(fileSystemApi.saveAllProducts,
       [dataDir, prods]
     )
-    yield put({type: actionTypes.PRODUCT_FETCH_ALL_SUCCEEDED, products})
+    yield put({type: actionTypes.PRODUCT_SAVE_ALL_SUCCEEDED, products})
   } catch (err) {
-    yield put({type: actionTypes.PRODUCT_FETCH_ALL_FAILED, message: err.message})
+    yield put({type: actionTypes.PRODUCT_SAVE_ALL_FAILED, message: err})
   }
 }
 

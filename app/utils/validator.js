@@ -90,6 +90,7 @@ class ProductValidator {
     this.prodFilenames = fs.readdirSync(`${this.dataDir}/prods`)
     this.nutrsFilenames = fs.readdirSync(`${this.dataDir}/nutrs`)
     this.nutrChangeFilenames = fs.readdirSync(`${this.dataDir}/nutr-change`)
+
     this.prods = this.prodFilenames
       .filter(filename => {
         // http://regexr.com/ is awesome! Thanks Michi!
@@ -100,12 +101,16 @@ class ProductValidator {
         const product = jsonfile.readFileSync(`${this.dataDir}/prods/${filename}`)
         return Object.assign(product, {filename})
       })
+
     this.nutrs = this.nutrsFilenames.map(filename => {
       return jsonfile.readFileSync(`${this.dataDir}/nutrs/${filename}`)
     })
+
     this.nutrChange = this.nutrChangeFilenames.map(filename => {
       return jsonfile.readFileSync(`${this.dataDir}/nutr-change/${filename}`)
     })
+
+    this.faos = jsonfile.readFileSync(`${this.dataDir}/fao-product-list.json`)
 
     return this
   }

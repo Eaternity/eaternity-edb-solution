@@ -22,6 +22,12 @@ const data = (state = initialState, action) => {
     case actionTypes.PRODUCT_FETCH_ALL_FAILED:
       return {...state, errorMessages: [...state.errorMessages, action.message]}
 
+    case actionTypes.PRODUCT_SAVE_ALL_SUCCEEDED:
+      return {...state, products: action.products}
+
+    case actionTypes.PRODUCT_SAVE_ALL_FAILED:
+      return {...state, errorMessages: [...state.errorMessages, action.message]}
+
     case actionTypes.SELECT_PRODUCT:
       const id = state.products.findIndex(product => {
         return product.id === action.id

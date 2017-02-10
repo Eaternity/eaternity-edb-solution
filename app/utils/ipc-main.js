@@ -36,42 +36,58 @@ ipcMain.on('fetch-all-products', (event, dataDir) => {
     // So the order get lost in ipc... Reorder on the other side!!!
     event.sender.send('all-products-fetched', orderedFixedProducts)
   } catch (err) {
-    event.sender.send('error', err)
+    event.sender.send(
+      'error-fetching-prods',
+      `Error in ipc-main.js, line 21: ${err}`
+    )
   }
 })
 
 // load and send all nutrients
 ipcMain.on('fetch-all-nutrients', (event, dataDir) => {
-  const nutrientFileNames = fs.readdirSync(`${dataDir}/nutrs`)
+  try {
+    const nutrientFileNames = fs.readdirSync(`${dataDir}/nutrs`)
     .filter(filename => {
       // json files only...
       const extension = path.extname(filename)
       return extension === '.json'
     })
 
-  const allNutrients = nutrientFileNames
+    const allNutrients = nutrientFileNames
     .map(filename => {
       return jsonfile.readFileSync(`${dataDir}/nutrs/${filename}`)
     })
 
-  event.sender.send('all-nutrients-fetched', allNutrients)
+    event.sender.send('all-nutrients-fetched', allNutrients)
+  } catch (err) {
+    event.sender.send(
+      'error-fetching-nutrients',
+      `Error in ipc-main.js, line 47: ${err}`
+    )
+  }
 })
 
 // load and send all faos
 ipcMain.on('fetch-all-faos', (event, dataDir) => {
-  const allFAOs = jsonfile.readFileSync(`${dataDir}/fao-product-list.json`)
-
-  event.sender.send('all-faos-fetched', allFAOs)
+  try {
+    const allFAOs = jsonfile.readFileSync(`${dataDir}/fao-product-list.json`)
+    event.sender.send('all-faos-fetched', allFAOs)
+  } catch (err) {
+    event.sender.send(
+      'error-fetching-faos',
+      `Error in ipc-main.js, line 71: ${err}`
+    )
+  }
 })
 
 // HACK: save all products is triggered when a single product was edited or
 // added and saved. This ensures that all new products are validated and/or
 // fixed upon save and show up in the invalid product view when invalid
 ipcMain.on('save-all-products', (event, dataDir, products) => {
-  // validate, fix and save products
-  const productValidator = new ProductValidator()
-
-  const orderedFixedProducts = productValidator
+  try {
+    // validate, fix and save products
+    const productValidator = new ProductValidator()
+    const orderedFixedProducts = productValidator
     .setDataDir(dataDir)
     .validateAllProducts(products)
     .fixAllProducts()
@@ -81,9 +97,15 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
     .saveOrderedFixedProducts()
     .orderedFixedProducts
 
-  // send fixed products back so they can be put to the redux store.
-  // All arguments to event.sender.sedn will be serialized to json internally!
-  // https://github.com/electron/electron/blob/master/docs/api/ipc-renderer.md
-  // So the order get lost in ipc... Reorder on the other side!!!
-  event.sender.send('all-products-saved', orderedFixedProducts)
+    // send fixed products back so they can be put to the redux store.
+    // All arguments to event.sender.send will be serialized to json internally!
+    // https://github.com/electron/electron/blob/master/docs/api/ipc-renderer.md
+    // So the order get lost in ipc... Reorder on the other side!!!
+    event.sender.send('all-products-saved', orderedFixedProducts)
+  } catch (err) {
+    event.sender.send(
+      'error-saving-products',
+      `Error in ipc-main.js, line 86: ${err}`
+    )
+  }
 })
