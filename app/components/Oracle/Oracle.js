@@ -26,7 +26,8 @@ class Oracle extends Component {
     const inputLength = inputValue.length
 
     return inputLength === 0 ? [] : data.filter(obj =>
-      obj[searchFor] !== null && obj[searchFor] !== undefined && obj[searchFor].toLowerCase().slice(0, inputLength) === inputValue
+      obj[searchFor] !== null && obj[searchFor] !== undefined &&
+      obj[searchFor].toLowerCase().slice(0, inputLength) === inputValue
     )
   }
 
@@ -43,7 +44,8 @@ class Oracle extends Component {
     })
   }
 
-  // Autosuggest will call this function every time you need to clear suggestions.
+  // Autosuggest will call this function every time you need to clear
+  // suggestions.
   handleSuggestionClear = () => {
     this.setState({
       suggestions: []

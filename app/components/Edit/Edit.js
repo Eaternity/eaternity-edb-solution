@@ -23,9 +23,11 @@ class Edit extends Component {
     backModalOpen: false
   }
 
-  componentWillUpdate = (nextProps, nextState) => {
-    console.log(nextProps)
-  }
+  // componentWillUpdate = (nextProps, nextState) => {
+  //   //TODO: The component should/ will update when edited productgets saved
+  //   // and validation adds new fields from linked-id...
+  //
+  // }
 
   toggleSaveModal = () => {
     this.setState({
@@ -104,7 +106,7 @@ class Edit extends Component {
               return defaultInput
             }
 
-          // render some fileds as textarea. Use swith fallthrough...
+          // render some fileds as textarea. Use switch fallthrough...
           case 'quantity-comments':
           case 'quantity-references':
           case 'foodwaste-comment':

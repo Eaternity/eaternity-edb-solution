@@ -310,11 +310,14 @@ class ProductValidator {
         return field[key] !== 'NOT_RESOLVABLE'
       })
 
-    // Array.some() resolves to true if the callback returns true for any
-    // of the arrays elements...
-    const hasUnresolvableMandatoryFields = unresolvableFields.some(field => {
+    const unresolvableMandatoryFields = unresolvableFields.filter(field => {
       return this.mandatoryFields.includes(field)
     })
+
+    // Array.some() resolves to true if the callback returns true for any
+    // of the arrays elements...
+    const hasUnresolvableMandatoryFields = unresolvableMandatoryFields
+      .length > 0
 
     if (hasUnresolvableMandatoryFields) {
       isValid = false
@@ -338,8 +341,7 @@ class ProductValidator {
     validationSummary = Object.assign({}, {
       isValid,
       brokenLinks,
-      // use only the keys for the summary
-      missingFields: unresolvableFields
+      missingFields: unresolvableMandatoryFields
     })
 
     this.fixedProduct = Object.assign(validatedProduct, ...resolvedFields, {
