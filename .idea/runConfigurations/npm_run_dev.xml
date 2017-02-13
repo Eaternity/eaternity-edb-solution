@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="npm run dev" type="js.build_tools.npm" factoryName="npm">
     <package-json value="$PROJECT_DIR$/package.json" />
-    <command value="run" />
+    <command value="run-script" />
     <scripts>
       <script value="dev" />
     </scripts>
