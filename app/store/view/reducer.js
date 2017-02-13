@@ -14,15 +14,17 @@ const initialState = {
   orderedKeys: [
     'id',
     'name',
-    'linked-id', // added by mcmunder
-    'fao-product-id', // added by mcmunder
-    'co2-value',
-    'tags',
-    'specification',
-    'synonyms',
     'name-english',
     'name-french',
+    'synonyms',
+    'co2-value',
+    'allergenes', // added by mcmunder
+    'tags',
+    'linked-id', // added by mcmunder
     'nutrition-id',
+    'fao-product-id', // added by mcmunder
+    'waste-id', // added by mcmunder
+    'specification',
     'alternatives',
     'production-names',
     'production-values',
@@ -43,6 +45,8 @@ const initialState = {
     'foodwaste-comment',
     'co2-calculation',
     'calculation-process-documentation',
+    'processes', // added by mcmunder
+    'perishability',
     'info-text',
     'references',
     'other-references',
@@ -52,9 +56,6 @@ const initialState = {
     'data-quality',
     'author',
     'delete',
-    'allergenes', // added by mcmunder
-    'processes', // added by mcmunder
-    'waste-id', // added by mcmunder
     'filename', // delete later
     'validationSummary' // delete later
   ]

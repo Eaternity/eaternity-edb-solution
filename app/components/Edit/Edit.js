@@ -185,8 +185,9 @@ class Edit extends Component {
               </InputWrapper>
             )
 
-          // do not show filename field
+          // do not show filename and validationSummary fields:
           case 'filename':
+          case 'validationSummary':
             return <div key={String(key)} />
 
           default:

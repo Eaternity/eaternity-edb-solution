@@ -1,23 +1,30 @@
 import fs from 'fs'
 import jsonfile from 'jsonfile'
+import jsonschema from 'jsonschema'
+import productSchema from './prod.schema.json'
 
 // set indentation for jsonfile
 jsonfile.spaces = 2
 
 class ProductValidator {
   constructor () {
+    // this.productSchema = new SimpleSchema(productSchema)
+    this.productSchema = productSchema
+
     this.orderedKeys = [
       'id',
       'name',
-      'linked-id', // added by mcmunder
-      'fao-product-id', // added by mcmunder
-      'co2-value',
-      'tags',
-      'specification',
-      'synonyms',
       'name-english',
       'name-french',
+      'synonyms',
+      'co2-value',
+      'allergenes', // added by mcmunder
+      'tags',
+      'linked-id', // added by mcmunder
       'nutrition-id',
+      'fao-product-id', // added by mcmunder
+      'waste-id', // added by mcmunder
+      'specification',
       'alternatives',
       'production-names',
       'production-values',
@@ -38,6 +45,8 @@ class ProductValidator {
       'foodwaste-comment',
       'co2-calculation',
       'calculation-process-documentation',
+      'processes', // added by mcmunder
+      'perishability',
       'info-text',
       'references',
       'other-references',
@@ -47,9 +56,6 @@ class ProductValidator {
       'data-quality',
       'author',
       'delete',
-      'allergenes', // added by mcmunder
-      'processes', // added by mcmunder
-      'waste-id', // added by mcmunder
       'filename', // delete later
       'validationSummary' // delete later
     ]
@@ -122,18 +128,14 @@ class ProductValidator {
 
   orderProduct (product = this.product) {
     const orderedPairs = this.orderedKeys
-      .filter(key => !(product[key] === ''))
       .map(key => ({[key]: product[key]}))
 
     this.orderedProduct = Object.assign({}, ...orderedPairs)
-
     return this
   }
 
   orderFixedProducts (fixedProducts = this.fixedProducts) {
     this.orderedFixedProducts = fixedProducts.map(product => {
-      // delete product.filename
-      // delete product.validationSummary
       return this.orderProduct(product).orderedProduct
     })
 
@@ -141,22 +143,24 @@ class ProductValidator {
   }
 
   saveOrderedFixedProducts () {
-    // Overwrite original products
-    this.fixedProducts.forEach(product => {
-      const filename = product.filename
+    // write all products to a single file
+    jsonfile.writeFileSync(
+      `${this.dataDir}/prods.all.json`,
+      this.orderedFixedProducts
+    )
 
-      // remove filename and validationSummary fields
-      delete product.filename
-      delete product.validationSummary
+    this.orderedFixedProducts
+      // make a copy before deleting fields!
+      .map(product => Object.assign({}, product))
+      .forEach(product => {
+        const filename = product.filename
 
-      const orderedProduct = this.orderProduct(product).orderedProduct
+        delete product.filename
+        delete product.validationSummary
 
-      jsonfile.writeFileSync(`${this.dataDir}/prods/${filename}`, orderedProduct)
-    })
-
-    // write all products in a single file
-    jsonfile.writeFileSync(`${this.dataDir}/prods.all.json`,
-      this.orderedFixedProducts)
+      // write all files separately and overwrite original products
+        jsonfile.writeFileSync(`${this.dataDir}/prods/${filename}`, product)
+      })
 
     return this
   }
@@ -173,6 +177,17 @@ class ProductValidator {
       linkedNutritionIdExists: false,
       linkedNutritionChangeIdsExist: false,
       missingFields: []
+    }
+
+    // // There should be no schema errors once the json ui schema is
+    //  implemented!
+    const schemaErrors = jsonschema
+      .validate(product, this.productSchema).errors
+
+    const hasSchemaErrors = schemaErrors.length > 0
+
+    if (hasSchemaErrors) {
+      console.error(schemaErrors)
     }
 
     const missingFields = this.allFields.filter(field => {

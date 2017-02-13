@@ -21,7 +21,6 @@ function * fetchAllProducts () {
     // messy... Could/Should use Json UI schema instead!
     const products = unorderedProds.map(product => {
       const orderedPairs = orderedKeys
-        .filter(key => !!product[key])
         .map(key => ({[key]: product[key]}))
 
       return Object.assign({}, ...orderedPairs)
@@ -59,15 +58,27 @@ function * fetchAllFAOs () {
 function * saveAllProducts () {
   try {
     const dataDir = yield select(getDataDir)
+    const orderedKeys = yield select(getOrderedKeys)
     // HACK: get all products from the store, these include the added/edited
     // products
     const prods = yield select(getProducts)
     // save them to the filesystem; get validated/fixed products back and put
     // them in the store; invalid products should then show up in the invalid
     // product view
-    const products = yield call(fileSystemApi.saveAllProducts,
+    const unorderedProds = yield call(fileSystemApi.saveAllProducts,
       [dataDir, prods]
     )
+
+    // This is essentially the orderProduct() method from validator.js... I
+    // guess I could use the validator here again but feel that this would be
+    // messy... Could/Should use Json UI schema instead!
+    const products = unorderedProds.map(product => {
+      const orderedPairs = orderedKeys
+        .map(key => ({[key]: product[key]}))
+
+      return Object.assign({}, ...orderedPairs)
+    })
+
     yield put({type: actionTypes.PRODUCT_SAVE_ALL_SUCCEEDED, products})
   } catch (err) {
     yield put({type: actionTypes.PRODUCT_SAVE_ALL_FAILED, message: err})

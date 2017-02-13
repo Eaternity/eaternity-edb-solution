@@ -1,0 +1,205 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Eaternity Database Product Schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "title": "id",
+      "type": "integer"
+    },
+    "name": {
+      "title": "name",
+      "type": "string"
+    },
+    "name-english": {
+      "title": "name-english",
+      "type": "string"
+    },
+    "name-french": {
+      "title": "name-french",
+      "type": "string"
+    },
+    "synonyms": {
+      "title": "synonyms",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "co2-value": {
+      "title": "co2-value",
+      "type": "number"
+    },
+    "allergenes": {
+      "title": "allergenes",
+      "type": "string"
+    },
+    "tags": {
+      "title": "tags",
+      "type": "string"
+    },
+    "specification": {
+      "title": "specification",
+      "type": "string"
+    },
+    "linked-id": {
+      "title": "linked-id",
+      "type": "string"
+    },
+    "nutrition-id": {
+      "title": "nutrition-id",
+      "type": "string"
+    },
+    "waste-id": {
+      "title": "waste-id",
+      "type": "string"
+    },
+    "fao-product-id": {
+      "title": "fao-product-id",
+      "type": "string"
+    },
+    "alternatives": {
+      "title": "alternatives",
+      "type": "string"
+    },
+    "production-names": {
+      "title": "production-names",
+      "type": "string"
+    },
+    "production-values": {
+      "title": "production-values",
+      "type": "string"
+    },
+    "processing-names": {
+      "title": "processing-names",
+      "type": "string"
+    },
+    "processing-values": {
+      "title": "processing-values",
+      "type": "string"
+    },
+    "conservation-names": {
+      "title": "conservation-names",
+      "type": "string"
+    },
+    "conservation-values": {
+      "title": "conservation-values",
+      "type": "string"
+    },
+    "packaging-names": {
+      "title": "packaging-names",
+      "type": "string"
+    },
+    "packaging-values": {
+      "title": "packaging-values",
+      "type": "string"
+    },
+    "season-begin": {
+      "title": "season-begin",
+      "type": "string"
+    },
+    "season-end": {
+      "title": "season-end",
+      "type": "string"
+    },
+    "combined-product": {
+      "title": "combined-product",
+      "type": "boolean"
+    },
+    "density": {
+      "title": "density",
+      "type": "number"
+    },
+    "unit-weight": {
+      "title": "unit-weight",
+      "type": "number"
+    },
+    "quantity-comments": {
+      "title": "quantity-comments",
+      "type": "string"
+    },
+    "quantity-references": {
+      "title": "quantity-references",
+      "type": "string"
+    },
+    "foodwaste": {
+      "title": "foodwaste",
+      "type": "number"
+    },
+    "foodwaste-comment": {
+      "title": "foodwaste-comment",
+      "type": "string"
+    },
+    "co2-calculation": {
+      "title": "co2-calculation",
+      "type": "string"
+    },
+    "processes": {
+      "title": "processes",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "process": {
+            "type": "string"
+          },
+          "nutr-change-id": {
+            "type": "integer"
+          }
+        }
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "perishability": {
+      "title": "perishability",
+      "type": "string"
+    },
+    "calculation-process-documentation": {
+      "title": "calculation-process-documentation",
+      "type": "string"
+    },
+    "info-text": {
+      "title": "info-text",
+      "type": "string"
+    },
+    "references": {
+      "title": "references",
+      "type": "string"
+    },
+    "other-references": {
+      "title": "other-references",
+      "type": "string"
+    },
+    "comments": {
+      "title": "comments",
+      "type": "string"
+    },
+    "co2-calculation-parameters": {
+      "title": "co2-calculation-parameters",
+      "type": "string"
+    },
+    "references-parameters": {
+      "title": "references-parameters",
+      "type": "string"
+    },
+    "data-quality": {
+      "title": "data-quality",
+      "type": "string"
+    },
+    "author": {
+      "title": "author",
+      "type": "string"
+    },
+    "delete": {
+      "title": "delete",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "name"
+  ]
+}
