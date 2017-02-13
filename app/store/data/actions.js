@@ -26,11 +26,10 @@ export const selectProduct = id => {
   }
 }
 
-export const updateEditedProduct = (field, value) => {
+export const updateEditedProduct = payload => {
   return {
     type: actions.UPDATE_EDITED_PRODUCT,
-    field,
-    value
+    payload
   }
 }
 

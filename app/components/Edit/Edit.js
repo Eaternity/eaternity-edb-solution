@@ -11,7 +11,6 @@ class Edit extends Component {
   static propTypes = {
     dataDir: PropTypes.string.isRequired,
     editedProduct: PropTypes.object.isRequired,
-    productType: PropTypes.string.isRequired,
     orderedKeys: PropTypes.array.isRequired,
     products: PropTypes.array.isRequired,
     faos: PropTypes.array.isRequired,
@@ -62,15 +61,21 @@ class Edit extends Component {
   }
 
   handleInputChange = event => {
-    this.props.actions.updateEditedProduct(event.target.id, event.target.value)
+    this.props.actions.updateEditedProduct({
+      key: event.target.id,
+      value: event.target.value
+    })
   }
 
   handleSynonymChange = synonyms => {
-    this.props.actions.updateEditedProduct('synonyms', synonyms)
+    this.props.actions.updateEditedProduct({
+      key: 'synonyms',
+      value: synonyms
+    })
   }
 
   renderInputs = () => {
-    const { products, faos, editedProduct, productType, orderedKeys } =
+    const { products, faos, editedProduct, orderedKeys } =
       this.props
 
     return orderedKeys
@@ -98,13 +103,6 @@ class Edit extends Component {
         switch (key) {
           case 'id':
             return readOnlyInput
-
-          case 'name':
-            if (!(productType === 'new')) {
-              return readOnlyInput
-            } else {
-              return defaultInput
-            }
 
           // render some fileds as textarea. Use switch fallthrough...
           case 'quantity-comments':

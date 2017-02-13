@@ -74,9 +74,10 @@ const data = (state = initialState, action) => {
 
     case actionTypes.UPDATE_EDITED_PRODUCT:
       let updatedProduct = {}
+      const { key, value } = action.payload
 
-      if (action.field === 'name') {
-        const processedName = action.value
+      if (key === 'name' && state.productType === 'new') {
+        const processedName = value
           .replace(/ /g, '_').toLowerCase()
           // replace german umlauts; ä with a and so on...
           .replace(/\u00e4/g, 'a')
@@ -88,9 +89,9 @@ const data = (state = initialState, action) => {
         const ending = 'prod.json'
         const filename = `${id}-${processedName}-${ending}`
 
-        updatedProduct = {...state.editedProduct, name: action.value, filename}
+        updatedProduct = {...state.editedProduct, [key]: value, filename}
       } else {
-        updatedProduct = {...state.editedProduct, [action.field]: action.value}
+        updatedProduct = {...state.editedProduct, [key]: value}
       }
 
       return {...state, editedProduct: updatedProduct}
