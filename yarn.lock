@@ -369,27 +369,6 @@ aws4@^1.2.1:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.5.0.tgz#0a29ffb79c31c9e712eeb087e8e7a64b4a56d755"
 
-babel-cli@^6.22.2:
-  version "6.22.2"
-  resolved "https://registry.yarnpkg.com/babel-cli/-/babel-cli-6.22.2.tgz#3f814c8acf52759082b8fedd9627f938936ab559"
-  dependencies:
-    babel-core "^6.22.1"
-    babel-polyfill "^6.22.0"
-    babel-register "^6.22.0"
-    babel-runtime "^6.22.0"
-    commander "^2.8.1"
-    convert-source-map "^1.1.0"
-    fs-readdir-recursive "^1.0.0"
-    glob "^7.0.0"
-    lodash "^4.2.0"
-    output-file-sync "^1.1.0"
-    path-is-absolute "^1.0.0"
-    slash "^1.0.0"
-    source-map "^0.5.0"
-    v8flags "^2.0.10"
-  optionalDependencies:
-    chokidar "^1.6.1"
-
 babel-code-frame@^6.11.0, babel-code-frame@^6.16.0, babel-code-frame@^6.22.0:
   version "6.22.0"
   resolved "https://registry.yarnpkg.com/babel-code-frame/-/babel-code-frame-6.22.0.tgz#027620bee567a88c32561574e7fd0801d33118e4"
@@ -1635,7 +1614,7 @@ cheerio@^0.22.0:
     lodash.reject "^4.4.0"
     lodash.some "^4.4.0"
 
-chokidar@^1.0.0, chokidar@^1.6.1:
+chokidar@^1.0.0:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-1.6.1.tgz#2f4447ab5e96e50fb3d789fd90d4c72e0e4c70c2"
   dependencies:
@@ -1731,7 +1710,7 @@ clone-stats@^0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/clone-stats/-/clone-stats-0.0.1.tgz#b88f94a82cf38b8791d58046ea4029ad88ca99d1"
 
-clone@1.0.2, clone@^1.0.0, clone@^1.0.2:
+clone@^1.0.0, clone@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/clone/-/clone-1.0.2.tgz#260b7a99ebb1edfe247538175f783243cb19d149"
 
@@ -2186,13 +2165,19 @@ debug@0.7.4:
   version "0.7.4"
   resolved "https://registry.yarnpkg.com/debug/-/debug-0.7.4.tgz#06e1ea8082c2cb14e39806e22e2f6f757f92af39"
 
-debug@2.2.0, debug@^2.1.1, debug@^2.2.0, debug@~2.2.0:
+debug@2.2.0, debug@^2.1.1, debug@^2.1.3, debug@^2.2.0, debug@~2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.2.0.tgz#f87057e995b1a1f6ae6a4960664137bc56f039da"
   dependencies:
     ms "0.7.1"
 
-debug@2.6.0, debug@^2.1.3, debug@^2.6.0:
+debug@2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.1.tgz#79855090ba2c4e3115cc7d8769491d58f0491351"
+  dependencies:
+    ms "0.7.2"
+
+debug@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.0.tgz#bc596bcabe7617f11d9fa15361eded5608b8499b"
   dependencies:
@@ -2218,7 +2203,7 @@ deep-diff@0.3.4:
   version "0.3.4"
   resolved "https://registry.yarnpkg.com/deep-diff/-/deep-diff-0.3.4.tgz#aac5c39952236abe5f037a2349060ba01b00ae48"
 
-deep-extend@^0.4.1, deep-extend@~0.4.0:
+deep-extend@~0.4.0:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/deep-extend/-/deep-extend-0.4.1.tgz#efe4113d08085f4e6f9687759810f807469e2253"
 
@@ -2409,35 +2394,49 @@ ejs@^2.3.1:
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/ejs/-/ejs-2.5.2.tgz#21444ba09386f0c65b6eafb96a3d51bcb3be80d1"
 
-electron-builder-core@11.2.1:
-  version "11.2.1"
-  resolved "https://registry.yarnpkg.com/electron-builder-core/-/electron-builder-core-11.2.1.tgz#1dca8c1a1cee8b51750b7708a04913aeffacf8a8"
+electron-builder-core@13.6.0:
+  version "13.6.0"
+  resolved "https://registry.yarnpkg.com/electron-builder-core/-/electron-builder-core-13.6.0.tgz#84432366e7d9d8561e75523c630a44d71c52f9e1"
 
-electron-builder-http@12.3.0, electron-builder-http@~12.3.0:
-  version "12.3.0"
-  resolved "https://registry.yarnpkg.com/electron-builder-http/-/electron-builder-http-12.3.0.tgz#5a75e3683e4c1a8ef093f353d3298342c875d2c0"
+electron-builder-http@13.6.0, electron-builder-http@~13.6.0:
+  version "13.6.0"
+  resolved "https://registry.yarnpkg.com/electron-builder-http/-/electron-builder-http-13.6.0.tgz#c4b6a4c7872b02576260eb7a1ebd9b6dc13830f8"
   dependencies:
-    debug "2.6.0"
+    debug "2.6.1"
     fs-extra-p "^3.1.0"
 
-electron-builder-util@12.3.0:
-  version "12.3.0"
-  resolved "https://registry.yarnpkg.com/electron-builder-util/-/electron-builder-util-12.3.0.tgz#50c54d1c8c415a0cb1d2722edaa836312535d59d"
+electron-builder-publisher@13.6.0:
+  version "13.6.0"
+  resolved "https://registry.yarnpkg.com/electron-builder-publisher/-/electron-builder-publisher-13.6.0.tgz#2823d0665666bfee568311773cbe2abf01fdd1ad"
+  dependencies:
+    bluebird-lst-c "^1.0.6"
+    chalk "^1.1.3"
+    electron-builder-http "~13.6.0"
+    electron-builder-util "~13.6.0"
+    fs-extra-p "^3.1.0"
+    mime "^1.3.4"
+    progress-ex "^2.0.0"
+
+electron-builder-util@13.6.0, electron-builder-util@~13.6.0:
+  version "13.6.0"
+  resolved "https://registry.yarnpkg.com/electron-builder-util/-/electron-builder-util-13.6.0.tgz#4f4fc58a30428d262b86e950b75182953f596a01"
   dependencies:
     "7zip-bin" "^2.0.4"
     bluebird-lst-c "^1.0.6"
     chalk "^1.1.3"
-    debug "2.6.0"
-    electron-builder-http "~12.3.0"
+    debug "2.6.1"
+    electron-builder-http "~13.6.0"
     fs-extra-p "^3.1.0"
+    ini "^1.3.4"
     is-ci "^1.0.10"
     node-emoji "^1.5.1"
     source-map-support "^0.4.11"
     stat-mode "^0.2.2"
+    tunnel-agent "^0.4.3"
 
-electron-builder@^12.3.1:
-  version "12.3.1"
-  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-12.3.1.tgz#db82b8c1830e6a121a98046bc8d26c315b4890a2"
+electron-builder@^13.6.0:
+  version "13.6.0"
+  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-13.6.0.tgz#592c5b7461831e2d12210abb98c3579305bd5ff9"
   dependencies:
     "7zip-bin" "^2.0.4"
     asar-electron-builder "^0.13.5"
@@ -2445,26 +2444,24 @@ electron-builder@^12.3.1:
     chalk "^1.1.3"
     chromium-pickle-js "^0.2.0"
     cuint "^0.2.2"
-    electron-builder-core "11.2.1"
-    electron-builder-http "12.3.0"
-    electron-builder-util "12.3.0"
+    electron-builder-core "13.6.0"
+    electron-builder-http "13.6.0"
+    electron-builder-publisher "13.6.0"
+    electron-builder-util "13.6.0"
     electron-download-tf "3.2.0"
-    electron-macos-sign "~1.5.0"
+    electron-macos-sign "~1.6.0"
     fs-extra-p "^3.1.0"
-    hosted-git-info "^2.1.5"
-    ini "^1.3.4"
+    hosted-git-info "^2.2.0"
     is-ci "^1.0.10"
     isbinaryfile "^3.0.2"
-    js-yaml "^3.7.0"
-    mime "^1.3.4"
+    js-yaml "^3.8.1"
     minimatch "^3.0.3"
+    node-forge "^0.7.0"
     normalize-package-data "^2.3.5"
     parse-color "^1.0.0"
     plist "^2.0.1"
-    progress "^1.1.8"
     sanitize-filename "^1.6.1"
     semver "^5.3.0"
-    tunnel-agent "^0.4.3"
     update-notifier "^1.0.3"
     uuid-1345 "^0.99.6"
     yargs "^6.6.0"
@@ -2541,9 +2538,9 @@ electron-localshortcut@^0.6.0:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/electron-localshortcut/-/electron-localshortcut-0.6.1.tgz#c4e268c38a6e42f40de5618fc906d1ed608f11aa"
 
-electron-macos-sign@~1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/electron-macos-sign/-/electron-macos-sign-1.5.0.tgz#fe3a8acb755b5f568f1fe144e9e66cee44019448"
+electron-macos-sign@~1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/electron-macos-sign/-/electron-macos-sign-1.6.0.tgz#56af59012dda368614222f9a3df2fd2fbe13ef31"
   dependencies:
     bluebird "^3.4.7"
     compare-version "^0.1.2"
@@ -2923,6 +2920,10 @@ espree@^3.4.0:
 esprima@^2.6.0, esprima@^2.7.1:
   version "2.7.3"
   resolved "https://registry.yarnpkg.com/esprima/-/esprima-2.7.3.tgz#96e3b70d5779f6ad49cd032673d1c312767ba581"
+
+esprima@^3.1.1:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/esprima/-/esprima-3.1.3.tgz#fdca51cee6133895e3c88d535ce49dbff62a4633"
 
 esprima@~3.0.0:
   version "3.0.0"
@@ -3336,10 +3337,6 @@ fs-extra@^2.0.0:
     graceful-fs "^4.1.2"
     jsonfile "^2.1.0"
 
-fs-readdir-recursive@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/fs-readdir-recursive/-/fs-readdir-recursive-1.0.0.tgz#8cd1745c8b4f8a29c8caec392476921ba195f560"
-
 fs.realpath@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
@@ -3527,7 +3524,7 @@ got@^5.0.0:
     unzip-response "^1.0.0"
     url-parse-lax "^1.0.0"
 
-graceful-fs@^4.1.0, graceful-fs@^4.1.2, graceful-fs@^4.1.3, graceful-fs@^4.1.4, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
+graceful-fs@^4.1.0, graceful-fs@^4.1.2, graceful-fs@^4.1.3, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
   version "4.1.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.11.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
 
@@ -3568,7 +3565,7 @@ gulplog@^1.0.0:
   dependencies:
     glogg "^1.0.0"
 
-handlebars@^4.0.3, handlebars@^4.0.5:
+handlebars@^4.0.3:
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.0.6.tgz#2ce4484850537f9c97a8026d5399b935c4ed4ed7"
   dependencies:
@@ -3706,9 +3703,13 @@ home-path@^1.0.1:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/home-path/-/home-path-1.0.3.tgz#9ece59fec3f032e6d10b5434fee264df4c2de32f"
 
-hosted-git-info@^2.1.4, hosted-git-info@^2.1.5:
+hosted-git-info@^2.1.4:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.1.5.tgz#0ba81d90da2e25ab34a332e6ec77936e1598118b"
+
+hosted-git-info@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.2.0.tgz#7a0d097863d886c0fabbdcd37bf1758d8becf8a5"
 
 html-comment-regex@^1.1.0:
   version "1.1.1"
@@ -4469,6 +4470,13 @@ js-yaml@^3.5.1, js-yaml@^3.7.0:
     argparse "^1.0.7"
     esprima "^2.6.0"
 
+js-yaml@^3.8.1:
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.8.1.tgz#782ba50200be7b9e5a8537001b7804db3ad02628"
+  dependencies:
+    argparse "^1.0.7"
+    esprima "^3.1.1"
+
 js-yaml@~3.6.1:
   version "3.6.1"
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.6.1.tgz#6e5fe67d8b205ce4d22fad05b7781e8dadcc4b30"
@@ -5035,13 +5043,6 @@ merge@^1.1.3, merge@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/merge/-/merge-1.2.0.tgz#7531e39d4949c281a66b8c5a6e0265e8b05894da"
 
-message-box@0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/message-box/-/message-box-0.0.2.tgz#38ee3de4bcddb0bcb883a7db2468cac81fd76f79"
-  dependencies:
-    deep-extend "^0.4.1"
-    handlebars "^4.0.5"
-
 methods@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
@@ -5161,12 +5162,6 @@ moment@2.x.x, moment@^2.11.2:
   version "2.15.2"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.15.2.tgz#1bfdedf6a6e345f322fe956d5df5bd08a8ce84dc"
 
-mongo-object@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/mongo-object/-/mongo-object-0.0.1.tgz#8cad470e5925f76b5d79b0988c5918f54904e170"
-  dependencies:
-    lodash "^4.5.1"
-
 ms@0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/ms/-/ms-0.7.1.tgz#9cd13c03adbff25b65effde7ce864ee952017098"
@@ -5225,6 +5220,10 @@ node-fetch@^1.0.1:
   dependencies:
     encoding "^0.1.11"
     is-stream "^1.0.1"
+
+node-forge@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.7.0.tgz#5e0782a44e5e093fae3676d59f84ecfb38a4baad"
 
 node-int64@^0.4.0:
   version "0.4.0"
@@ -5548,14 +5547,6 @@ osenv@^0.1.0, osenv@^0.1.3:
   dependencies:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.0"
-
-output-file-sync@^1.1.0:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/output-file-sync/-/output-file-sync-1.1.2.tgz#d0a33eefe61a205facb90092e826598d5245ce76"
-  dependencies:
-    graceful-fs "^4.1.4"
-    mkdirp "^0.5.1"
-    object-assign "^4.1.0"
 
 package-json@^2.0.0:
   version "2.4.0"
@@ -5999,6 +5990,10 @@ process@^0.11.0, process@~0.11.0:
 process@~0.5.1:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/process/-/process-0.5.2.tgz#1638d8a8e34c2f440a91db95ab9aeb677fc185cf"
+
+progress-ex@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/progress-ex/-/progress-ex-2.0.0.tgz#0292fe0d5c70e75ad6accf71d5bd1b92a4d34ee7"
 
 progress-stream@^1.1.0:
   version "1.2.0"
@@ -6849,15 +6844,6 @@ signal-exit@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.1.tgz#5a4c884992b63a7acd9badb7894c3ee9cfccad81"
 
-simpl-schema@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/simpl-schema/-/simpl-schema-0.2.1.tgz#f103056129be4c26c570088263e809235af1fcb7"
-  dependencies:
-    clone "1.0.2"
-    message-box "0.0.2"
-    mongo-object "0.0.1"
-    underscore "1.8.3"
-
 simple-assign@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/simple-assign/-/simple-assign-0.1.0.tgz#17fd3066a5f3d7738f50321bb0f14ca281cc4baa"
@@ -7414,10 +7400,6 @@ unc-path-regex@^0.1.0:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/unc-path-regex/-/unc-path-regex-0.1.2.tgz#e73dd3d7b0d7c5ed86fbac6b0ae7d8c6a69d50fa"
 
-underscore@1.8.3:
-  version "1.8.3"
-  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.8.3.tgz#4f3fb53b106e6097fcf9cb4109f2a5e9bdfa5022"
-
 uniq@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/uniq/-/uniq-1.0.1.tgz#b31c5ae8254844a3a8281541ce2b04b865a734ff"
@@ -7481,10 +7463,6 @@ url@^0.11.0, url@~0.11.0:
     punycode "1.3.2"
     querystring "0.2.0"
 
-user-home@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/user-home/-/user-home-1.1.1.tgz#2b5be23a32b63a7c9deb8d0f28d485724a3df190"
-
 user-home@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/user-home/-/user-home-2.0.0.tgz#9c70bfd8169bc1dcbf48604e0f04b8b49cde9e9f"
@@ -7530,12 +7508,6 @@ uuid@^2.0.1, uuid@^2.0.3:
 uuid@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.0.1.tgz#6544bba2dfda8c1cf17e629a3a305e2bb1fee6c1"
-
-v8flags@^2.0.10:
-  version "2.0.11"
-  resolved "https://registry.yarnpkg.com/v8flags/-/v8flags-2.0.11.tgz#bca8f30f0d6d60612cc2c00641e6962d42ae6881"
-  dependencies:
-    user-home "^1.1.1"
 
 validate-npm-package-license@^3.0.1:
   version "3.0.1"
