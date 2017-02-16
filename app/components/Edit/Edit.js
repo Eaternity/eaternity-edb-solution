@@ -1,10 +1,34 @@
 import React, { Component, PropTypes } from 'react'
-import { Button, Card, CardBlock, CardTitle, CardSubtitle, Col } from 'reactstrap'
+import { Button, Card, CardBlock, CardTitle, Col, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 import Form from 'react-jsonschema-form'
 import ConfirmRejectModal from '../ConfirmRejectModal/ConfirmRejectModal'
 import EditBar from '../EditBar/EditBar'
-import productSchema from './prod.schema.json'
+import productSchema from './productSchema.json'
+import uiSchema from './uiSchema'
 import styles from './Edit.css'
+
+const CustomFieldTemplate = props => {
+  const { children, classNames, errors, rawErrors, id, label, required } = props
+  const enhancedclassNames = `${classNames} ${rawErrors ? styles.error : ''}`
+
+  return (
+    <div className={enhancedclassNames}>
+      <label htmlFor={id}>{label}{required ? '*' : null}</label>
+      {children}
+      {errors}
+    </div>
+  )
+}
+
+CustomFieldTemplate.propTypes = {
+  id: PropTypes.string,
+  classNames: PropTypes.string,
+  label: PropTypes.string,
+  required: PropTypes.bool,
+  children: PropTypes.object,
+  errors: PropTypes.object,
+  rawErrors: PropTypes.array,
+}
 
 class Edit extends Component {
   static propTypes = {
@@ -18,7 +42,15 @@ class Edit extends Component {
 
   state = {
     saveModalOpen: false,
-    backModalOpen: false
+    backModalOpen: false,
+    errorModalOpen: false,
+    errorMessages: []
+  }
+
+  toggleErrorModal = () => {
+    this.setState({
+      errorModalOpen: !this.state.errorModalOpen
+    })
   }
 
   toggleSaveModal = () => {
@@ -47,17 +79,34 @@ class Edit extends Component {
     this.toggleBackModal()
   }
 
+  handleInputChange = ({ formData, errors }) => {
+    const errorMessages = errors
+      .map(error => {
+        return (
+          <p key={error.stack}>
+            {error.stack}
+          </p>
+        )
+      })
+
+    this.setState({
+      errorMessages
+    })
+
+    this.props.actions.updateEditedProduct({
+      editedProduct: formData
+    })
+  }
+
+  handleSubmit = ({formData}) => {
+    this.props.actions.updateEditedProduct({
+      editedProduct: formData
+    })
+  }
+
   render () {
-    const log = type => console.log.bind(console, type)
     const { editedProduct } = this.props
-    const uiSchema = {
-      'delete': {
-        'ui:widget': 'select'
-      },
-      'combined-product': {
-        'ui:widget': 'select'
-      }
-    }
+    const hasErrors = this.state.errorMessages.length > 0
 
     return (
       <div>
@@ -76,20 +125,22 @@ class Edit extends Component {
           <Card>
             <CardBlock>
               <CardTitle>{this.props.editedProduct.name}</CardTitle>
-              <CardSubtitle>{this.props.editedProduct.filename}</CardSubtitle>
             </CardBlock>
             <CardBlock>
               <Form
                 schema={productSchema}
                 uiSchema={uiSchema}
+                FieldTemplate={CustomFieldTemplate}
                 formData={editedProduct}
-                onChange={log('changed')}
-                onSubmit={log('submitted')}
-                onError={log('errors')} >
+                liveValidate
+                onChange={this.handleInputChange}
+                onSubmit={this.handleSubmit} >
+                <p>* required field </p>
                 <CardBlock>
                   <div className={styles.editBtnGroup}>
                     <Col sm={4}>
                       <Button
+                        type='button'
                         outline
                         color='warning'
                         onClick={() => this.toggleBackModal()}>
@@ -105,21 +156,31 @@ class Edit extends Component {
                         confirmBtnText='Back to table view'
                         rejectBtnText='Cancel' />{' '}
                       <Button
-                        onClick={() => this.toggleSaveModal()}
+                        type='button'
+                        onClick={hasErrors ? this.toggleErrorModal
+                          : this.toggleSaveModal}
                         outline
                         color='success'>
                         Save changes
                       </Button>
-                      <ConfirmRejectModal
-                        isOpen={this.state.saveModalOpen}
-                        toggle={this.toggleSaveModal}
-                        onConfirmClick={this.handleSaveConfirmClick}
-                        onRejectClick={this.toggleSaveModal}
-                        header='Saving will overwrite file!'
-                        body={`Clicking save will overwrite ${this.props.editedProduct.filename}! Are you sure?`}
-                        confirmBtnText='Save!'
-                        rejectBtnText='Cancel'
-                        />
+                      <Modal
+                        isOpen={this.state.errorModalOpen}
+                        toggle={this.toggleErrorModal} >
+                        <ModalHeader
+                          toggle={this.toggleErrorModal} >
+                          {'Cannot save product. Form contains errors:'}
+                        </ModalHeader>
+                        <ModalBody>
+                          {this.state.errorMessages}
+                        </ModalBody>
+                        <ModalFooter>
+                          <Button
+                            color='success'
+                            onClick={this.toggleErrorModal} >
+                            Fix Errors
+                          </Button>
+                        </ModalFooter>
+                      </Modal>
                     </Col>
                   </div>
                 </CardBlock>
