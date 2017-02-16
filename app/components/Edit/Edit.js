@@ -111,16 +111,14 @@ class Edit extends Component {
     return (
       <div>
         <EditBar
+          {...this.state}
           actions={this.props.actions}
           filename={this.props.editedProduct.filename}
-          saveModalOpen={this.state.saveModalOpen}
-          backModalOpen={this.state.backModalOpen}
           toggleSaveModal={this.toggleSaveModal}
           toggleBackModal={this.toggleBackModal}
+          toggleErrorModal={this.toggleErrorModal}
           handleSaveConfirmClick={this.handleSaveConfirmClick}
-          handleBackConfirmClick={this.handleBackConfirmClick}
-          handleSaveRejectClick={this.toggleSaveModal}
-          handleBackRejectClick={this.toggleBackModal} />
+          handleBackConfirmClick={this.handleBackConfirmClick} />
         <div className={styles.container}>
           <Card>
             <CardBlock>
@@ -143,7 +141,7 @@ class Edit extends Component {
                         type='button'
                         outline
                         color='warning'
-                        onClick={() => this.toggleBackModal()}>
+                        onClick={this.toggleBackModal}>
                         Back
                       </Button>
                       <ConfirmRejectModal
@@ -163,24 +161,36 @@ class Edit extends Component {
                         color='success'>
                         Save changes
                       </Button>
-                      <Modal
-                        isOpen={this.state.errorModalOpen}
-                        toggle={this.toggleErrorModal} >
-                        <ModalHeader
+                      {hasErrors
+                        ? <Modal
+                          isOpen={this.state.errorModalOpen}
                           toggle={this.toggleErrorModal} >
-                          {'Cannot save product. Form contains errors:'}
-                        </ModalHeader>
-                        <ModalBody>
-                          {this.state.errorMessages}
-                        </ModalBody>
-                        <ModalFooter>
-                          <Button
-                            color='success'
-                            onClick={this.toggleErrorModal} >
-                            Fix Errors
-                          </Button>
-                        </ModalFooter>
-                      </Modal>
+                          <ModalHeader
+                            toggle={this.toggleErrorModal} >
+                            {'Cannot save product. Form contains errors:'}
+                          </ModalHeader>
+                          <ModalBody>
+                            {this.state.errorMessages}
+                          </ModalBody>
+                          <ModalFooter>
+                            <Button
+                              color='success'
+                              onClick={this.toggleErrorModal} >
+                              Fix Errors
+                            </Button>
+                          </ModalFooter>
+                        </Modal>
+                      : <ConfirmRejectModal
+                        isOpen={this.saveModalOpen}
+                        toggle={this.toggleSaveModal}
+                        onConfirmClick={this.handleSaveConfirmClick}
+                        onRejectClick={this.toggleSaveModal}
+                        header='Saving will overwrite file!'
+                        body={`Clicking save will overwrite ${this.props.editedProduct.filename}! Are you sure?`}
+                        confirmBtnText='Save!'
+                        rejectBtnText='Cancel'
+                        />
+                      }
                     </Col>
                   </div>
                 </CardBlock>
