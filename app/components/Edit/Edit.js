@@ -1,5 +1,16 @@
 import React, { Component, PropTypes } from 'react'
-import { Button, Card, CardBlock, CardTitle, Col, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
+import {
+  Button,
+  Card,
+  CardBlock,
+  CardTitle,
+  CardSubtitle,
+  Col,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter
+} from 'reactstrap'
 import Form from 'react-jsonschema-form'
 import ConfirmRejectModal from '../ConfirmRejectModal/ConfirmRejectModal'
 import EditBar from '../EditBar/EditBar'
@@ -36,6 +47,7 @@ class Edit extends Component {
     editedProduct: PropTypes.object.isRequired,
     orderedKeys: PropTypes.array.isRequired,
     products: PropTypes.array.isRequired,
+    nutrients: PropTypes.array.isRequired,
     faos: PropTypes.array.isRequired,
     actions: PropTypes.object.isRequired
   }
@@ -105,15 +117,24 @@ class Edit extends Component {
   }
 
   render () {
-    const { editedProduct } = this.props
+    const { editedProduct, products, nutrients, faos } = this.props
+    const { updateEditedProduct } = this.props.actions
     const hasErrors = this.state.errorMessages.length > 0
+    const formContext = {
+      allData: {
+        products,
+        nutrients,
+        faos
+      },
+      updateEditedProduct
+    }
 
     return (
       <div>
         <EditBar
           {...this.state}
           actions={this.props.actions}
-          filename={this.props.editedProduct.filename}
+          filename={editedProduct.filename}
           toggleSaveModal={this.toggleSaveModal}
           toggleBackModal={this.toggleBackModal}
           toggleErrorModal={this.toggleErrorModal}
@@ -122,10 +143,12 @@ class Edit extends Component {
         <div className={styles.container}>
           <Card>
             <CardBlock>
-              <CardTitle>{this.props.editedProduct.name}</CardTitle>
+              <CardTitle>{editedProduct.name}</CardTitle>
+              <CardSubtitle>{editedProduct.filename}</CardSubtitle>
             </CardBlock>
             <CardBlock>
               <Form
+                formContext={formContext}
                 schema={productSchema}
                 uiSchema={uiSchema}
                 FieldTemplate={CustomFieldTemplate}
@@ -181,12 +204,12 @@ class Edit extends Component {
                           </ModalFooter>
                         </Modal>
                       : <ConfirmRejectModal
-                        isOpen={this.saveModalOpen}
+                        isOpen={this.state.saveModalOpen}
                         toggle={this.toggleSaveModal}
                         onConfirmClick={this.handleSaveConfirmClick}
                         onRejectClick={this.toggleSaveModal}
                         header='Saving will overwrite file!'
-                        body={`Clicking save will overwrite ${this.props.editedProduct.filename}! Are you sure?`}
+                        body={`Clicking save will overwrite ${editedProduct.filename}! Are you sure?`}
                         confirmBtnText='Save!'
                         rejectBtnText='Cancel'
                         />

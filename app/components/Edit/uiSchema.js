@@ -1,3 +1,5 @@
+import Oracle from '../Oracle/Oracle'
+
 const uiSchema = {
   'id': {
     'ui:readonly': true
@@ -29,16 +31,40 @@ const uiSchema = {
     'ui:widget': 'text'
   },
   'linked-id': {
-    'ui:widget': 'text'
+    'ui:widget': Oracle,
+    'ui:options': {
+      'dataSelector': 'products',
+      'searchFor': 'name',
+      'autocomplete': 'id',
+      'additionalRenderedFields': [
+        'id'
+      ]
+    }
   },
   'nutrition-id': {
-    'ui:widget': 'text'
+    'ui:widget': Oracle,
+    'ui:options': {
+      'dataSelector': 'nutrients',
+      'searchFor': 'name',
+      'autocomplete': 'id',
+      'additionalRenderedFields': [
+        'id'
+      ]
+    }
   },
   'waste-id': {
     'ui:widget': 'text'
   },
   'fao-product-id': {
-    'ui:widget': 'text'
+    'ui:widget': Oracle,
+    'ui:options': {
+      'dataSelector': 'faos',
+      'searchFor': 'fao-name',
+      'autocomplete': 'fao-code',
+      'additionalRenderedFields': [
+        'fao-code'
+      ]
+    }
   },
   'alternatives': {
     'ui:widget': 'text'
