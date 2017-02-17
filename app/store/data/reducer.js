@@ -73,7 +73,25 @@ const data = (state = initialState, action) => {
       return {...state, productType: action.payload}
 
     case actionTypes.UPDATE_EDITED_PRODUCT:
-      return {...state, editedProduct: action.payload.editedProduct}
+      let updatedProduct = action.payload.editedProduct
+
+      if (state.productType === 'new') {
+        const processedName = updatedProduct.name
+          .replace(/ /g, '_').toLowerCase()
+          // replace german umlauts; ä with a and so on...
+          .replace(/\u00e4/g, 'a')
+          .replace(/\u00f6/g, 'o')
+          .replace(/\u00fc/g, 'u')
+          .replace(/\u00df/g, 's')
+
+        const id = state.editedProduct.id
+        const ending = 'prod.json'
+        const filename = `${id}-${processedName}-${ending}`
+
+        updatedProduct = {...updatedProduct, filename}
+      }
+
+      return {...state, editedProduct: updatedProduct}
 
     case actionTypes.FAO_FETCH_ALL_SUCCEEDED:
       return {...state, faos: action.faos}
