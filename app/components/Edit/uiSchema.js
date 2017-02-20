@@ -16,6 +16,11 @@ const uiSchema = {
   'synonyms': {
     'items': {
       'ui:widget': 'text'
+    },
+    'ui:field': 'synonyms',
+    'ui:options': {
+      orderable: false,
+      removable: false
     }
   },
   'co2-value': {
@@ -121,7 +126,7 @@ const uiSchema = {
     'ui:widget': 'textarea'
   },
   'co2-calculation': {
-    'ui:widget': 'text'
+    'ui:widget': 'textarea'
   },
   'perishability': {
     'ui:widget': 'text'
@@ -141,13 +146,17 @@ const uiSchema = {
   'comments': {
     'ui:widget': 'textarea'
   },
-  'co2-calculation-parameters': {
-    'ui:widget': 'text'
-  },
   'processes': {
     'items': {
+      'ui:widget': 'text',
       'ui:order': ['process', 'nutr-change-id']
+    },
+    'ui:options': {
+      orderable: false
     }
+  },
+  'co2-calculation-parameters': {
+    'ui:widget': 'text'
   },
   'references-parameters': {
     'ui:widget': 'text'

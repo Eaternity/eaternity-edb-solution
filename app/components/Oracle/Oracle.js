@@ -81,10 +81,10 @@ class Oracle extends Component {
 
   render () {
     const { id, value } = this.props
-    const { dataSelector, searchFor } = this.props.options
+    const { searchFor } = this.props.options
     // Autosuggest will pass inputProps to the input element
     const inputProps = {
-      placeholder: `Search for ${dataSelector} ${searchFor}...`,
+      placeholder: `Search for ${searchFor}...`,
       value: value || '',
       onChange: this.handleInputChange
     }

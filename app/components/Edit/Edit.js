@@ -13,33 +13,13 @@ import {
 } from 'reactstrap'
 import Form from 'react-jsonschema-form'
 import ConfirmRejectModal from '../ConfirmRejectModal/ConfirmRejectModal'
+import CustomFieldTemplate from './CustomFieldTemlpate'
+import CustomArrayTemplate from './CustomArrayTemplate'
+import SynonymsField from './SynonymsField'
 import EditBar from '../EditBar/EditBar'
 import productSchema from './productSchema.json'
 import uiSchema from './uiSchema'
 import styles from './Edit.css'
-
-const CustomFieldTemplate = props => {
-  const { children, classNames, errors, rawErrors, id, label, required } = props
-  const enhancedclassNames = `${classNames} ${rawErrors ? styles.error : ''}`
-
-  return (
-    <div className={enhancedclassNames}>
-      <label htmlFor={id}>{label}{required ? '*' : null}</label>
-      {children}
-      {errors}
-    </div>
-  )
-}
-
-CustomFieldTemplate.propTypes = {
-  id: PropTypes.string,
-  classNames: PropTypes.string,
-  label: PropTypes.string,
-  required: PropTypes.bool,
-  children: PropTypes.object,
-  errors: PropTypes.object,
-  rawErrors: PropTypes.array,
-}
 
 class Edit extends Component {
   static propTypes = {
@@ -120,6 +100,9 @@ class Edit extends Component {
     const { editedProduct, products, nutrients, faos } = this.props
     const { updateEditedProduct } = this.props.actions
     const hasErrors = this.state.errorMessages.length > 0
+    const fields = {
+      synonyms: SynonymsField
+    }
     const formContext = {
       allData: {
         products,
@@ -152,14 +135,16 @@ class Edit extends Component {
                 schema={productSchema}
                 uiSchema={uiSchema}
                 FieldTemplate={CustomFieldTemplate}
+                ArrayFieldTemplate={CustomArrayTemplate}
                 formData={editedProduct}
                 liveValidate
                 onChange={this.handleInputChange}
-                onSubmit={this.handleSubmit} >
+                onSubmit={this.handleSubmit}
+                fields={fields} >
                 <p>* required field </p>
                 <CardBlock>
                   <div className={styles.editBtnGroup}>
-                    <Col sm={4}>
+                    <Col sm={5}>
                       <Button
                         type='button'
                         outline
