@@ -26,19 +26,16 @@ ipcMain.on('fetch-all-products', (event, dataDir) => {
       .validateAllProducts()
       .fixAllProducts()
       .orderFixedProducts()
-      // HACK: saving fixed products array here although only fetch-all-products
-      // was listened for...
-      .saveOrderedFixedProducts()
       .orderedFixedProducts
 
-    // all arguments to event.sender.sedn will be serialized to json internally!
+    // all arguments to event.sender.send will be serialized to json internally!
     // https://github.com/electron/electron/blob/master/docs/api/ipc-renderer.md
     // So the order get lost in ipc... Reorder on the other side!!!
     event.sender.send('all-products-fetched', orderedFixedProducts)
   } catch (err) {
     event.sender.send(
       'error-fetching-prods',
-      `Error in ipc-main.js, line 21: ${err}`
+      `Error in ipc-main.js: ${err}`
     )
   }
 })
@@ -62,7 +59,7 @@ ipcMain.on('fetch-all-nutrients', (event, dataDir) => {
   } catch (err) {
     event.sender.send(
       'error-fetching-nutrients',
-      `Error in ipc-main.js, line 47: ${err}`
+      `Error in ipc-main.js: ${err}`
     )
   }
 })
@@ -75,7 +72,7 @@ ipcMain.on('fetch-all-faos', (event, dataDir) => {
   } catch (err) {
     event.sender.send(
       'error-fetching-faos',
-      `Error in ipc-main.js, line 71: ${err}`
+      `Error in ipc-main.js: ${err}`
     )
   }
 })
@@ -89,11 +86,12 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
     const productValidator = new ProductValidator()
     const orderedFixedProducts = productValidator
     .setDataDir(dataDir)
-    .validateAllProducts(products)
+    .setProducts(products)
+    .validateAllProducts()
+    .orderValidatedProducts()
+    .saveOrderedValidatedProducts()
     .fixAllProducts()
     .orderFixedProducts()
-    // HACK: saving fixed products array here although only fetch-all-products
-    // was listened for...
     .saveOrderedFixedProducts()
     .orderedFixedProducts
 
@@ -105,7 +103,7 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
   } catch (err) {
     event.sender.send(
       'error-saving-products',
-      `Error in ipc-main.js, line 86: ${err}`
+      `Error in ipc-main.js: ${err}`
     )
   }
 })

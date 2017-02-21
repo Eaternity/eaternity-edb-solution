@@ -25,7 +25,6 @@ class Edit extends Component {
   static propTypes = {
     dataDir: PropTypes.string.isRequired,
     editedProduct: PropTypes.object.isRequired,
-    orderedKeys: PropTypes.array.isRequired,
     products: PropTypes.array.isRequired,
     nutrients: PropTypes.array.isRequired,
     faos: PropTypes.array.isRequired,

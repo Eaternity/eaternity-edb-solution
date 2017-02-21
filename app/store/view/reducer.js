@@ -10,54 +10,6 @@ const initialState = {
     'Synonyms',
     'Tags',
     'Co2-value'
-  ],
-  orderedKeys: [
-    'id',
-    'name',
-    'name-english',
-    'name-french',
-    'synonyms',
-    'co2-value',
-    'allergenes', // added by mcmunder
-    'tags',
-    'linked-id', // added by mcmunder
-    'nutrition-id',
-    'fao-product-id', // added by mcmunder
-    'waste-id', // added by mcmunder
-    'specification',
-    'alternatives',
-    'production-names',
-    'production-values',
-    'processing-names',
-    'processing-values',
-    'conservation-names',
-    'conservation-values',
-    'packaging-names',
-    'packaging-values',
-    'season-begin',
-    'season-end',
-    'combined-product',
-    'density',
-    'unit-weight',
-    'quantity-comments',
-    'quantity-references',
-    'foodwaste',
-    'foodwaste-comment',
-    'co2-calculation',
-    'calculation-process-documentation',
-    'processes', // added by mcmunder
-    'perishability',
-    'info-text',
-    'references',
-    'other-references',
-    'comments',
-    'co2-calculation-parameters',
-    'references-parameters',
-    'data-quality',
-    'author',
-    'delete',
-    'filename', // delete later
-    'validationSummary' // delete later
   ]
 }
 

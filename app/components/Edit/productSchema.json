@@ -32,7 +32,7 @@
       "minItems": 0,
       "uniqueItems": true
     },
-    "Co2-value": {
+    "co2-value": {
       "title": "CO2-value [kg CO2/kg]",
       "description": "You can leave the CO2-value empty if this is a linked product.",
       "type": "number"
@@ -51,7 +51,7 @@
       "type": "string"
     },
     "waste-id": {
-      "title": "Foodwate link (waste-id)",
+      "title": "Foodwaste link (waste-id)",
       "type": "string"
     },
     "fao-product-id": {
@@ -120,15 +120,6 @@
     },
     "quantity-references": {
       "title": "References for density & unit weight",
-      "type": "string"
-    },
-    "foodwaste": {
-      "title": "Foodwaste [%]",
-      "description": "Average fraction thrown away of this product, consumer included.",
-      "type": "number"
-    },
-    "foodwaste-comment": {
-      "title": "Comments on foodwaste",
       "type": "string"
     },
     "allergenes": {

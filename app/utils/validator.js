@@ -1,7 +1,7 @@
 import fs from 'fs'
 import jsonfile from 'jsonfile'
 import jsonschema from 'jsonschema'
-import productSchema from './prod.schema.json'
+import productSchema from './productSchema.json'
 
 // set indentation for jsonfile
 jsonfile.spaces = 2
@@ -12,52 +12,9 @@ class ProductValidator {
     this.productSchema = productSchema
 
     this.orderedKeys = [
-      'id',
-      'name',
-      'name-english',
-      'name-french',
-      'synonyms',
-      'co2-value',
-      'allergenes', // added by mcmunder
-      'tags',
-      'linked-id', // added by mcmunder
-      'nutrition-id',
-      'fao-product-id', // added by mcmunder
-      'waste-id', // added by mcmunder
-      'specification',
-      'alternatives',
-      'production-names',
-      'production-values',
-      'processing-names',
-      'processing-values',
-      'conservation-names',
-      'conservation-values',
-      'packaging-names',
-      'packaging-values',
-      'season-begin',
-      'season-end',
-      'combined-product',
-      'density',
-      'unit-weight',
-      'quantity-comments',
-      'quantity-references',
-      'foodwaste',
-      'foodwaste-comment',
-      'co2-calculation',
-      'calculation-process-documentation',
-      'processes', // added by mcmunder
-      'perishability',
-      'info-text',
-      'references',
-      'other-references',
-      'comments',
-      'co2-calculation-parameters',
-      'references-parameters',
-      'data-quality',
-      'author',
-      'delete',
-      'filename', // delete later
-      'validationSummary' // delete later
+      ...Object.keys(productSchema.properties),
+      'filename',
+      'validationSummary'
     ]
 
     this.mandatoryFields = [
@@ -126,11 +83,48 @@ class ProductValidator {
     return this
   }
 
+  setProducts (products) {
+    this.prods = products
+    return this
+  }
+
   orderProduct (product = this.product) {
+    const orderProcesses = processes => {
+      const keys = ['process', 'nutr-change-id']
+      const orderedProcesses = processes.map(process => {
+        if (process) {
+          const orderedProcess = keys
+          .map(key => {
+            return {[key]: process[key]}
+          })
+          .reduce((process, nutrChangeId) => {
+            return Object.assign(process, nutrChangeId)
+          })
+
+          return orderedProcess
+        }
+      })
+      return orderedProcesses
+    }
+
     const orderedPairs = this.orderedKeys
-      .map(key => ({[key]: product[key]}))
+      .map(key => {
+        if (key === 'processes' && product[key]) {
+          return {[key]: orderProcesses(product[key])}
+        } else {
+          return {[key]: product[key]}
+        }
+      })
 
     this.orderedProduct = Object.assign({}, ...orderedPairs)
+    return this
+  }
+
+  orderValidatedProducts (validatedProducts = this.validatedProducts) {
+    this.orderedValidatedProducts = validatedProducts.map(product => {
+      return this.orderProduct(product).orderedProduct
+    })
+
     return this
   }
 
@@ -142,14 +136,8 @@ class ProductValidator {
     return this
   }
 
-  saveOrderedFixedProducts () {
-    // write all products to a single file
-    jsonfile.writeFileSync(
-      `${this.dataDir}/prods.all.json`,
-      this.orderedFixedProducts
-    )
-
-    this.orderedFixedProducts
+  saveOrderedValidatedProducts () {
+    this.orderedValidatedProducts
       // make a copy before deleting fields!
       .map(product => Object.assign({}, product))
       .forEach(product => {
@@ -161,6 +149,16 @@ class ProductValidator {
       // write all files separately and overwrite original products
         jsonfile.writeFileSync(`${this.dataDir}/prods/${filename}`, product)
       })
+
+    return this
+  }
+
+  saveOrderedFixedProducts () {
+    // write all products to a single file
+    jsonfile.writeFileSync(
+      `${this.dataDir}/prods.all.json`,
+      this.orderedFixedProducts
+    )
 
     return this
   }
@@ -371,8 +369,8 @@ class ProductValidator {
     return this
   }
 
-  validateAllProducts (prods = this.prods) {
-    this.validatedProducts = prods.map(product => {
+  validateAllProducts (products = this.prods) {
+    this.validatedProducts = products.map(product => {
       return this.validateProduct(product).validatedProduct
     })
 

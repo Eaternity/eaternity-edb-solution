@@ -13,8 +13,7 @@ const EditContainer = props => {
 }
 
 const mapStateToProps = state => ({
-  ...state.data,
-  orderedKeys: state.view.orderedKeys
+  ...state.data
 })
 
 const mapDispatchToProps = dispatch => ({

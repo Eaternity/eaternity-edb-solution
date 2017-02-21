@@ -119,12 +119,6 @@ const uiSchema = {
   'quantity-references': {
     'ui:widget': 'textarea'
   },
-  'foodwaste': {
-    'ui:widget': 'text'
-  },
-  'foodwaste-comment': {
-    'ui:widget': 'textarea'
-  },
   'co2-calculation': {
     'ui:widget': 'textarea'
   },
