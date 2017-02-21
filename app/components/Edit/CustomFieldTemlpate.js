@@ -2,12 +2,22 @@ import React, { PropTypes } from 'react'
 import styles from './Edit.css'
 
 const CustomFieldTemplate = props => {
-  const { children, classNames, errors, rawErrors, id, label, required } = props
+  const {
+    children,
+    classNames,
+    description,
+    errors,
+    rawErrors,
+    id,
+    label,
+    required
+  } = props
   const enhancedclassNames = `${classNames} ${rawErrors ? styles.error : ''}`
 
   return (
     <div className={enhancedclassNames}>
       <label htmlFor={id}>{label}{required ? '*' : null}</label>
+      {description}
       {children}
       {errors}
     </div>
@@ -15,9 +25,10 @@ const CustomFieldTemplate = props => {
 }
 
 CustomFieldTemplate.propTypes = {
-  id: PropTypes.string,
+  id: PropTypes.string.isRequired,
   classNames: PropTypes.string,
   label: PropTypes.string,
+  description: PropTypes.object.isRequired,
   required: PropTypes.bool,
   children: PropTypes.object,
   errors: PropTypes.object,

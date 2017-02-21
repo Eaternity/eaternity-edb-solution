@@ -25,6 +25,10 @@ label {
   border-color: red;
 }
 
+.errorModalText {
+  color: red;
+}
+
 .processesContainer {
   margin-left: 5%;
 }

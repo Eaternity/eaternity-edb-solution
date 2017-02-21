@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react'
-// import x from './x.png'
 import styles from './Chip.css'
 
 const Chip = props => {
@@ -10,6 +9,7 @@ const Chip = props => {
       className={styles.chip} >
       {value}
       <button
+        className={styles.chipButton}
         id={id}
         type='button'
         onClick={(e) => handleRemoveClick(e)}>

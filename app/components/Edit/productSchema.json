@@ -2,23 +2,29 @@
   "type": "object",
   "properties": {
     "id": {
-      "title": "id",
+      "title": "ID",
+      "description": "The unique identifier for a product",
       "type": "integer"
     },
     "name": {
-      "title": "name",
+      "title": "Name",
+      "description": "Name of the product",
+      "type": "string"
+    },
+    "specification": {
+      "title": "Specification",
       "type": "string"
     },
     "name-english": {
-      "title": "name-english",
+      "title": "English name",
       "type": "string"
     },
     "name-french": {
-      "title": "name-french",
+      "title": "French name",
       "type": "string"
     },
     "synonyms": {
-      "title": "synonyms",
+      "title": "Synonyms",
       "type": "array",
       "items": {
         "type": "string"
@@ -26,112 +32,117 @@
       "minItems": 0,
       "uniqueItems": true
     },
-    "co2-value": {
-      "title": "co2-value",
+    "Co2-value": {
+      "title": "CO2-value [kg CO2/kg]",
+      "description": "You can leave the CO2-value empty if this is a linked product.",
       "type": "number"
     },
-    "allergenes": {
-      "title": "allergenes",
-      "type": "string"
-    },
     "tags": {
-      "title": "tags",
-      "type": "string"
-    },
-    "specification": {
-      "title": "specification",
+      "title": "Tags",
       "type": "string"
     },
     "linked-id": {
-      "title": "linked-id",
+      "title": "ID of linked product (linked-id)",
+      "description": "The id of another product to which this product is linked. Some values like CO2-value are fetched from the linked product when not provided directly.",
       "type": "string"
     },
     "nutrition-id": {
-      "title": "nutrition-id",
+      "title": "Nutrition data link (nutrition-id)",
       "type": "string"
     },
     "waste-id": {
-      "title": "waste-id",
+      "title": "Foodwate link (waste-id)",
       "type": "string"
     },
     "fao-product-id": {
-      "title": "fao-product-id",
+      "title": "FAO data link (fao-product-id)",
       "type": "string"
     },
     "alternatives": {
-      "title": "alternatives",
+      "title": "Alternatives",
       "type": "string"
     },
     "production-names": {
-      "title": "production-names",
+      "title": "Production names",
       "type": "string"
     },
     "production-values": {
-      "title": "production-values",
+      "title": "Production values",
       "type": "string"
     },
     "processing-names": {
-      "title": "processing-names",
+      "title": "Processing names",
       "type": "string"
     },
     "processing-values": {
-      "title": "processing-values",
+      "title": "Processing values",
       "type": "string"
     },
     "conservation-names": {
-      "title": "conservation-names",
+      "title": "Conservation names",
       "type": "string"
     },
     "conservation-values": {
-      "title": "conservation-values",
+      "title": "Conservation values",
       "type": "string"
     },
     "packaging-names": {
-      "title": "packaging-names",
+      "title": "Packaging names",
       "type": "string"
     },
     "packaging-values": {
-      "title": "packaging-values",
+      "title": "Packaging values",
       "type": "string"
     },
     "season-begin": {
-      "title": "season-begin",
+      "title": "Start of local season",
       "type": "string"
     },
     "season-end": {
-      "title": "season-end",
+      "title": "End of local season",
       "type": "string"
     },
     "combined-product": {
-      "title": "combined-product",
+      "title": "Is this a combined product?",
       "type": "boolean"
     },
     "density": {
-      "title": "density",
+      "title": "Density [g/ml]",
       "type": "number"
     },
     "unit-weight": {
-      "title": "unit-weight",
+      "title": "Unit weight [g/piece]",
       "type": "number"
     },
     "quantity-comments": {
-      "title": "quantity-comments",
+      "title": "Comments on density & unit weight",
       "type": "string"
     },
     "quantity-references": {
-      "title": "quantity-references",
+      "title": "References for density & unit weight",
       "type": "string"
     },
     "foodwaste": {
-      "title": "foodwaste",
+      "title": "Foodwaste [%]",
+      "description": "Average fraction thrown away of this product, consumer included.",
       "type": "number"
     },
     "foodwaste-comment": {
-      "title": "foodwaste-comment",
+      "title": "Comments on foodwaste",
+      "type": "string"
+    },
+    "allergenes": {
+      "title": "Allergenes",
+      "description": "Comma-separated list of allergenes contained in this product. (Possible values: gluten, crustaceans, eggs, fish, peanuts, soy, milk, nuts, celery, mustard, sesame, sulphur, lupin, molluscs)",
       "type": "string"
     },
     "co2-calculation": {
-      "title": "co2-calculation",
+      "title": "Co2 calculation path for basic CO2-value",
+      "type": "string"
+    },
+    "calculation-process-documentation": {
+      "title": "Calculation process documentation",
+      "description": "Description of data used for CO2-calculation and important product traits",
       "type": "string"
     },
     "processes": {
@@ -155,44 +166,42 @@
       "title": "perishability",
       "type": "string"
     },
-    "calculation-process-documentation": {
-      "title": "calculation-process-documentation",
-      "type": "string"
-    },
     "info-text": {
-      "title": "info-text",
+      "title": "Info text for cook",
       "type": "string"
     },
     "references": {
-      "title": "references",
+      "title": "References for basic CO2-value",
       "type": "string"
     },
     "other-references": {
-      "title": "other-references",
+      "title": "Other references (not used)",
       "type": "string"
     },
     "comments": {
-      "title": "comments",
+      "title": "Comments",
       "type": "string"
     },
     "co2-calculation-parameters": {
-      "title": "co2-calculation-parameters",
+      "title": "CO2 calculation parameters",
+      "description": "CO2 calculation path for different product parameters",
       "type": "string"
     },
     "references-parameters": {
-      "title": "references-parameters",
+      "title": "References parameters",
+      "description": "References for product parameter calculation",
       "type": "string"
     },
     "data-quality": {
-      "title": "data-quality",
+      "title": "Data quality estimation",
       "type": "string"
     },
     "author": {
-      "title": "author",
+      "title": "Last analyst initials",
       "type": "string"
     },
     "delete": {
-      "title": "delete",
+      "title": "To delete",
       "type": "boolean"
     }
   },

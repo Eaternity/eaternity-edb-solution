@@ -36,6 +36,7 @@ class Edit extends Component {
     saveModalOpen: false,
     backModalOpen: false,
     errorModalOpen: false,
+    formData: {},
     errorMessages: []
   }
 
@@ -58,9 +59,17 @@ class Edit extends Component {
   }
 
   handleSaveConfirmClick = () => {
-    // this.props.actions.setProductType('old')
-    this.props.actions.mergeEditedToProducts()
-    this.props.actions.saveAllProducts()
+    const {
+      updateEditedProduct,
+      mergeEditedToProducts,
+      saveAllProducts
+    } = this.props.actions
+
+    updateEditedProduct({
+      editedProduct: this.state.formData
+    })
+    mergeEditedToProducts()
+    saveAllProducts()
     this.toggleSaveModal()
   }
 
@@ -71,7 +80,7 @@ class Edit extends Component {
     this.toggleBackModal()
   }
 
-  handleInputChange = ({ formData, errors }) => {
+  handleError = errors => {
     const errorMessages = errors
       .map(error => {
         return (
@@ -81,35 +90,34 @@ class Edit extends Component {
         )
       })
 
-    this.setState({
-      errorMessages
-    })
-
-    this.props.actions.updateEditedProduct({
-      editedProduct: formData
-    })
+    // persist errors in state, then toggleErrorModal...
+    this.setState(
+      {errorMessages},
+      () => this.toggleErrorModal()
+    )
   }
 
   handleSubmit = ({formData}) => {
-    this.props.actions.updateEditedProduct({
-      editedProduct: formData
+    // the formData object passed to handleSubmit does never have any
+    // errors??!! This means invalid values get removed!
+    this.setState({
+      formData
     })
+    this.toggleSaveModal()
   }
 
   render () {
     const { editedProduct, products, nutrients, faos } = this.props
-    const { updateEditedProduct } = this.props.actions
-    const hasErrors = this.state.errorMessages.length > 0
     const fields = {
       synonyms: SynonymsField
     }
+    // the formContext object is consumed by the Oracle/Autosuggest
     const formContext = {
       allData: {
         products,
         nutrients,
         faos
-      },
-      updateEditedProduct
+      }
     }
 
     return (
@@ -131,15 +139,15 @@ class Edit extends Component {
             </CardBlock>
             <CardBlock>
               <Form
-                formContext={formContext}
                 schema={productSchema}
                 uiSchema={uiSchema}
+                formData={editedProduct}
+                formContext={formContext}
                 FieldTemplate={CustomFieldTemplate}
                 ArrayFieldTemplate={CustomArrayTemplate}
-                formData={editedProduct}
-                liveValidate
                 showErrorList={false}
-                onChange={this.handleInputChange}
+                liveValidate
+                onError={this.handleError}
                 onSubmit={this.handleSubmit}
                 fields={fields} >
                 <p>* required field </p>
@@ -163,33 +171,31 @@ class Edit extends Component {
                         confirmBtnText='Back to table view'
                         rejectBtnText='Cancel' />{' '}
                       <Button
-                        type='button'
-                        onClick={hasErrors ? this.toggleErrorModal
-                          : this.toggleSaveModal}
+                        type='submit'
                         outline
                         color='success'>
                         Save changes
                       </Button>
-                      {hasErrors
-                        ? <Modal
-                          isOpen={this.state.errorModalOpen}
+                      <Modal
+                        isOpen={this.state.errorModalOpen}
+                        toggle={this.toggleErrorModal} >
+                        <ModalHeader
                           toggle={this.toggleErrorModal} >
-                          <ModalHeader
-                            toggle={this.toggleErrorModal} >
-                            {'Cannot save product. Form contains errors:'}
-                          </ModalHeader>
-                          <ModalBody>
-                            {this.state.errorMessages}
-                          </ModalBody>
-                          <ModalFooter>
-                            <Button
-                              color='success'
-                              onClick={this.toggleErrorModal} >
-                              Fix Errors
-                            </Button>
-                          </ModalFooter>
-                        </Modal>
-                      : <ConfirmRejectModal
+                          {'Cannot save product. Form contains errors:'}
+                        </ModalHeader>
+                        <ModalBody
+                          className={styles.errorModalText} >
+                          {this.state.errorMessages}
+                        </ModalBody>
+                        <ModalFooter>
+                          <Button
+                            color='success'
+                            onClick={this.toggleErrorModal} >
+                            Fix Errors
+                          </Button>
+                        </ModalFooter>
+                      </Modal>
+                      <ConfirmRejectModal
                         isOpen={this.state.saveModalOpen}
                         toggle={this.toggleSaveModal}
                         onConfirmClick={this.handleSaveConfirmClick}
@@ -197,9 +203,7 @@ class Edit extends Component {
                         header='Saving will overwrite file!'
                         body={`Clicking save will overwrite ${editedProduct.filename}! Are you sure?`}
                         confirmBtnText='Save!'
-                        rejectBtnText='Cancel'
-                        />
-                      }
+                        rejectBtnText='Cancel' />
                     </Col>
                   </div>
                 </CardBlock>
