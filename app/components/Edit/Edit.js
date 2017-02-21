@@ -138,6 +138,7 @@ class Edit extends Component {
                 ArrayFieldTemplate={CustomArrayTemplate}
                 formData={editedProduct}
                 liveValidate
+                showErrorList={false}
                 onChange={this.handleInputChange}
                 onSubmit={this.handleSubmit}
                 fields={fields} >
