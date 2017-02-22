@@ -120,6 +120,13 @@ class ProductValidator {
     return this
   }
 
+  orderValidatedProduct (validatedProduct = this.validatedProduct) {
+    this.orderedValidatedProduct = this.orderProduct(validatedProduct)
+      .orderedProduct
+
+    return this
+  }
+
   orderValidatedProducts (validatedProducts = this.validatedProducts) {
     this.orderedValidatedProducts = validatedProducts.map(product => {
       return this.orderProduct(product).orderedProduct
@@ -183,6 +190,22 @@ class ProductValidator {
     // make a copy, before deleting fields
     const cleanProduct = Object.assign({}, validatedProduct)
     const filename = validatedProduct.filename
+
+    delete cleanProduct.filename
+    delete cleanProduct.validationSummary
+
+    jsonfile.writeFileSync(
+      `${this.dataDir}/prods/${filename}`,
+      cleanProduct
+    )
+
+    return this
+  }
+
+  saveOrderedValidatedProduct (product = this.orderedValidatedProduct) {
+    // make a copy, before deleting fields
+    const cleanProduct = Object.assign({}, product)
+    const filename = product.filename
 
     delete cleanProduct.filename
     delete cleanProduct.validationSummary

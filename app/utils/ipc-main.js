@@ -114,9 +114,9 @@ ipcMain.on('save-edited-product', (event, dataDir, editedProduct) => {
     productValidator
       .setDataDir(dataDir)
       .setProduct(editedProduct)
-      .orderProduct()
       .validateProduct()
-      .saveValidatedProduct()
+      .orderValidatedProduct()
+      .saveOrderedValidatedProduct()
 
     event.sender.send('edited-product-saved')
   } catch (err) {

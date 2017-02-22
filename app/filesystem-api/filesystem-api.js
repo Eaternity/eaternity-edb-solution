@@ -94,7 +94,7 @@ const fileSystemApi = {
         resolve()
       })
 
-      ipcRenderer.on('error-saving-products', (_, error) => {
+      ipcRenderer.on('error-saving-product', (_, error) => {
         console.error(error)
         reject(error)
       })

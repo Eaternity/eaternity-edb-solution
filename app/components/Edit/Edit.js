@@ -57,28 +57,24 @@ class Edit extends Component {
     })
   }
 
-  handleSaveConfirmClick = () => {
-    const {
-      updateEditedProduct,
-      mergeEditedToProducts,
-      saveAllProducts,
-      saveEditedProduct
-    } = this.props.actions
-
-    updateEditedProduct({
-      editedProduct: this.state.formData
-    })
-    mergeEditedToProducts()
-    saveAllProducts()
-    saveEditedProduct()
-    this.toggleSaveModal()
-  }
-
   handleBackConfirmClick = () => {
     this.props.actions.setProductType('old')
     this.props.actions.clearSearchInput()
     this.props.actions.changeLocation('/')
     this.toggleBackModal()
+  }
+
+  handleSaveConfirmClick = () => {
+    const {
+      mergeEditedToProducts,
+      saveAllProducts,
+      saveEditedProduct
+    } = this.props.actions
+
+    mergeEditedToProducts()
+    saveAllProducts()
+    saveEditedProduct()
+    this.toggleSaveModal()
   }
 
   handleError = errors => {
@@ -99,10 +95,12 @@ class Edit extends Component {
   }
 
   handleSubmit = ({formData}) => {
-    // the formData object passed to handleSubmit does never have any
-    // errors??!! This means invalid values get removed!
-    this.setState({
-      formData
+    const { updateEditedProduct } = this.props.actions
+
+    // the formData object passed to handleSubmit never has any
+    // errors??!! This means invalid values get removed?!
+    updateEditedProduct({
+      editedProduct: formData
     })
 
     this.toggleSaveModal()
