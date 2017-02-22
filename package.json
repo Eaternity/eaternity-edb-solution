@@ -150,6 +150,7 @@
   "dependencies": {
     "bootstrap": "4.0.0-alpha.5",
     "electron-debug": "^1.1.0",
+    "electron-localshortcut": "^1.0.0",
     "history": "^4.5.1",
     "jsonfile": "^2.4.0",
     "jsonschema": "^1.1.1",

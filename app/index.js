@@ -8,6 +8,7 @@ import { syncHistoryWithStore, routerMiddleware } from 'react-router-redux'
 import rootSaga from './store/sagas/sagas'
 import routes from './routes'
 import rootReducer from './store/reducers'
+import './ipc/ipc-renderer' // make sure ipcRenderer gets bundled
 import './app.global.css'
 
 const sagaMiddleware = createSagaMiddleware()

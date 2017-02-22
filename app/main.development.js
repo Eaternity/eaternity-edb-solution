@@ -1,7 +1,8 @@
 import { app, BrowserWindow } from 'electron'
-import './utils/ipc-main'
+import electronLocalshortcut from 'electron-localshortcut'
+import './ipc/ipc-main'
 
-let mainWindow = null
+let win = null
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support'); // eslint-disable-line
@@ -14,10 +15,6 @@ if (process.env.NODE_ENV === 'development') {
   const p = path.join(__dirname, '..', 'app', 'node_modules'); // eslint-disable-line
   require('module').globalPaths.push(p); // eslint-disable-line
 }
-
-app.on('window-all-closed', () => {
-  app.quit()
-})
 
 const installExtensions = async () => {
   if (process.env.NODE_ENV === 'development') {
@@ -39,24 +36,47 @@ const installExtensions = async () => {
 app.on('ready', async () => {
   await installExtensions()
 
-  mainWindow = new BrowserWindow({
+  win = new BrowserWindow({
     show: false,
     width: 1024,
     height: 728
   })
 
-  mainWindow.loadURL(`file://${__dirname}/app.html`)
+  win.loadURL(`file://${__dirname}/app.html`)
 
-  mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow.show()
-    mainWindow.focus()
+  electronLocalshortcut.register(win, 'CommandOrControl+S', () => {
+    console.log('You pressed cmd & S')
+    win.webContents.send('save-edited-product')
   })
 
-  mainWindow.on('closed', () => {
-    mainWindow = null
+  const shortcutRegisterd = electronLocalshortcut
+    .isRegistered(win, 'CommandOrControl+S')
+
+  if (shortcutRegisterd) {
+    console.log(
+      'Registered shortcut: CommandOrControl+S => save-edited-product'
+    )
+  }
+
+  win.webContents.on('did-finish-load', () => {
+    win.show()
+    win.focus()
+  })
+
+  win.on('closed', () => {
+    win = null
   })
 
   if (process.env.NODE_ENV === 'development') {
-    mainWindow.openDevTools()
+    win.openDevTools()
   }
+})
+
+app.on('will-quit', () => {
+  // Unregister shortcut.
+  electronLocalshortcut.unregister(win, 'CommandOrControl+S')
+})
+
+app.on('window-all-closed', () => {
+  app.quit()
 })

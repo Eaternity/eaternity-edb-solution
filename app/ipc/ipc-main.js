@@ -2,7 +2,7 @@ import { ipcMain, dialog } from 'electron'
 import fs from 'fs'
 import path from 'path'
 import jsonfile from 'jsonfile'
-import ProductValidator from './validator.js'
+import ProductValidator from '../utils/validator.js'
 
 // set indentation for jsonfile
 jsonfile.spaces = 2
