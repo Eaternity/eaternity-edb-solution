@@ -84,16 +84,16 @@ class Edit extends Component {
       .map(error => {
         return (
           <p key={error.stack}>
-            {error.stack}
+            {error.stack.split('.')[1]}
           </p>
         )
       })
 
-    // persist errors in state, then toggleErrorModal...
-    this.setState(
-      {errorMessages},
-      () => this.toggleErrorModal()
-    )
+    this.setState({
+      errorMessages
+    })
+
+    this.toggleErrorModal()
   }
 
   handleSubmit = ({formData}) => {
@@ -102,6 +102,7 @@ class Edit extends Component {
     this.setState({
       formData
     })
+
     this.toggleSaveModal()
   }
 
@@ -122,13 +123,9 @@ class Edit extends Component {
     return (
       <div>
         <EditBar
-          {...this.state}
           actions={this.props.actions}
-          filename={editedProduct.filename}
-          toggleSaveModal={this.toggleSaveModal}
+          backModalOpen={this.state.backModalOpen}
           toggleBackModal={this.toggleBackModal}
-          toggleErrorModal={this.toggleErrorModal}
-          handleSaveConfirmClick={this.handleSaveConfirmClick}
           handleBackConfirmClick={this.handleBackConfirmClick} />
         <div className={styles.container}>
           <Card>
