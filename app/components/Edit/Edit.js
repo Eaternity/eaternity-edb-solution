@@ -149,7 +149,7 @@ class Edit extends Component {
                 <p>* required field </p>
                 <CardBlock>
                   <div className={styles.editBtnGroup}>
-                    <Col sm={5}>
+                    <Col xs={{ size: 'auto', offset: 8 }}>
                       <Button
                         type='button'
                         outline
