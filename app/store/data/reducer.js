@@ -28,6 +28,12 @@ const data = (state = initialState, action) => {
     case actionTypes.PRODUCT_SAVE_ALL_FAILED:
       return {...state, errorMessages: [...state.errorMessages, action.message]}
 
+    case actionTypes.PRODUCT_SAVE_SUCCEEDED:
+      return state
+
+    case actionTypes.PRODUCT_SAVE_FAILED:
+      return {...state, errorMessages: [...state.errorMessages, action.message]}
+
     case actionTypes.SELECT_PRODUCT:
       const id = state.products.findIndex(product => {
         return product.id === action.id
@@ -73,11 +79,10 @@ const data = (state = initialState, action) => {
       return {...state, productType: action.payload}
 
     case actionTypes.UPDATE_EDITED_PRODUCT:
-      let updatedProduct = {}
-      const { key, value } = action.payload
+      let updatedProduct = action.payload.editedProduct
 
-      if (key === 'name' && state.productType === 'new') {
-        const processedName = value
+      if (state.productType === 'new') {
+        const processedName = updatedProduct.name
           .replace(/ /g, '_').toLowerCase()
           // replace german umlauts; ä with a and so on...
           .replace(/\u00e4/g, 'a')
@@ -89,9 +94,7 @@ const data = (state = initialState, action) => {
         const ending = 'prod.json'
         const filename = `${id}-${processedName}-${ending}`
 
-        updatedProduct = {...state.editedProduct, [key]: value, filename}
-      } else {
-        updatedProduct = {...state.editedProduct, [key]: value}
+        updatedProduct = {...updatedProduct, filename}
       }
 
       return {...state, editedProduct: updatedProduct}

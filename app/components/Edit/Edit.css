@@ -1,3 +1,8 @@
+label {
+  font-weight: bolder;
+  display: inline-block;
+}
+
 .container {
   margin-top: 2%;
   margin-left: 10%;
@@ -14,4 +19,32 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+}
+
+.error input {
+  border-color: red;
+}
+
+.errorModalText {
+  color: red;
+}
+
+.processesContainer {
+  margin-left: 5%;
+}
+
+.processContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.processRemoveBtn {
+  padding-top: 30px;
+  margin-left: 5%;
+}
+
+.process {
+  width: 100%;
 }

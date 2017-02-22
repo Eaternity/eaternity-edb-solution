@@ -64,7 +64,7 @@ const fileSystemApi = {
     })
   },
 
-  saveAllProducts: (args) => {
+  saveAllProducts: args => {
     // why the hell does sagas call() method accept arguments as an array?!!
     const dataDir = args[0]
     const products = args[1]
@@ -77,6 +77,24 @@ const fileSystemApi = {
       })
 
       ipcRenderer.on('error-saving-products', (_, error) => {
+        console.error(error)
+        reject(error)
+      })
+    })
+  },
+
+  saveEditedProduct: args => {
+    const dataDir = args[0]
+    const editedProduct = args[1]
+
+    return new Promise((resolve, reject) => {
+      ipcRenderer.send('save-edited-product', dataDir, editedProduct)
+
+      ipcRenderer.on('edited-product-saved', () => {
+        resolve()
+      })
+
+      ipcRenderer.on('error-saving-product', (_, error) => {
         console.error(error)
         reject(error)
       })

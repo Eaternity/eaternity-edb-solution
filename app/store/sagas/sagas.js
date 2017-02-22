@@ -3,7 +3,8 @@ import {
   fetchProductsSaga,
   fetchNutrientsSaga,
   fetchFAOsSaga,
-  saveProductsSaga
+  saveProductsSaga,
+  saveEditedProductSaga
  } from './filesystem'
 
 function * rootSaga () {
@@ -11,7 +12,8 @@ function * rootSaga () {
     fork(fetchProductsSaga),
     fork(fetchFAOsSaga),
     fork(fetchNutrientsSaga),
-    fork(saveProductsSaga)
+    fork(saveProductsSaga),
+    fork(saveEditedProductSaga)
   ]
 }
 

@@ -19,6 +19,12 @@ export const saveAllProducts = () => {
   }
 }
 
+export const saveEditedProduct = () => {
+  return {
+    type: actions.EDITED_PRODUCT_SAVE_REQUESTED
+  }
+}
+
 export const selectProduct = id => {
   return {
     type: actions.SELECT_PRODUCT,

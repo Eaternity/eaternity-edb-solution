@@ -5,7 +5,11 @@
 // (select) data from the store, fire other actions etc...
 
 import { call, put, select, takeLatest } from 'redux-saga/effects'
-import { getDataDir, getProducts, getOrderedKeys } from '../selectors/selector'
+import {
+  getDataDir,
+  getProducts,
+  getEditedProduct
+} from '../selectors/selector'
 import fileSystemApi from '../../filesystem-api/filesystem-api'
 import * as actionTypes from '../data/action-types'
 
@@ -13,18 +17,7 @@ import * as actionTypes from '../data/action-types'
 function * fetchAllProducts () {
   try {
     const dataDir = yield select(getDataDir)
-    const orderedKeys = yield select(getOrderedKeys)
-    const unorderedProds = yield call(fileSystemApi.fetchAllProducts, dataDir)
-
-    // This is essentially the orderProduct() method from validator.js... I
-    // guess I could use the validator here again but feel that this would be
-    // messy... Could/Should use Json UI schema instead!
-    const products = unorderedProds.map(product => {
-      const orderedPairs = orderedKeys
-        .map(key => ({[key]: product[key]}))
-
-      return Object.assign({}, ...orderedPairs)
-    })
+    const products = yield call(fileSystemApi.fetchAllProducts, dataDir)
 
     yield put({type: actionTypes.PRODUCT_FETCH_ALL_SUCCEEDED, products})
   } catch (err) {
@@ -58,30 +51,29 @@ function * fetchAllFAOs () {
 function * saveAllProducts () {
   try {
     const dataDir = yield select(getDataDir)
-    const orderedKeys = yield select(getOrderedKeys)
     // HACK: get all products from the store, these include the added/edited
     // products
     const prods = yield select(getProducts)
     // save them to the filesystem; get validated/fixed products back and put
     // them in the store; invalid products should then show up in the invalid
     // product view
-    const unorderedProds = yield call(fileSystemApi.saveAllProducts,
-      [dataDir, prods]
-    )
-
-    // This is essentially the orderProduct() method from validator.js... I
-    // guess I could use the validator here again but feel that this would be
-    // messy... Could/Should use Json UI schema instead!
-    const products = unorderedProds.map(product => {
-      const orderedPairs = orderedKeys
-        .map(key => ({[key]: product[key]}))
-
-      return Object.assign({}, ...orderedPairs)
-    })
+    const products = yield call(fileSystemApi.saveAllProducts, [dataDir, prods])
 
     yield put({type: actionTypes.PRODUCT_SAVE_ALL_SUCCEEDED, products})
   } catch (err) {
     yield put({type: actionTypes.PRODUCT_SAVE_ALL_FAILED, message: err})
+  }
+}
+
+// fires on PRODUCT_SAVE_ALL_REQUESTED
+function * saveEditedProduct () {
+  try {
+    const dataDir = yield select(getDataDir)
+    const editedProduct = yield select(getEditedProduct)
+    yield call(fileSystemApi.saveEditedProduct, [dataDir, editedProduct])
+    yield put({type: actionTypes.EDITED_PRODUCT_SAVE_SUCCEEDED})
+  } catch (err) {
+    yield put({type: actionTypes.EDITED_PRODUCT_SAVE_FAILED, message: err})
   }
 }
 
@@ -99,4 +91,11 @@ export function * fetchFAOsSaga () {
 
 export function * saveProductsSaga () {
   yield takeLatest(actionTypes.PRODUCT_SAVE_ALL_REQUESTED, saveAllProducts)
+}
+
+export function * saveEditedProductSaga () {
+  yield takeLatest(
+    actionTypes.EDITED_PRODUCT_SAVE_REQUESTED,
+    saveEditedProduct
+  )
 }

@@ -13,8 +13,7 @@ const EditContainer = props => {
 }
 
 const mapStateToProps = state => ({
-  ...state.data,
-  orderedKeys: state.view.orderedKeys
+  ...state.data
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -23,6 +22,7 @@ const mapDispatchToProps = dispatch => ({
     updateEditedProduct: dataActions.updateEditedProduct,
     mergeEditedToProducts: dataActions.mergeEditedToProducts,
     saveAllProducts: dataActions.saveAllProducts,
+    saveEditedProduct: dataActions.saveEditedProduct,
     clearSearchInput: viewActions.clearSearchInput,
     changeLocation: push
   }, dispatch)

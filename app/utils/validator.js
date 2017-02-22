@@ -12,52 +12,9 @@ class ProductValidator {
     this.productSchema = productSchema
 
     this.orderedKeys = [
-      'id',
-      'name',
-      'name-english',
-      'name-french',
-      'synonyms',
-      'co2-value',
-      'allergenes', // added by mcmunder
-      'tags',
-      'linked-id', // added by mcmunder
-      'nutrition-id',
-      'fao-product-id', // added by mcmunder
-      'waste-id', // added by mcmunder
-      'specification',
-      'alternatives',
-      'production-names',
-      'production-values',
-      'processing-names',
-      'processing-values',
-      'conservation-names',
-      'conservation-values',
-      'packaging-names',
-      'packaging-values',
-      'season-begin',
-      'season-end',
-      'combined-product',
-      'density',
-      'unit-weight',
-      'quantity-comments',
-      'quantity-references',
-      'foodwaste',
-      'foodwaste-comment',
-      'co2-calculation',
-      'calculation-process-documentation',
-      'processes', // added by mcmunder
-      'perishability',
-      'info-text',
-      'references',
-      'other-references',
-      'comments',
-      'co2-calculation-parameters',
-      'references-parameters',
-      'data-quality',
-      'author',
-      'delete',
-      'filename', // delete later
-      'validationSummary' // delete later
+      ...Object.keys(productSchema.properties),
+      'filename',
+      'validationSummary'
     ]
 
     this.mandatoryFields = [
@@ -126,11 +83,55 @@ class ProductValidator {
     return this
   }
 
+  setProducts (products) {
+    this.prods = products
+    return this
+  }
+
   orderProduct (product = this.product) {
+    const orderProcesses = processes => {
+      const keys = ['process', 'nutr-change-id']
+      const orderedProcesses = processes.map(process => {
+        if (process) {
+          const orderedProcess = keys
+          .map(key => {
+            return {[key]: process[key]}
+          })
+          .reduce((process, nutrChangeId) => {
+            return Object.assign(process, nutrChangeId)
+          })
+
+          return orderedProcess
+        }
+      })
+      return orderedProcesses
+    }
+
     const orderedPairs = this.orderedKeys
-      .map(key => ({[key]: product[key]}))
+      .map(key => {
+        if (key === 'processes' && product[key]) {
+          return {[key]: orderProcesses(product[key])}
+        } else {
+          return {[key]: product[key]}
+        }
+      })
 
     this.orderedProduct = Object.assign({}, ...orderedPairs)
+    return this
+  }
+
+  orderValidatedProduct (validatedProduct = this.validatedProduct) {
+    this.orderedValidatedProduct = this.orderProduct(validatedProduct)
+      .orderedProduct
+
+    return this
+  }
+
+  orderValidatedProducts (validatedProducts = this.validatedProducts) {
+    this.orderedValidatedProducts = validatedProducts.map(product => {
+      return this.orderProduct(product).orderedProduct
+    })
+
     return this
   }
 
@@ -142,14 +143,8 @@ class ProductValidator {
     return this
   }
 
-  saveOrderedFixedProducts () {
-    // write all products to a single file
-    jsonfile.writeFileSync(
-      `${this.dataDir}/prods.all.json`,
-      this.orderedFixedProducts
-    )
-
-    this.orderedFixedProducts
+  saveOrderedValidatedProducts () {
+    this.orderedValidatedProducts
       // make a copy before deleting fields!
       .map(product => Object.assign({}, product))
       .forEach(product => {
@@ -165,6 +160,64 @@ class ProductValidator {
     return this
   }
 
+  saveOrderedFixedProducts () {
+    // remove filename and validation Summary from products getting saved to
+    // prods.all.json
+    // const cleanProducts = this.orderedFixedProducts
+    //   .map(product => {
+    //     // make a copy before deleting fields!
+    //     const cleanProduct = Object.assign({}, product)
+    //
+    //     delete cleanProduct.filename
+    //     delete cleanProduct.validationSummary
+    //
+    //     return cleanProduct
+    //   })
+
+    // write all products to a single file
+    // jsonfile.writeFileSync(`${this.dataDir}/prods.all.json`, cleanProducts)
+
+    // write all products to a single file
+    jsonfile.writeFileSync(
+      `${this.dataDir}/prods.all.json`,
+      this.orderedFixedProducts
+    )
+
+    return this
+  }
+
+  saveValidatedProduct (validatedProduct = this.validatedProduct) {
+    // make a copy, before deleting fields
+    const cleanProduct = Object.assign({}, validatedProduct)
+    const filename = validatedProduct.filename
+
+    delete cleanProduct.filename
+    delete cleanProduct.validationSummary
+
+    jsonfile.writeFileSync(
+      `${this.dataDir}/prods/${filename}`,
+      cleanProduct
+    )
+
+    return this
+  }
+
+  saveOrderedValidatedProduct (product = this.orderedValidatedProduct) {
+    // make a copy, before deleting fields
+    const cleanProduct = Object.assign({}, product)
+    const filename = product.filename
+
+    delete cleanProduct.filename
+    delete cleanProduct.validationSummary
+
+    jsonfile.writeFileSync(
+      `${this.dataDir}/prods/${filename}`,
+      cleanProduct
+    )
+
+    return this
+  }
+
   // method to validate a product
   validateProduct (product = this.product) {
     this.setProduct(product)
@@ -176,18 +229,21 @@ class ProductValidator {
       hasNutritionChangeId: false,
       linkedNutritionIdExists: false,
       linkedNutritionChangeIdsExist: false,
-      missingFields: []
+      missingFields: [],
+      validationErrors: []
     }
 
     // // There should be no schema errors once the json ui schema is
     //  implemented!
-    const schemaErrors = jsonschema
-      .validate(product, this.productSchema).errors
+    const validationErrors = jsonschema
+      .validate(product, this.productSchema).errors.map(error => {
+        return error.stack.split('.')[1]
+      })
 
-    const hasSchemaErrors = schemaErrors.length > 0
+    const hasValidationErrors = validationErrors.length > 0
 
-    if (hasSchemaErrors) {
-      console.error(schemaErrors)
+    if (hasValidationErrors) {
+      validationSummary = Object.assign(validationSummary, {validationErrors})
     }
 
     const missingFields = this.allFields.filter(field => {
@@ -246,7 +302,6 @@ class ProductValidator {
       const linkedNutritionChangeIdsExist = allNutritionChangeIds
           .every(nutritionChangeId => {
             return this.nutrChange.some(nutrChangeObj => {
-              // console.log(nutrChangeObj.id, nutritionChangeId)
               return nutrChangeObj.id === nutritionChangeId
             })
           })
@@ -310,7 +365,8 @@ class ProductValidator {
   }
 
   fixProduct (validatedProduct = this.validatedProduct) {
-    let validationSummary = validatedProduct.validationSummary
+    let { validationSummary } = validatedProduct
+    const { validationErrors } = validationSummary
     let isValid = true
     let brokenLinks = []
     const fieldsFromParent = this.getFieldsFromParent(validatedProduct)
@@ -358,10 +414,17 @@ class ProductValidator {
       isValid = false
     }
 
+    const hasValidationErrors = validationErrors.length > 0
+
+    if (hasValidationErrors) {
+      isValid = false
+    }
+
     validationSummary = Object.assign({}, {
       isValid,
       brokenLinks,
-      missingFields: unresolvableMandatoryFields
+      missingFields: unresolvableMandatoryFields,
+      validationErrors
     })
 
     this.fixedProduct = Object.assign(validatedProduct, ...resolvedFields, {
@@ -371,8 +434,8 @@ class ProductValidator {
     return this
   }
 
-  validateAllProducts (prods = this.prods) {
-    this.validatedProducts = prods.map(product => {
+  validateAllProducts (products = this.prods) {
+    this.validatedProducts = products.map(product => {
       return this.validateProduct(product).validatedProduct
     })
 
@@ -381,7 +444,6 @@ class ProductValidator {
 
   fixAllProducts (validatedProducts = this.validatedProducts) {
     this.fixedProducts = validatedProducts.map(validatedProduct => {
-      // console.log(this.fixProduct(validatedProduct).fixedProduct)
       return this.fixProduct(validatedProduct).fixedProduct
     })
 

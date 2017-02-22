@@ -5,23 +5,23 @@ import theme from './Oracle.css'
 class Oracle extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
-    data: PropTypes.array.isRequired,
-    searchFor: PropTypes.string.isRequired,
-    autocomplete: PropTypes.string.isRequired,
-    additionalRenderedFields: PropTypes.array.isRequired,
-    value: PropTypes.node.isRequired,
-    updateEditedProduct: PropTypes.func.isRequired
+    label: PropTypes.string.isRequired,
+    formContext: PropTypes.object.isRequired,
+    options: PropTypes.object.isRequired,
+    value: PropTypes.string,
+    onChange: PropTypes.func.isRequired
   }
 
   state = {
     suggestions: [],
-    autosuggestFieldId: '',
     autosuggestValue: ''
   }
 
   // Teach Autosuggest how to calculate suggestions for any given input value.
   getSuggestions = value => {
-    const { data, searchFor } = this.props
+    const { allData } = this.props.formContext
+    const { dataSelector, searchFor } = this.props.options
+    const data = allData[dataSelector]
     const inputValue = value.trim().toLowerCase()
     const inputLength = inputValue.length
 
@@ -32,7 +32,12 @@ class Oracle extends Component {
   }
 
   getSuggestionValue = suggestion => {
-    const { autocomplete } = this.props
+    // REFACT: it is important that the value we get from the oracle here
+    // has the same type as required in the input field! For example the
+    // fao-product-id field in the product specifies type string through
+    // the schema but the field in fao-product-list.json is an integer... So
+    // it has to be converted...
+    const { autocomplete } = this.props.options
     return String(suggestion[autocomplete])
   }
 
@@ -53,25 +58,16 @@ class Oracle extends Component {
   }
 
   handleInputChange = (event, { newValue }) => {
-    const { updateEditedProduct, id } = this.props
-    // HACK: How to get the id when autosuggest is clicked??? Here I get it
-    // from previous input into the search field and "cache" it...
-    if (event.target.id) {
-      this.setState({
-        autosuggestFieldId: event.target.id
-      })
-    }
-
-    this.setState({
-      autosuggestValue: newValue
-    })
-
-    updateEditedProduct(id, newValue)
+    // Holy crap this was almost killing me... The new value comes in
+    // as event.target.value OR newWalue. Why?
+    const value = newValue || event.target.value
+    const { onChange } = this.props
+    onChange(value)
   }
 
   // Use your imagination to render suggestions.
   renderSuggestion = suggestion => {
-    const { searchFor, additionalRenderedFields } = this.props
+    const { searchFor, additionalRenderedFields } = this.props.options
     const additionalFields = additionalRenderedFields.map(field => {
       return `${field}: ${suggestion[field]}`
     }).join(', ')
@@ -84,12 +80,12 @@ class Oracle extends Component {
   }
 
   render () {
-    const { id, searchFor, value } = this.props
+    const { id, value } = this.props
+    const { searchFor } = this.props.options
     // Autosuggest will pass inputProps to the input element
     const inputProps = {
-      id,
       placeholder: `Search for ${searchFor}...`,
-      value: value || this.state.autosuggestValue,
+      value: value || '',
       onChange: this.handleInputChange
     }
 
