@@ -6,6 +6,7 @@ import { createSelector } from 'reselect'
 
 const getVisibilityFilter = state => state.view.productFilter
 const getProducts = state => state.data.products
+const getEditedProduct = state => state.data.editedProduct
 const getDataDir = state => state.data.dataDir
 
 export const getVisibleProducts = createSelector(
@@ -47,4 +48,4 @@ export const getVisibleProducts = createSelector(
 )
 
 // Export selectors for saga
-export { getDataDir, getProducts }
+export { getDataDir, getProducts, getEditedProduct }

@@ -154,10 +154,42 @@ class ProductValidator {
   }
 
   saveOrderedFixedProducts () {
+    // remove filename and validation Summary from products getting saved to
+    // prods.all.json
+    // const cleanProducts = this.orderedFixedProducts
+    //   .map(product => {
+    //     // make a copy before deleting fields!
+    //     const cleanProduct = Object.assign({}, product)
+    //
+    //     delete cleanProduct.filename
+    //     delete cleanProduct.validationSummary
+    //
+    //     return cleanProduct
+    //   })
+
+    // write all products to a single file
+    // jsonfile.writeFileSync(`${this.dataDir}/prods.all.json`, cleanProducts)
+
     // write all products to a single file
     jsonfile.writeFileSync(
       `${this.dataDir}/prods.all.json`,
       this.orderedFixedProducts
+    )
+
+    return this
+  }
+
+  saveValidatedProduct (validatedProduct = this.validatedProduct) {
+    // make a copy, before deleting fields
+    const cleanProduct = Object.assign({}, validatedProduct)
+    const filename = validatedProduct.filename
+
+    delete cleanProduct.filename
+    delete cleanProduct.validationSummary
+
+    jsonfile.writeFileSync(
+      `${this.dataDir}/prods/${filename}`,
+      cleanProduct
     )
 
     return this

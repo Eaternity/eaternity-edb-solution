@@ -22,6 +22,7 @@ const mapDispatchToProps = dispatch => ({
     updateEditedProduct: dataActions.updateEditedProduct,
     mergeEditedToProducts: dataActions.mergeEditedToProducts,
     saveAllProducts: dataActions.saveAllProducts,
+    saveEditedProduct: dataActions.saveEditedProduct,
     clearSearchInput: viewActions.clearSearchInput,
     changeLocation: push
   }, dispatch)

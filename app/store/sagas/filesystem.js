@@ -5,7 +5,11 @@
 // (select) data from the store, fire other actions etc...
 
 import { call, put, select, takeLatest } from 'redux-saga/effects'
-import { getDataDir, getProducts } from '../selectors/selector'
+import {
+  getDataDir,
+  getProducts,
+  getEditedProduct
+} from '../selectors/selector'
 import fileSystemApi from '../../filesystem-api/filesystem-api'
 import * as actionTypes from '../data/action-types'
 
@@ -61,6 +65,18 @@ function * saveAllProducts () {
   }
 }
 
+// fires on PRODUCT_SAVE_ALL_REQUESTED
+function * saveEditedProduct () {
+  try {
+    const dataDir = yield select(getDataDir)
+    const editedProduct = yield select(getEditedProduct)
+    yield call(fileSystemApi.saveEditedProduct, [dataDir, editedProduct])
+    yield put({type: actionTypes.EDITED_PRODUCT_SAVE_SUCCEEDED})
+  } catch (err) {
+    yield put({type: actionTypes.EDITED_PRODUCT_SAVE_FAILED, message: err})
+  }
+}
+
 export function * fetchProductsSaga () {
   yield takeLatest(actionTypes.PRODUCT_FETCH_ALL_REQUESTED, fetchAllProducts)
 }
@@ -75,4 +91,11 @@ export function * fetchFAOsSaga () {
 
 export function * saveProductsSaga () {
   yield takeLatest(actionTypes.PRODUCT_SAVE_ALL_REQUESTED, saveAllProducts)
+}
+
+export function * saveEditedProductSaga () {
+  yield takeLatest(
+    actionTypes.EDITED_PRODUCT_SAVE_REQUESTED,
+    saveEditedProduct
+  )
 }

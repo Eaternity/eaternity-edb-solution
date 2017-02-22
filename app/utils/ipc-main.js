@@ -85,24 +85,43 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
     // validate, fix and save products
     const productValidator = new ProductValidator()
     const orderedFixedProducts = productValidator
-    .setDataDir(dataDir)
-    .setProducts(products)
-    .validateAllProducts()
-    .orderValidatedProducts()
-    .saveOrderedValidatedProducts()
-    .fixAllProducts()
-    .orderFixedProducts()
-    .saveOrderedFixedProducts()
-    .orderedFixedProducts
+      .setDataDir(dataDir)
+      .setProducts(products)
+      .validateAllProducts()
+      .fixAllProducts()
+      .orderFixedProducts()
+      .saveOrderedFixedProducts()
+      .orderedFixedProducts
 
     // send fixed products back so they can be put to the redux store.
-    // All arguments to event.sender.send will be serialized to json internally!
-    // https://github.com/electron/electron/blob/master/docs/api/ipc-renderer.md
-    // So the order get lost in ipc... Reorder on the other side!!!
+    // All arguments to event.sender.send will be serialized to json
+    // internally! So the order get lost in ipc... Reorder on the other
+    // side!!!
     event.sender.send('all-products-saved', orderedFixedProducts)
   } catch (err) {
     event.sender.send(
       'error-saving-products',
+      `Error in ipc-main.js: ${err}`
+    )
+  }
+})
+
+ipcMain.on('save-edited-product', (event, dataDir, editedProduct) => {
+  try {
+    // validate, fix and save product
+    const productValidator = new ProductValidator()
+
+    productValidator
+      .setDataDir(dataDir)
+      .setProduct(editedProduct)
+      .orderProduct()
+      .validateProduct()
+      .saveValidatedProduct()
+
+    event.sender.send('edited-product-saved')
+  } catch (err) {
+    event.sender.send(
+      'error-saving-product',
       `Error in ipc-main.js: ${err}`
     )
   }
