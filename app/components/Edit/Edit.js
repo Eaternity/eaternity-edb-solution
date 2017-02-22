@@ -17,7 +17,7 @@ import CustomFieldTemplate from './CustomFieldTemlpate'
 import CustomArrayTemplate from './CustomArrayTemplate'
 import SynonymsField from './SynonymsField'
 import EditBar from '../EditBar/EditBar'
-import productSchema from './productSchema.json'
+import productSchema from './prod.schema.json'
 import uiSchema from './uiSchema'
 import styles from './Edit.css'
 

@@ -1,7 +1,7 @@
 import fs from 'fs'
 import jsonfile from 'jsonfile'
 import jsonschema from 'jsonschema'
-import productSchema from './productSchema.json'
+import productSchema from './prod.schema.json'
 
 // set indentation for jsonfile
 jsonfile.spaces = 2
@@ -174,18 +174,21 @@ class ProductValidator {
       hasNutritionChangeId: false,
       linkedNutritionIdExists: false,
       linkedNutritionChangeIdsExist: false,
-      missingFields: []
+      missingFields: [],
+      validationErrors: []
     }
 
     // // There should be no schema errors once the json ui schema is
     //  implemented!
-    const schemaErrors = jsonschema
-      .validate(product, this.productSchema).errors
+    const validationErrors = jsonschema
+      .validate(product, this.productSchema).errors.map(error => {
+        return error.stack.split('.')[1]
+      })
 
-    const hasSchemaErrors = schemaErrors.length > 0
+    const hasValidationErrors = validationErrors.length > 0
 
-    if (hasSchemaErrors) {
-      console.error(schemaErrors)
+    if (hasValidationErrors) {
+      validationSummary = Object.assign(validationSummary, {validationErrors})
     }
 
     const missingFields = this.allFields.filter(field => {
@@ -244,7 +247,6 @@ class ProductValidator {
       const linkedNutritionChangeIdsExist = allNutritionChangeIds
           .every(nutritionChangeId => {
             return this.nutrChange.some(nutrChangeObj => {
-              // console.log(nutrChangeObj.id, nutritionChangeId)
               return nutrChangeObj.id === nutritionChangeId
             })
           })
@@ -308,7 +310,8 @@ class ProductValidator {
   }
 
   fixProduct (validatedProduct = this.validatedProduct) {
-    let validationSummary = validatedProduct.validationSummary
+    let { validationSummary } = validatedProduct
+    const { validationErrors } = validationSummary
     let isValid = true
     let brokenLinks = []
     const fieldsFromParent = this.getFieldsFromParent(validatedProduct)
@@ -356,10 +359,17 @@ class ProductValidator {
       isValid = false
     }
 
+    const hasValidationErrors = validationErrors.length > 0
+
+    if (hasValidationErrors) {
+      isValid = false
+    }
+
     validationSummary = Object.assign({}, {
       isValid,
       brokenLinks,
-      missingFields: unresolvableMandatoryFields
+      missingFields: unresolvableMandatoryFields,
+      validationErrors
     })
 
     this.fixedProduct = Object.assign(validatedProduct, ...resolvedFields, {
@@ -379,7 +389,6 @@ class ProductValidator {
 
   fixAllProducts (validatedProducts = this.validatedProducts) {
     this.fixedProducts = validatedProducts.map(validatedProduct => {
-      // console.log(this.fixProduct(validatedProduct).fixedProduct)
       return this.fixProduct(validatedProduct).fixedProduct
     })
 

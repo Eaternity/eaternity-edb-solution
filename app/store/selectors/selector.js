@@ -5,7 +5,6 @@
 import { createSelector } from 'reselect'
 
 const getVisibilityFilter = state => state.view.productFilter
-const getOrderedKeys = state => state.view.orderedKeys
 const getProducts = state => state.data.products
 const getDataDir = state => state.data.dataDir
 
@@ -34,11 +33,13 @@ export const getVisibleProducts = createSelector(
         return products
           .filter(product => product.validationSummary.isValid === false)
           .map(product => {
+            const { id, name, validationSummary } = product
             return {
-              id: product.id,
-              name: product.name,
-              missingFields: product.validationSummary.missingFields.join(', '),
-              brokenLinks: product.validationSummary.brokenLinks.join(', ')
+              id,
+              name,
+              missingFields: validationSummary.missingFields.join(', '),
+              brokenLinks: validationSummary.brokenLinks.join(', '),
+              validationErrors: validationSummary.validationErrors.join(', ')
             }
           })
     }
@@ -46,4 +47,4 @@ export const getVisibleProducts = createSelector(
 )
 
 // Export selectors for saga
-export { getDataDir, getProducts, getOrderedKeys }
+export { getDataDir, getProducts }
