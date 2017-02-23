@@ -1,5 +1,19 @@
 import React, { Component, PropTypes } from 'react'
-import { Col, Container, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupButton, Nav, Navbar, NavItem, Row } from 'reactstrap'
+import {
+  Col,
+  Container,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Input,
+  InputGroup,
+  InputGroupButton,
+  Nav,
+  Navbar,
+  NavItem,
+  Row
+} from 'reactstrap'
 import fileSystemApi from '../../filesystem-api/filesystem-api'
 import menu from './menu.png'
 import logo from './logo.png'
