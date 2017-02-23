@@ -31,38 +31,35 @@ Once you have selected the right data folder, product, fao and nutrition files a
 __Important: All products are checked for errors (validated) and - if possible - fixed automatically once the data folder was selected. This means that all fields that are required via the linked parent product (linked-id) are pulled in automatically. At the moment there is no way to distinguish between fields that have been pulled from the parent product and fields that were entered manually... This will be fixed soon!__
 
 ## Using the search bar
-You can switch between Products, FAO, Nutrition and Invalid products views by clicking an the corresponding buttons right under the search bar. In each of these views you can type into the search bar and search the data table shown in the view. The search gets reseted once you switch the view.
+You can switch between Products, FAO, Nutrition and Invalid products views by clicking the corresponding buttons in the button group under the search bar. In each of these views you can type into the search bar. The data table shown in the view will then be searched for what you have typed and updated dynamically. The search gets reseted once you switch the view.
+
+## Sorting the table
+The tables in the Products, FAO, Nutrition and Invalid products views can be sorted dynamically according to the values present in each column. To do so, simply click on the column headers.
 
 ## Edit a product
 In the product view (screenshot 2) you can either double click a row or click on the 'Edit' button in the last column to edit a product. This will bring you to the Edit view, which shows all fields of the product:
 
-![screenshot 3]()
+![screenshot 3](./docu/edit-screen.png)
 *screenshot 3*
 
-You can edit all fields except from the id. Input errors - for example typing a letter in the 'Density' field, which expects a number - will be recognized automatically and prevent you from saving the edited product.
+You can edit all fields except from the id. Input errors - for example typing a letter in the 'Density' field, which expects a number - will be recognized automatically and prevent you from saving the edited product. Certain fields (like "Linked to Product (Parent Product)") will provide you with autosuggest values once you start typing. This functionality will be added to more fields in the future.
 
-Certain fields (like "Linked to Product (Parent Product)") will provide you with autosuggest values once you start typing. This functionality will be added to more fields in the future.
-
-When you are done editing and there are no errors, you can save the edited product with the save button on the very bottom of the view.
-
-Saving will overwrite the corresponding .json file in the eaternity-edb-data folder. You can verify this using `git diff` inside of that folder (explain better?).
+When you are done editing and there are no errors, you can save the edited product with the save button on the very bottom of the view. Saving will overwrite the corresponding .json file in the eaternity-edb-data folder. You can verify this using `git diff` inside of that folder (explain better?).
 
 ## Add a new product
-You can add a new product by clicking on the menu symbol on the right in the header bar and chhosong "Add new product"
+You can add a new product by clicking on the menu icon placed on the right in the header/search bar and choosing "Add new product":
 
 ![screenshot 4](./docu/add-new-product.png)
 *screenshot 4*
 
-This will automatically generate a new unique id and bring you to the same edit view as described under 'Edit a product'.
+This will automatically generate a unique id and filename for the new product and bring you to the same edit view as described under 'Edit a product'.
 
 ## Check for invalid products
-Products that failed validation and could not be fixed automatically show up in the invalid product view:
+Products that failed validation and could not be fixed automatically when the app was started show up in the invalid product view:
 
 ![invalid products](./docu/invalid-prods.png)
 
-You can click on the fix product button in the last column to fix the error manually. This will bring you to the exact same edit view as described under 'Edit a product'.
-
-The idea is that this view provides you with a quick and easy way to fix all invalid products.
+You can click on the fix product button in the last column to fix the error manually. This will bring you to the exact same edit view as described under 'Edit a product'. The idea is that this view provides you with a quick and easy way to fix all invalid products.
 
 ---
 # Information for developers
@@ -93,7 +90,7 @@ npm run package-linux # packaging for linux
 npm run package-all # packaging for all platforms
 ```
 
-Packaging for operating systems other than your own requires additional steps. See [here](https://github.com/electron-userland/electron-builder/wiki/Multi-Platform-Build) for more information.
+Packaging for operating systems other than your local OS requires additional steps. See [here](https://github.com/electron-userland/electron-builder/wiki/Multi-Platform-Build) for more information.
 
 ---
 # Copyright and license
