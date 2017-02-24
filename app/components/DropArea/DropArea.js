@@ -6,6 +6,7 @@ import styles from './DropArea.css'
 const DropArea = props => {
   const {
     setDataDir,
+    fetchProductSchema,
     fetchAllProducts,
     fetchAllFAOs,
     fetchAllNutrients
@@ -21,6 +22,7 @@ const DropArea = props => {
     event.preventDefault()
     const dataDir = event.dataTransfer.files[0].path
     setDataDir(dataDir)
+    fetchProductSchema()
     fetchAllProducts()
     fetchAllFAOs()
     fetchAllNutrients()
@@ -30,6 +32,7 @@ const DropArea = props => {
     fileSystemApi.chooseDataDir()
       .then(dataDir => {
         setDataDir(dataDir)
+        fetchProductSchema()
         fetchAllProducts()
         fetchAllFAOs()
         fetchAllNutrients()

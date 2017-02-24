@@ -2,6 +2,7 @@ import * as actionTypes from './action-types'
 
 const initialState = {
   dataDir: '',
+  productSchema: {},
   products: [],
   faos: [],
   nutrients: [],
@@ -15,6 +16,9 @@ const data = (state = initialState, action) => {
 
     case actionTypes.SET_DATA_DIR:
       return {...state, dataDir: action.payload}
+
+    case actionTypes.PRODUCT_SCHEMA_FETCH_SUCCEEDED:
+      return {...state, productSchema: action.payload}
 
     case actionTypes.PRODUCT_FETCH_ALL_SUCCEEDED:
       return {...state, products: action.products}

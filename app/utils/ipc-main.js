@@ -17,12 +17,37 @@ ipcMain.on('choose-data-dir', event => {
   })
 })
 
+// load and send productSchema
+ipcMain.on('fetch-product-schema', (event, dataDir) => {
+  try {
+    const productSchema = jsonfile.readFileSync(`${dataDir}/prod.schema.json`)
+    // keys are needed to reorder properties, see comment below
+    const keys = Object.keys(productSchema.properties)
+
+    // all arguments to event.sender.send will be serialized to json internally!
+    // https://github.com/electron/electron/blob/master/docs/api/ipc-renderer.md
+    // So the order get lost in ipc... Reorder on the other side!!!
+    event.sender.send('product-schema-fetched', productSchema, keys)
+  } catch (err) {
+    event.sender.send(
+      'error-fetching-product-schema',
+      `Error in ipc-main.js: ${err}`
+    )
+  }
+})
+
 // load and send all products
 ipcMain.on('fetch-all-products', (event, dataDir) => {
   try {
-    const productValidator = new ProductValidator()
+    const productSchema = jsonfile.readFileSync(`${dataDir}/prod.schema.json`)
+
+    // pass config object to ProductValidator's constructor
+    const productValidator = new ProductValidator({
+      dataDir,
+      productSchema
+    })
+
     const orderedFixedProducts = productValidator
-      .setDataDir(dataDir)
       .validateAllProducts()
       .fixAllProducts()
       .orderFixedProducts()
@@ -82,10 +107,15 @@ ipcMain.on('fetch-all-faos', (event, dataDir) => {
 // fixed upon save and show up in the invalid product view when invalid
 ipcMain.on('save-all-products', (event, dataDir, products) => {
   try {
-    // validate, fix and save products
-    const productValidator = new ProductValidator()
+    const productSchema = jsonfile.readFileSync(`${dataDir}/prod.schema.json`)
+
+    // pass config object to ProductValidator's constructor
+    const productValidator = new ProductValidator({
+      dataDir,
+      productSchema
+    })
+
     const orderedFixedProducts = productValidator
-      .setDataDir(dataDir)
       .setProducts(products)
       .validateAllProducts()
       .fixAllProducts()
@@ -108,11 +138,15 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
 
 ipcMain.on('save-edited-product', (event, dataDir, editedProduct) => {
   try {
-    // validate, fix and save product
-    const productValidator = new ProductValidator()
+    const productSchema = jsonfile.readFileSync(`${dataDir}/prod.schema.json`)
+
+    // pass config object to ProductValidator's constructor
+    const productValidator = new ProductValidator({
+      dataDir,
+      productSchema
+    })
 
     productValidator
-      .setDataDir(dataDir)
       .setProduct(editedProduct)
       .validateProduct()
       .orderValidatedProduct()

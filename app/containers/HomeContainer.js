@@ -30,6 +30,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
+    fetchProductSchema: dataActions.fetchProductSchema,
     fetchAllProducts: dataActions.fetchAllProducts,
     fetchAllFAOs: dataActions.fetchAllFAOs,
     fetchAllNutrients: dataActions.fetchAllNutrients,

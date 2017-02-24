@@ -1,18 +1,42 @@
 import fs from 'fs'
 import jsonfile from 'jsonfile'
 import jsonschema from 'jsonschema'
-import productSchema from './prod.schema.json'
 
 // set indentation for jsonfile
 jsonfile.spaces = 2
 
 class ProductValidator {
-  constructor () {
-    // this.productSchema = new SimpleSchema(productSchema)
-    this.productSchema = productSchema
+  constructor (config) {
+    this.dataDir = config.dataDir
+    this.productSchema = config.productSchema
+
+    this.prodFilenames = fs.readdirSync(`${this.dataDir}/prods`)
+    this.nutrsFilenames = fs.readdirSync(`${this.dataDir}/nutrs`)
+    this.nutrChangeFilenames = fs.readdirSync(`${this.dataDir}/nutr-change`)
+
+    this.prods = this.prodFilenames
+      .filter(filename => {
+        // http://regexr.com/ is awesome! Thanks Michi!
+        const filenameRegEx = /^\d.+(prod\.json)/g
+        return filenameRegEx.test(filename)
+      })
+      .map(filename => {
+        const product = jsonfile.readFileSync(`${this.dataDir}/prods/${filename}`)
+        return Object.assign(product, {filename})
+      })
+
+    this.nutrs = this.nutrsFilenames.map(filename => {
+      return jsonfile.readFileSync(`${this.dataDir}/nutrs/${filename}`)
+    })
+
+    this.nutrChange = this.nutrChangeFilenames.map(filename => {
+      return jsonfile.readFileSync(`${this.dataDir}/nutr-change/${filename}`)
+    })
+
+    this.faos = jsonfile.readFileSync(`${this.dataDir}/fao-product-list.json`)
 
     this.orderedKeys = [
-      ...Object.keys(productSchema.properties),
+      ...Object.keys(this.productSchema.properties),
       'filename',
       'validationSummary'
     ]
@@ -45,37 +69,6 @@ class ProductValidator {
 
     // concat all fields
     this.allFields = this.mandatoryFields.concat(this.optionalFields)
-  }
-
-  // method to set dataDir
-  setDataDir (dataDir) {
-    this.dataDir = dataDir
-    this.prodFilenames = fs.readdirSync(`${this.dataDir}/prods`)
-    this.nutrsFilenames = fs.readdirSync(`${this.dataDir}/nutrs`)
-    this.nutrChangeFilenames = fs.readdirSync(`${this.dataDir}/nutr-change`)
-
-    this.prods = this.prodFilenames
-      .filter(filename => {
-        // http://regexr.com/ is awesome! Thanks Michi!
-        const filenameRegEx = /^\d.+(prod\.json)/g
-        return filenameRegEx.test(filename)
-      })
-      .map(filename => {
-        const product = jsonfile.readFileSync(`${this.dataDir}/prods/${filename}`)
-        return Object.assign(product, {filename})
-      })
-
-    this.nutrs = this.nutrsFilenames.map(filename => {
-      return jsonfile.readFileSync(`${this.dataDir}/nutrs/${filename}`)
-    })
-
-    this.nutrChange = this.nutrChangeFilenames.map(filename => {
-      return jsonfile.readFileSync(`${this.dataDir}/nutr-change/${filename}`)
-    })
-
-    this.faos = jsonfile.readFileSync(`${this.dataDir}/fao-product-list.json`)
-
-    return this
   }
 
   setProduct (product) {

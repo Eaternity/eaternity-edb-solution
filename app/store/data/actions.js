@@ -7,6 +7,12 @@ export const setDataDir = payload => {
 }
 
 // products
+export const fetchProductSchema = () => {
+  return {
+    type: actions.PRODUCT_SCHEMA_FETCH_REQUESTED
+  }
+}
+
 export const fetchAllProducts = () => {
   return {
     type: actions.PRODUCT_FETCH_ALL_REQUESTED

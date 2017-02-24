@@ -17,7 +17,6 @@ import {
 import fileSystemApi from '../../filesystem-api/filesystem-api'
 import menu from './menu.png'
 import logo from './logo.png'
-// import searchIcon from './search.png'
 import styles from './SearchBar.css'
 
 class SearchBar extends Component {
@@ -73,11 +72,18 @@ class SearchBar extends Component {
   }
 
   handleChooseDir = () => {
-    const { setDataDir, fetchAllProducts, fetchAllFAOs, fetchAllNutrients } =
-      this.props.actions
+    const {
+      setDataDir,
+      fetchProductSchema,
+      fetchAllProducts,
+      fetchAllFAOs,
+      fetchAllNutrients
+    } = this.props.actions
+
     fileSystemApi.chooseDataDir()
       .then(dataDir => {
         setDataDir(dataDir)
+        fetchProductSchema()
         fetchAllProducts()
         fetchAllFAOs()
         fetchAllNutrients()

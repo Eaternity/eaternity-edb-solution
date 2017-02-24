@@ -16,6 +16,26 @@ const fileSystemApi = {
     })
   },
 
+  fetchProductSchema: dataDir => {
+    return new Promise((resolve, reject) => {
+      ipcRenderer.send('fetch-product-schema', dataDir)
+
+      ipcRenderer.on('product-schema-fetched', (_, productSchema, keys) => {
+        const { properties } = productSchema
+        let orderedProperties = {}
+        keys.forEach(key => {
+          orderedProperties[key] = properties[key]
+        })
+        resolve({...productSchema, properties: orderedProperties})
+      })
+
+      ipcRenderer.on('error-fetching-product-schema', (_, error) => {
+        console.error(error)
+        reject(error)
+      })
+    })
+  },
+
   // dataDir is extracted from the state by the fetchAllProducts saga!
   fetchAllProducts: dataDir => {
     return new Promise((resolve, reject) => {

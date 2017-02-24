@@ -9,14 +9,13 @@ const CustomFieldTemplate = props => {
     errors,
     rawErrors,
     id,
-    label,
-    required
+    label
   } = props
   const enhancedclassNames = `${classNames} ${rawErrors ? styles.error : ''}`
 
   return (
     <div className={enhancedclassNames}>
-      <label htmlFor={id}>{label}{required ? '*' : null}</label>
+      <label htmlFor={id}>{label}</label>
       {description}
       {children}
       {errors}

@@ -13,6 +13,20 @@ import {
 import fileSystemApi from '../../filesystem-api/filesystem-api'
 import * as actionTypes from '../data/action-types'
 
+// fires on PRODUCT_SCHEMA_FETCH_REQUESTED
+function * fetchProductSchema () {
+  try {
+    const dataDir = yield select(getDataDir)
+    const productSchema = yield call(fileSystemApi.fetchProductSchema, dataDir)
+    yield put({
+      type: actionTypes.PRODUCT_SCHEMA_FETCH_SUCCEEDED,
+      payload: productSchema
+    })
+  } catch (err) {
+    yield put({type: actionTypes.PRODUCT_SCHEMA_FETCH_FAILED, message: err})
+  }
+}
+
 // fires on PRODUCT_FETCH_ALL_REQUESTED
 function * fetchAllProducts () {
   try {
@@ -75,6 +89,12 @@ function * saveEditedProduct () {
   } catch (err) {
     yield put({type: actionTypes.EDITED_PRODUCT_SAVE_FAILED, message: err})
   }
+}
+
+export function * fetchProductSchemaSaga () {
+  yield takeLatest(
+    actionTypes.PRODUCT_SCHEMA_FETCH_REQUESTED, fetchProductSchema
+  )
 }
 
 export function * fetchProductsSaga () {

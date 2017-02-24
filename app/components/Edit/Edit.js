@@ -17,13 +17,13 @@ import CustomFieldTemplate from './CustomFieldTemlpate'
 import CustomArrayTemplate from './CustomArrayTemplate'
 import SynonymsField from './SynonymsField'
 import EditBar from '../EditBar/EditBar'
-import productSchema from './prod.schema.json'
 import uiSchema from './uiSchema'
 import styles from './Edit.css'
 
 class Edit extends Component {
   static propTypes = {
     dataDir: PropTypes.string.isRequired,
+    productSchema: PropTypes.object.isRequired,
     editedProduct: PropTypes.object.isRequired,
     products: PropTypes.array.isRequired,
     nutrients: PropTypes.array.isRequired,
@@ -58,9 +58,15 @@ class Edit extends Component {
   }
 
   handleBackConfirmClick = () => {
-    this.props.actions.setProductType('old')
-    this.props.actions.clearSearchInput()
-    this.props.actions.changeLocation('/')
+    const {
+      setProductType,
+      clearSearchInput,
+      changeLocation
+    } = this.props.actions
+
+    setProductType('old')
+    clearSearchInput()
+    changeLocation('/')
     this.toggleBackModal()
   }
 
@@ -107,10 +113,19 @@ class Edit extends Component {
   }
 
   render () {
-    const { editedProduct, products, nutrients, faos } = this.props
+    const {
+      actions,
+      productSchema,
+      editedProduct,
+      products,
+      nutrients,
+      faos
+    } = this.props
+
     const fields = {
       synonyms: SynonymsField
     }
+
     // the formContext object is consumed by the Oracle/Autosuggest
     const formContext = {
       allData: {
@@ -123,7 +138,7 @@ class Edit extends Component {
     return (
       <div>
         <EditBar
-          actions={this.props.actions}
+          actions={actions}
           backModalOpen={this.state.backModalOpen}
           toggleBackModal={this.toggleBackModal}
           handleBackConfirmClick={this.handleBackConfirmClick} />
