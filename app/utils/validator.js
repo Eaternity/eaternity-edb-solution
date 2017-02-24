@@ -44,27 +44,30 @@ class ProductValidator {
     this.mandatoryFields = [
       'name',
       'id',
-      'co2-value',
       'nutrition-id',
-      'tags'
+      'tags',
+      'perishability',
+      'co2-value'
     ]
 
     // these optional fields will be oulled from parent if possible
     this.optionalFields = [
       'fao-product-id',
+      'waste-id',
+      'season-begin',
+      'season-end',
+      'processes',
+      'allergenes',
+      'unit-weight',
+      'density',
       'production-names',
       'production-values',
       'conservation-names',
       'conservation-values',
+      'processing-names',
+      'processing-values',
       'packaging-names',
-      'packaging-values',
-      'season-begin',
-      'season-end',
-      'unit-weight',
-      'processes',
-      'allergenes',
-      'density',
-      'alternatives'
+      'packaging-values'
     ]
 
     // concat all fields
