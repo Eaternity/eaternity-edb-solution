@@ -28,7 +28,7 @@ Once you have selected the right data folder, product, fao and nutrition files a
 ![screenshot 2](./docu/prods-loaded.png)
 *screenshot 2*
 
-__Important: All products are checked for errors (validated) and - if possible - fixed automatically once the data folder was selected. This means that all fields that are required via the linked parent product (linked-id) are pulled in automatically. At the moment there is no way to distinguish between fields that have been pulled from the parent product and fields that were entered manually... This will be fixed soon!__
+__Important: All products are checked for errors (validated) and - if possible - fixed automatically once the data folder was selected. This means that all fields that are required via the linked parent product (linked-id) are pulled in automatically. At the moment there is no way to distinguish between fields that have been pulled from the parent product and fields that were entered manually... This will/should be fixed soon!__
 
 ## Using the search bar
 You can switch between Products, FAO, Nutrition and Invalid products views by clicking the corresponding buttons in the button group under the search bar. In each of these views you can type into the search bar. The data table shown in the view will then be searched for what you have typed and updated dynamically. The search gets reseted once you switch the view.
