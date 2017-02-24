@@ -8,14 +8,14 @@ import InvalidTable from '../InvalidTable/InvalidTable'
 import styles from './Home.css'
 
 const Home = props => {
-  const renderTable = (table) => {
+  const renderTable = table => {
     switch (table) {
       case 'products':
         return <ProductTable
           actions={props.actions}
           products={props.products}
-          searchInput={props.searchInput} />
-
+          searchInput={props.searchInput}
+          searchFilter={props.searchFilter} />
       case 'fao':
         return <FaoTable
           actions={props.actions}
@@ -55,12 +55,19 @@ const Home = props => {
 Home.propTypes = {
   products: PropTypes.array.isRequired,
   editedProduct: PropTypes.object.isRequired,
+  productType: PropTypes.string.isRequired,
   dataDir: PropTypes.string.isRequired,
   faos: PropTypes.array.isRequired,
   nutrients: PropTypes.array.isRequired,
   actions: PropTypes.object.isRequired,
-  visibleTable: PropTypes.oneOf(['products', 'fao', 'nutrition', 'invalid']).isRequired,
-  searchInput: PropTypes.string.isRequired
+  visibleTable: PropTypes.oneOf([
+    'products',
+    'fao',
+    'nutrition',
+    'invalid'
+  ]).isRequired,
+  searchInput: PropTypes.string.isRequired,
+  searchFilter: PropTypes.array.isRequired
 }
 
 export default Home

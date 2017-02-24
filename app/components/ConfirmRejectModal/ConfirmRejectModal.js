@@ -1,31 +1,39 @@
-/* @flux */
 import React, { PropTypes } from 'react'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 
-const ConfirmRejectModal = (props: Object) => {
+const ConfirmRejectModal = props => {
+  const {
+    header,
+    body,
+    isOpen,
+    toggle,
+    confirmBtnText,
+    rejectBtnText,
+    onConfirmClick,
+    onRejectClick
+  } = props
   return (
     <Modal
-      isOpen={props.isOpen}
-      toggle={props.toggle} >
-      <ModalHeader
-        toggle={props.toggle}>
-        {props.header}
+      isOpen={isOpen}
+      toggle={toggle} >
+      <ModalHeader>
+        {header}
       </ModalHeader>
       <ModalBody>
-        {props.body}
+        {body}
       </ModalBody>
       <ModalFooter>
         <Button
           color='success'
           outline
-          onClick={() => props.onConfirmClick()}>
-          {props.confirmBtnText}
+          onClick={() => onConfirmClick()}>
+          {confirmBtnText}
         </Button>{' '}
         <Button
           color='warning'
           outline
-          onClick={() => props.onRejectClick()}>
-          {props.rejectBtnText}
+          onClick={() => onRejectClick()}>
+          {rejectBtnText}
         </Button>
       </ModalFooter>
     </Modal>
@@ -40,7 +48,7 @@ ConfirmRejectModal.propTypes = {
   confirmBtnText: PropTypes.string.isRequired,
   rejectBtnText: PropTypes.string.isRequired,
   onConfirmClick: PropTypes.func.isRequired,
-  onRejectClick: PropTypes.func.isRequired,
+  onRejectClick: PropTypes.func.isRequired
 }
 
 export default ConfirmRejectModal

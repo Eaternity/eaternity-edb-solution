@@ -17,39 +17,146 @@ ipcMain.on('choose-data-dir', event => {
   })
 })
 
+// load and send productSchema
+ipcMain.on('fetch-product-schema', (event, dataDir) => {
+  try {
+    const productSchema = jsonfile.readFileSync(`${dataDir}/prod.schema.json`)
+    // keys are needed to reorder properties, see comment below
+    const keys = Object.keys(productSchema.properties)
+
+    // all arguments to event.sender.send will be serialized to json internally!
+    // https://github.com/electron/electron/blob/master/docs/api/ipc-renderer.md
+    // So the order get lost in ipc... Reorder on the other side!!!
+    event.sender.send('product-schema-fetched', productSchema, keys)
+  } catch (err) {
+    event.sender.send(
+      'error-fetching-product-schema',
+      `Error in ipc-main.js: ${err}`
+    )
+  }
+})
+
 // load and send all products
 ipcMain.on('fetch-all-products', (event, dataDir) => {
-  const productValidator = new ProductValidator()
+  try {
+    const productSchema = jsonfile.readFileSync(`${dataDir}/prod.schema.json`)
 
-  const fixedProducts = productValidator
-    .setDataDir(dataDir)
-    .validateAllProducts()
-    .fixAllProducts()
-    .fixedProducts
+    // pass config object to ProductValidator's constructor
+    const productValidator = new ProductValidator({
+      dataDir,
+      productSchema
+    })
 
-  event.sender.send('all-products-fetched', fixedProducts)
+    const orderedFixedProducts = productValidator
+      .validateAllProducts()
+      .fixAllProducts()
+      .orderFixedProducts()
+      .orderedFixedProducts
+
+    // all arguments to event.sender.send will be serialized to json internally!
+    // https://github.com/electron/electron/blob/master/docs/api/ipc-renderer.md
+    // So the order get lost in ipc... Reorder on the other side!!!
+    event.sender.send('all-products-fetched', orderedFixedProducts)
+  } catch (err) {
+    event.sender.send(
+      'error-fetching-prods',
+      `Error in ipc-main.js: ${err}`
+    )
+  }
 })
 
 // load and send all nutrients
 ipcMain.on('fetch-all-nutrients', (event, dataDir) => {
-  const nutrientFileNames = fs.readdirSync(`${dataDir}/nutrs`)
+  try {
+    const nutrientFileNames = fs.readdirSync(`${dataDir}/nutrs`)
     .filter(filename => {
-      // json fiels only...
+      // json files only...
       const extension = path.extname(filename)
       return extension === '.json'
     })
 
-  const allNutrients = nutrientFileNames
+    const allNutrients = nutrientFileNames
     .map(filename => {
       return jsonfile.readFileSync(`${dataDir}/nutrs/${filename}`)
     })
 
-  event.sender.send('all-nutrients-fetched', allNutrients)
+    event.sender.send('all-nutrients-fetched', allNutrients)
+  } catch (err) {
+    event.sender.send(
+      'error-fetching-nutrients',
+      `Error in ipc-main.js: ${err}`
+    )
+  }
 })
 
 // load and send all faos
 ipcMain.on('fetch-all-faos', (event, dataDir) => {
-  const allFAOs = jsonfile.readFileSync(`${dataDir}/fao-product-list.json`)
+  try {
+    const allFAOs = jsonfile.readFileSync(`${dataDir}/fao-product-list.json`)
+    event.sender.send('all-faos-fetched', allFAOs)
+  } catch (err) {
+    event.sender.send(
+      'error-fetching-faos',
+      `Error in ipc-main.js: ${err}`
+    )
+  }
+})
 
-  event.sender.send('all-faos-fetched', allFAOs)
+// HACK: save all products is triggered when a single product was edited or
+// added and saved. This ensures that all new products are validated and/or
+// fixed upon save and show up in the invalid product view when invalid
+ipcMain.on('save-all-products', (event, dataDir, products) => {
+  try {
+    const productSchema = jsonfile.readFileSync(`${dataDir}/prod.schema.json`)
+
+    // pass config object to ProductValidator's constructor
+    const productValidator = new ProductValidator({
+      dataDir,
+      productSchema
+    })
+
+    const orderedFixedProducts = productValidator
+      .setProducts(products)
+      .validateAllProducts()
+      .fixAllProducts()
+      .orderFixedProducts()
+      .saveOrderedFixedProducts()
+      .orderedFixedProducts
+
+    // send fixed products back so they can be put to the redux store.
+    // All arguments to event.sender.send will be serialized to json
+    // internally! So the order get lost in ipc... Reorder on the other
+    // side!!!
+    event.sender.send('all-products-saved', orderedFixedProducts)
+  } catch (err) {
+    event.sender.send(
+      'error-saving-products',
+      `Error in ipc-main.js: ${err}`
+    )
+  }
+})
+
+ipcMain.on('save-edited-product', (event, dataDir, editedProduct) => {
+  try {
+    const productSchema = jsonfile.readFileSync(`${dataDir}/prod.schema.json`)
+
+    // pass config object to ProductValidator's constructor
+    const productValidator = new ProductValidator({
+      dataDir,
+      productSchema
+    })
+
+    productValidator
+      .setProduct(editedProduct)
+      .validateProduct()
+      .orderValidatedProduct()
+      .saveOrderedValidatedProduct()
+
+    event.sender.send('edited-product-saved')
+  } catch (err) {
+    event.sender.send(
+      'error-saving-product',
+      `Error in ipc-main.js: ${err}`
+    )
+  }
 })

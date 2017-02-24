@@ -10,20 +10,23 @@ const InvalidTable = props => {
   }
 
   const renderTableRows = () => {
+    const { products } = props
     return (
-      props.products.map(product => {
+      products.map(prod => {
+        const { id, name, brokenLinks, missingFields, validationErrors } = prod
         return (
-          <Tr key={product.id} >
-            <Td column='Id' data={product.id} />
-            <Td column='Name' data={product.name} />
-            <Td column='Broken Links' data={product.brokenLinks} />
-            <Td column='Missing Fields' data={product.missingFields} />
+          <Tr key={id} >
+            <Td column='Id' data={id} />
+            <Td column='Name' data={name} />
+            <Td column='Broken Links' data={brokenLinks} />
+            <Td column='Missing Fields' data={missingFields} />
+            <Td column='Validation Errors' data={validationErrors} />
             <Td column='Actions'>
               <Button
                 outline
                 color='info'
                 size='sm'
-                onClick={() => handleEditClick(product.id)} >
+                onClick={() => handleEditClick(id)} >
                 Fix product
               </Button>
             </Td>
@@ -34,6 +37,8 @@ const InvalidTable = props => {
   }
 
   const renderView = () => {
+    const { searchInput } = props
+
     if (props.products.length === 0) {
       return (
         <div className='drop-container'>
@@ -45,12 +50,31 @@ const InvalidTable = props => {
     return (
       <Table
         className='table'
-        columns={['Id', 'Name', 'Broken Links', 'Missing Fields', 'Actions']}
+        columns={[
+          'Id',
+          'Name',
+          'Broken Links',
+          'Missing Fields',
+          'Validation Errors',
+          'Actions'
+        ]}
         itemsPerPage={8}
         pageButtonLimit={5}
-        filterable={['Id', 'Name', 'Broken Links', 'Missing Fields']}
-        sortable={['Id', 'Name', 'Broken Links', 'Missing Fields']}
-        filterBy={props.searchInput}
+        filterable={[
+          'Id',
+          'Name',
+          'Broken Links',
+          'Missing Fields',
+          'Validation Errors'
+        ]}
+        sortable={[
+          'Id',
+          'Name',
+          'Broken Links',
+          'Missing Fields',
+          'Validation Errors'
+        ]}
+        filterBy={searchInput}
         hideFilterInput >
         {renderTableRows()}
       </Table>

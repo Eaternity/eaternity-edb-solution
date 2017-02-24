@@ -1,9 +1,22 @@
 import React, { Component, PropTypes } from 'react'
-import { Col, Container, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupAddon, Nav, Navbar, NavItem, Row } from 'reactstrap'
+import {
+  Col,
+  Container,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Input,
+  InputGroup,
+  InputGroupButton,
+  Nav,
+  Navbar,
+  NavItem,
+  Row
+} from 'reactstrap'
 import fileSystemApi from '../../filesystem-api/filesystem-api'
 import menu from './menu.png'
 import logo from './logo.png'
-import searchIcon from './search.png'
 import styles from './SearchBar.css'
 
 class SearchBar extends Component {
@@ -14,19 +27,42 @@ class SearchBar extends Component {
   }
 
   state = {
-    dropdownOpen: false
+    searchDropdownOpen: false,
+    dataDirDropdownOpen: false,
+    searchFor: 'all fields'
   }
 
-  handleChooseDir = () => {
-    fileSystemApi.chooseDataDir()
-      .then(dataDir => {
-        this.props.actions.setDataDir(dataDir)
-      })
-  }
-
-  toggleDropdown = () => {
+  toggleSearchDropdown = () => {
     this.setState({
-      dropdownOpen: !this.state.dropdownOpen
+      searchDropdownOpen: !this.state.searchDropdownOpen
+    })
+  }
+
+  toggleDataDirDropdown = () => {
+    this.setState({
+      dataDirDropdownOpen: !this.state.dataDirDropdownOpen
+    })
+  }
+
+  handleSearchAll = () => {
+    this.props.actions.setSearchFilter([
+      'Id',
+      'Name',
+      'Synonyms',
+      'Tags',
+      'Co2-value'
+    ])
+
+    this.setState({
+      searchFor: 'search all fields'
+    })
+  }
+
+  handleSearchRefs = () => {
+    this.props.actions.setSearchFilter(['Refs'])
+
+    this.setState({
+      searchFor: 'search for references'
     })
   }
 
@@ -35,9 +71,32 @@ class SearchBar extends Component {
     this.props.actions.updateSearchInput(searchInput)
   }
 
-  handlePlusClick = () => {
-    this.props.actions.setEditedProductToNew()
-    this.props.actions.changeLocation(`/edit/${this.props.editedProduct.id}`)
+  handleChooseDir = () => {
+    const {
+      setDataDir,
+      fetchProductSchema,
+      fetchAllProducts,
+      fetchAllFAOs,
+      fetchAllNutrients
+    } = this.props.actions
+
+    fileSystemApi.chooseDataDir()
+      .then(dataDir => {
+        setDataDir(dataDir)
+        fetchProductSchema()
+        fetchAllProducts()
+        fetchAllFAOs()
+        fetchAllNutrients()
+      })
+  }
+
+  handleAddNewProduct = () => {
+    const { setEditedProductToNew, setProductType, changeLocation } =
+      this.props.actions
+
+    setEditedProductToNew()
+    setProductType('new')
+    changeLocation(`/edit/${this.props.editedProduct.id}`)
   }
 
   render () {
@@ -57,12 +116,27 @@ class SearchBar extends Component {
                 <Nav navbar>
                   <NavItem>
                     <InputGroup>
-                      <InputGroupAddon>
-                        <img className={styles.search} src={searchIcon} alt='searchIcon' />
-                      </InputGroupAddon>
+                      <InputGroupButton>
+                        <Dropdown
+                          isOpen={this.state.searchDropdownOpen} toggle={this.toggleSearchDropdown} >
+                          <DropdownToggle caret>
+                            Search for
+                          </DropdownToggle>
+                          <DropdownMenu right>
+                            <DropdownItem
+                              onClick={() => this.handleSearchAll()}>
+                              All fields
+                            </DropdownItem>
+                            <DropdownItem
+                              onClick={() => this.handleSearchRefs()}>
+                              References
+                            </DropdownItem>
+                          </DropdownMenu>
+                        </Dropdown>
+                      </InputGroupButton>
                       <Input
                         onKeyUp={(e) => this.handleKeyUp(e)}
-                        placeholder='search for ...' />
+                        placeholder={this.state.searchFor} />
                     </InputGroup>
                   </NavItem>
                 </Nav>
@@ -71,7 +145,7 @@ class SearchBar extends Component {
                 <Nav navbar>
                   <NavItem>
                     <Dropdown
-                      isOpen={this.state.dropdownOpen} toggle={this.toggleDropdown}>
+                      isOpen={this.state.dataDirDropdownOpen} toggle={this.toggleDataDirDropdown}>
                       <DropdownToggle>
                         <img className={styles.menu} src={menu} alt='menuIcon' />
                       </DropdownToggle>
@@ -81,7 +155,7 @@ class SearchBar extends Component {
                           Choose data directory
                         </DropdownItem>
                         <DropdownItem
-                          onClick={() => this.handlePlusClick()}
+                          onClick={() => this.handleAddNewProduct()}
                           disabled={!this.props.dataDir}>
                           Add new product
                         </DropdownItem>

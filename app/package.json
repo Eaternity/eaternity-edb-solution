@@ -1,6 +1,6 @@
 {
-  "name": "EDB_editor",
-  "version": "1.0.1",
+  "name": "Edb-solution",
+  "version": "0.1.0",
   "description": "Electron application for editing of eaternity database json files. Based on elecron-react-boilerplate.",
   "main": "./main.js",
   "author": {
@@ -8,7 +8,5 @@
     "email": "matthiasmunder@gmail.com",
     "url": "https://github.com/mcmunder"
   },
-  "license": "MIT",
-  "dependencies": {
-  }
+  "license": "MIT"
 }

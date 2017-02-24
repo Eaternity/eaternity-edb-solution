@@ -7,9 +7,27 @@ export const setDataDir = payload => {
 }
 
 // products
+export const fetchProductSchema = () => {
+  return {
+    type: actions.PRODUCT_SCHEMA_FETCH_REQUESTED
+  }
+}
+
 export const fetchAllProducts = () => {
   return {
     type: actions.PRODUCT_FETCH_ALL_REQUESTED
+  }
+}
+
+export const saveAllProducts = () => {
+  return {
+    type: actions.PRODUCT_SAVE_ALL_REQUESTED
+  }
+}
+
+export const saveEditedProduct = () => {
+  return {
+    type: actions.EDITED_PRODUCT_SAVE_REQUESTED
   }
 }
 
@@ -20,11 +38,10 @@ export const selectProduct = id => {
   }
 }
 
-export const updateEditedProduct = (field, value) => {
+export const updateEditedProduct = payload => {
   return {
     type: actions.UPDATE_EDITED_PRODUCT,
-    field,
-    value
+    payload
   }
 }
 
@@ -34,15 +51,16 @@ export const mergeEditedToProducts = () => {
   }
 }
 
-// export const saveProduct = () => {
-//   return {
-//     type: actions.PRODUCT_SAVE_REQUESTED
-//   }
-// }
-
 export const setEditedProductToNew = () => {
   return {
     type: actions.SET_EDITED_PRODUCT_TO_NEW
+  }
+}
+
+export const setProductType = payload => {
+  return {
+    type: actions.SET_PRODUCT_TYPE,
+    payload
   }
 }
 

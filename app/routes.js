@@ -1,7 +1,7 @@
 // @flow
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
-import App from './containers/App'
+import App from './components/App/App'
 import HomeContainer from './containers/HomeContainer'
 import EditContainer from './containers/EditContainer'
 

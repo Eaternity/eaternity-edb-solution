@@ -40,7 +40,10 @@ sagaMiddleware.run(rootSaga)
 
 ReactDOM.render(
   <Provider store={store}>
-    <Router history={history} routes={routes} />
+    <Router
+      onUpdate={() => window.scrollTo(0, 0)}
+      history={history}
+      routes={routes} />
   </Provider>,
   document.getElementById('root')
 )

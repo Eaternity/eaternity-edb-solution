@@ -1,19 +1,48 @@
 import React, { Component, PropTypes } from 'react'
-import { ipcRenderer } from 'electron'
-import { Button, Card, CardBlock, CardTitle, CardSubtitle, Col, Input, Form, FormGroup, Label, Popover, PopoverTitle, PopoverContent } from 'reactstrap'
+import {
+  Button,
+  Card,
+  CardBlock,
+  CardTitle,
+  CardSubtitle,
+  Col,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter
+} from 'reactstrap'
+import Form from 'react-jsonschema-form'
 import ConfirmRejectModal from '../ConfirmRejectModal/ConfirmRejectModal'
+import CustomFieldTemplate from './CustomFieldTemlpate'
+import CustomArrayTemplate from './CustomArrayTemplate'
+import SynonymsField from './SynonymsField'
 import EditBar from '../EditBar/EditBar'
+import uiSchema from './uiSchema'
 import styles from './Edit.css'
 
 class Edit extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      fieldname: '',
-      saveModalOpen: false,
-      backModalOpen: false,
-      popoverOpen: false
-    }
+  static propTypes = {
+    dataDir: PropTypes.string.isRequired,
+    productSchema: PropTypes.object.isRequired,
+    editedProduct: PropTypes.object.isRequired,
+    products: PropTypes.array.isRequired,
+    nutrients: PropTypes.array.isRequired,
+    faos: PropTypes.array.isRequired,
+    actions: PropTypes.object.isRequired
+  }
+
+  state = {
+    saveModalOpen: false,
+    backModalOpen: false,
+    errorModalOpen: false,
+    formData: {},
+    errorMessages: []
+  }
+
+  toggleErrorModal = () => {
+    this.setState({
+      errorModalOpen: !this.state.errorModalOpen
+    })
   }
 
   toggleSaveModal = () => {
@@ -28,194 +57,174 @@ class Edit extends Component {
     })
   }
 
-  togglePopover = () => {
-    this.setState({
-      popoverOpen: !this.state.popoverOpen
-    })
+  handleBackConfirmClick = () => {
+    const {
+      setProductType,
+      clearSearchInput,
+      changeLocation
+    } = this.props.actions
+
+    setProductType('old')
+    clearSearchInput()
+    changeLocation('/')
+    this.toggleBackModal()
   }
 
   handleSaveConfirmClick = () => {
-    this.props.actions.mergeEditedToProducts()
-    ipcRenderer.send(
-      'save-products',
-      this.props.dataDir,
-      this.props.products,
-      this.props.editedProduct
-    )
-    ipcRenderer.on('products-saved', () => this.toggleSaveModal())
+    const {
+      mergeEditedToProducts,
+      saveAllProducts,
+      saveEditedProduct
+    } = this.props.actions
+
+    mergeEditedToProducts()
+    saveAllProducts()
+    saveEditedProduct()
+    this.toggleSaveModal()
   }
 
-  handleBackConfirmClick = () => {
-    this.props.actions.clearSearchInput()
-    this.props.actions.changeLocation('/')
-  }
+  handleError = errors => {
+    const errorMessages = errors
+      .map(error => {
+        return (
+          <p key={error.stack}>
+            {error.stack.split('.')[1]}
+          </p>
+        )
+      })
 
-  handleInputChange (event) {
-    this.props.actions.updateEditedProduct(event.target.id, event.target.value)
-  }
-
-  handleFieldnameInput (event) {
     this.setState({
-      fieldname: event.target.value
+      errorMessages
     })
+
+    this.toggleErrorModal()
   }
 
-  handleCreateFieldClick = () => {
-    const fieldname = this.state.fieldname
-    this.props.actions.updateEditedProduct(fieldname, '')
-    this.togglePopover()
-    this.setState({
-      fieldname: ''
+  handleSubmit = ({formData}) => {
+    const { updateEditedProduct } = this.props.actions
+
+    // the formData object passed to handleSubmit never has any
+    // errors??!! This means invalid values get removed?!
+    updateEditedProduct({
+      editedProduct: formData
     })
-  }
 
-  renderFormGroup = () => {
-    return Object.keys(this.props.editedProduct).map(key => {
-      const renderInputs = () => {
-        switch (key) {
-          case 'filename':
-            return <Input
-              type='text'
-              id={key}
-              readOnly
-              value={this.props.editedProduct[key]} />
-
-          case 'id':
-            return <Input
-              type='text'
-              id={key}
-              readOnly
-              value={this.props.editedProduct[key]} />
-
-          case 'processes':
-            return <Input
-              type='text'
-              id={key}
-              readOnly
-              value={'processes array not editable'} />
-
-          default:
-            return <Input
-              type='text'
-              id={key}
-              onKeyUp={(e) => this.handleInputChange(e)}
-              placeholder={this.props.editedProduct[key]} />
-        }
-      }
-
-      return (
-        <FormGroup key={key} row>
-          <Label
-            for={key}
-            sm={4}>
-            {key}
-          </Label>
-          <Col sm={8}>
-            {renderInputs()}
-          </Col>
-        </FormGroup>
-      )
-    })
-  }
-
-  renderEditView = () => {
-    return (
-      <div className={styles.container}>
-        <Card>
-          <CardBlock>
-            <CardTitle>{this.props.editedProduct.name}</CardTitle>
-            <CardSubtitle>{this.props.editedProduct.filename}</CardSubtitle>
-          </CardBlock>
-          <CardBlock>
-            <Form>
-              {this.renderFormGroup()}
-            </Form>
-          </CardBlock>
-          <CardBlock>
-            <div className={styles.editBtnGroup}>
-              <Col sm={2}>
-                <Button
-                  onClick={() => this.togglePopover()}
-                  outline
-                  id='addField'
-                  color='warning'
-                  block >
-                  Add field
-                </Button>
-                <Popover
-                  placement='top'
-                  isOpen={this.state.popoverOpen}
-                  target='addField'
-                  toggle={this.togglePopover}>
-                  <PopoverTitle>
-                    Enter field name
-                  </PopoverTitle>
-                  <PopoverContent>
-                    <Input
-                      type='text'
-                      onKeyUp={(e) => this.handleFieldnameInput(e)}
-                      placeholder='fieldname' />
-                  </PopoverContent>
-                  <PopoverContent className={styles.popoverBtn}>
-                    <Button
-                      onClick={() => this.handleCreateFieldClick()}
-                      size='sm'
-                      color='success'>
-                      Create field
-                    </Button>
-                  </PopoverContent>
-                </Popover>
-              </Col>
-              <Col sm={3}>
-                <Button
-                  onClick={() => this.toggleSaveModal()}
-                  outline
-                  color='success'>
-                  Save changes
-                </Button>
-                <ConfirmRejectModal
-                  isOpen={this.state.saveModalOpen}
-                  toggle={this.toggleSaveModal}
-                  onConfirmClick={this.handleSaveConfirmClick}
-                  onRejectClick={this.toggleSaveModal}
-                  header='Saving will overwrite file!'
-                  body={`Clicking save will overwrite ${this.props.editedProduct.filename}! Are you sure?`}
-                  confirmBtnText='Save!'
-                  rejectBtnText='Cancel'
-                  />
-              </Col>
-            </div>
-          </CardBlock>
-        </Card>
-      </div>
-    )
+    this.toggleSaveModal()
   }
 
   render () {
+    const {
+      actions,
+      productSchema,
+      editedProduct,
+      products,
+      nutrients,
+      faos
+    } = this.props
+
+    const fields = {
+      synonyms: SynonymsField
+    }
+
+    // the formContext object is consumed by the Oracle/Autosuggest
+    const formContext = {
+      allData: {
+        products,
+        nutrients,
+        faos
+      }
+    }
+
     return (
       <div>
         <EditBar
-          actions={this.props.actions}
-          filename={this.props.editedProduct.filename}
-          saveModalOpen={this.state.saveModalOpen}
+          actions={actions}
           backModalOpen={this.state.backModalOpen}
-          toggleSaveModal={this.toggleSaveModal}
           toggleBackModal={this.toggleBackModal}
-          handleSaveConfirmClick={this.handleSaveConfirmClick}
-          handleBackConfirmClick={this.handleBackConfirmClick}
-          handleSaveRejectClick={this.toggleSaveModal}
-          handleBackRejectClick={this.toggleBackModal} />
-        {this.renderEditView()}
+          handleBackConfirmClick={this.handleBackConfirmClick} />
+        <div className={styles.container}>
+          <Card>
+            <CardBlock>
+              <CardTitle>{editedProduct.name}</CardTitle>
+              <CardSubtitle>{editedProduct.filename}</CardSubtitle>
+            </CardBlock>
+            <CardBlock>
+              <Form
+                schema={productSchema}
+                uiSchema={uiSchema}
+                formData={editedProduct}
+                formContext={formContext}
+                FieldTemplate={CustomFieldTemplate}
+                ArrayFieldTemplate={CustomArrayTemplate}
+                showErrorList={false}
+                liveValidate
+                onError={this.handleError}
+                onSubmit={this.handleSubmit}
+                fields={fields} >
+                <p>* required field </p>
+                <CardBlock>
+                  <div className={styles.editBtnGroup}>
+                    <Col xs={{ size: 'auto', offset: 8 }}>
+                      <Button
+                        type='button'
+                        outline
+                        color='warning'
+                        onClick={this.toggleBackModal}>
+                        Back
+                      </Button>
+                      <ConfirmRejectModal
+                        isOpen={this.state.backModalOpen}
+                        toggle={this.toggleBackModal}
+                        onConfirmClick={this.handleBackConfirmClick}
+                        onRejectClick={this.toggleBackModal}
+                        header='Did you save your changes?'
+                        body={'Changes will be lost when you go back to the table view without saving!'}
+                        confirmBtnText='Back to table view'
+                        rejectBtnText='Cancel' />{' '}
+                      <Button
+                        type='submit'
+                        outline
+                        color='success'>
+                        Save changes
+                      </Button>
+                      <Modal
+                        isOpen={this.state.errorModalOpen}
+                        toggle={this.toggleErrorModal} >
+                        <ModalHeader
+                          toggle={this.toggleErrorModal} >
+                          {'Cannot save product. Form contains errors:'}
+                        </ModalHeader>
+                        <ModalBody
+                          className={styles.errorModalText} >
+                          {this.state.errorMessages}
+                        </ModalBody>
+                        <ModalFooter>
+                          <Button
+                            color='success'
+                            onClick={this.toggleErrorModal} >
+                            Fix Errors
+                          </Button>
+                        </ModalFooter>
+                      </Modal>
+                      <ConfirmRejectModal
+                        isOpen={this.state.saveModalOpen}
+                        toggle={this.toggleSaveModal}
+                        onConfirmClick={this.handleSaveConfirmClick}
+                        onRejectClick={this.toggleSaveModal}
+                        header='Saving will overwrite file!'
+                        body={`Clicking save will overwrite ${editedProduct.filename}! Are you sure?`}
+                        confirmBtnText='Save!'
+                        rejectBtnText='Cancel' />
+                    </Col>
+                  </div>
+                </CardBlock>
+              </Form>
+            </CardBlock>
+          </Card>
+        </div>
       </div>
     )
   }
-}
-
-Edit.propTypes = {
-  dataDir: PropTypes.string.isRequired,
-  products: PropTypes.array.isRequired,
-  editedProduct: PropTypes.object.isRequired,
-  actions: PropTypes.object.isRequired
 }
 
 export default Edit

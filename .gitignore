@@ -1,6 +1,8 @@
 # Logs
 logs
 *.log
+yarn-error.log
+yarn.lock
 
 # Runtime data
 pids
@@ -40,3 +42,8 @@ app/style.css.map
 dist
 main.js
 main.js.map
+
+.idea/*
+!.idea/runConfigurations/
+!.idea/runConfigurations/*
+#commented, because we can share run-configurations via that folder (if you tick "share" in a run-configuration it is stored as xml in the .idea folder)

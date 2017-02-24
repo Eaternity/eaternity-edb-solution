@@ -5,6 +5,8 @@ import logo from './logo.png'
 import styles from './EditBar.css'
 
 const EditBar = props => {
+  const { backModalOpen, toggleBackModal, handleBackConfirmClick } = props
+
   return (
     <Navbar color='faded' light>
       <NavbarBrand>
@@ -14,32 +16,17 @@ const EditBar = props => {
         <Button
           outline
           color='warning'
-          onClick={() => props.toggleBackModal()}>
+          onClick={toggleBackModal}>
           Back
         </Button>
         <ConfirmRejectModal
-          isOpen={props.backModalOpen}
-          toggle={props.toggleBackModal}
-          onConfirmClick={props.handleBackConfirmClick}
-          onRejectClick={props.handleBackRejectClick}
+          isOpen={backModalOpen}
+          toggle={toggleBackModal}
+          onConfirmClick={handleBackConfirmClick}
+          onRejectClick={toggleBackModal}
           header='Did you save your changes?'
           body={'Changes will be lost when you go back to the table view without saving!'}
           confirmBtnText='Back to table view'
-          rejectBtnText='Cancel' />{' '}
-        <Button
-          outline
-          color='success'
-          onClick={() => props.toggleSaveModal()}>
-          Save
-        </Button>
-        <ConfirmRejectModal
-          isOpen={props.saveModalOpen}
-          toggle={props.toggleSaveModal}
-          onConfirmClick={props.handleSaveConfirmClick}
-          onRejectClick={props.handleSaveRejectClick}
-          header='Warning'
-          body={`Clicking save will overwrite ${props.filename}! Are you sure?`}
-          confirmBtnText='Save'
           rejectBtnText='Cancel' />
       </Nav>
     </Navbar>
@@ -47,15 +34,9 @@ const EditBar = props => {
 }
 
 EditBar.propTypes = {
-  saveModalOpen: PropTypes.bool.isRequired,
   backModalOpen: PropTypes.bool.isRequired,
-  toggleSaveModal: PropTypes.func.isRequired,
   toggleBackModal: PropTypes.func.isRequired,
-  handleSaveConfirmClick: PropTypes.func.isRequired,
-  handleSaveRejectClick: PropTypes.func.isRequired,
-  handleBackConfirmClick: PropTypes.func.isRequired,
-  handleBackRejectClick: PropTypes.func.isRequired,
-  filename: PropTypes.string
+  handleBackConfirmClick: PropTypes.func.isRequired
 }
 
 export default EditBar
