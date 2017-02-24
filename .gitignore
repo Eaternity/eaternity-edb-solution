@@ -1,6 +1,7 @@
 # Logs
 logs
 *.log
+yarn-error.log
 yarn.lock
 
 # Runtime data
