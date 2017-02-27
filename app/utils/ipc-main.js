@@ -51,6 +51,7 @@ ipcMain.on('fetch-all-products', (event, dataDir) => {
       .validateAllProducts()
       .fixAllProducts()
       .orderFixedProducts()
+      .saveOrderedFixedProducts()
       .orderedFixedProducts
 
     // all arguments to event.sender.send will be serialized to json internally!

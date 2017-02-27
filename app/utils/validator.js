@@ -11,18 +11,18 @@ class ProductValidator {
     this.productSchema = config.productSchema
 
     this.prodFilenames = fs.readdirSync(`${this.dataDir}/prods`)
-    this.nutrsFilenames = fs.readdirSync(`${this.dataDir}/nutrs`)
-    this.nutrChangeFilenames = fs.readdirSync(`${this.dataDir}/nutr-change`)
-
-    this.prods = this.prodFilenames
       .filter(filename => {
         // http://regexr.com/ is awesome! Thanks Michi!
         const filenameRegEx = /^\d.+(prod\.json)/g
         return filenameRegEx.test(filename)
       })
+    this.nutrsFilenames = fs.readdirSync(`${this.dataDir}/nutrs`)
+    this.nutrChangeFilenames = fs.readdirSync(`${this.dataDir}/nutr-change`)
+
+    this.prods = this.prodFilenames
       .map(filename => {
         const product = jsonfile.readFileSync(`${this.dataDir}/prods/${filename}`)
-        return Object.assign(product, {filename})
+        return Object.assign({}, product, {filename})
       })
 
     this.nutrs = this.nutrsFilenames.map(filename => {
@@ -94,7 +94,7 @@ class ProductValidator {
             return {[key]: process[key]}
           })
           .reduce((process, nutrChangeId) => {
-            return Object.assign(process, nutrChangeId)
+            return Object.assign({}, process, nutrChangeId)
           })
 
           return orderedProcess
@@ -156,7 +156,7 @@ class ProductValidator {
     return this
   }
 
-  saveOrderedFixedProducts () {
+  saveOrderedFixedProducts (dataDir = this.dataDir) {
     // remove filename and validation Summary from products getting saved to
     // prods.all.json
     // const cleanProducts = this.orderedFixedProducts
@@ -175,7 +175,7 @@ class ProductValidator {
 
     // write all products to a single file
     jsonfile.writeFileSync(
-      `${this.dataDir}/prods.all.json`,
+      `${dataDir}/prods.all.json`,
       this.orderedFixedProducts
     )
 
@@ -216,8 +216,6 @@ class ProductValidator {
 
   // method to validate a product
   validateProduct (product = this.product) {
-    this.setProduct(product)
-
     // define a validationResult
     let validationSummary = {
       parentProduct: '',
@@ -239,18 +237,24 @@ class ProductValidator {
     const hasValidationErrors = validationErrors.length > 0
 
     if (hasValidationErrors) {
-      validationSummary = Object.assign(validationSummary, {validationErrors})
+      validationSummary = Object.assign({},
+        validationSummary,
+        {validationErrors}
+      )
     }
 
     const missingFields = this.allFields.filter(field => {
-      return !this.product.hasOwnProperty(field)
+      return !product.hasOwnProperty(field)
     })
 
-    const isLinked = this.product.hasOwnProperty('linked-id')
+    const isLinked = product.hasOwnProperty('linked-id')
     const fieldsMissing = missingFields.length > 0
 
     if (fieldsMissing) {
-      validationSummary = Object.assign(validationSummary, {missingFields})
+      validationSummary = Object.assign({},
+        validationSummary,
+        {missingFields}
+      )
     }
 
     if (isLinked) {
@@ -258,13 +262,15 @@ class ProductValidator {
         return filename.split('-')[0] === product['linked-id']
       })
 
-      validationSummary = Object.assign(validationSummary, {
-        parentProduct: parentName[0]
-      })
+      validationSummary = Object.assign({},
+        validationSummary,
+        {parentProduct: parentName[0]}
+      )
     }
 
     // does a nutrient-id field exist? Is there a corresponding file?
-    const hasNutritionId = this.product.hasOwnProperty('nutrition-id')
+
+    const hasNutritionId = product.hasOwnProperty('nutrition-id')
 
     if (hasNutritionId) {
       const nutritionId = product['nutrition-id']
@@ -273,24 +279,26 @@ class ProductValidator {
       })
 
       if (linkedNutritionIdExists) {
-        validationSummary = Object.assign(validationSummary, {
-          hasNutritionId,
-          linkedNutritionIdExists
-        })
+        validationSummary = Object.assign({},
+          validationSummary,
+          {hasNutritionId, linkedNutritionIdExists}
+        )
       } else {
-        validationSummary = Object.assign(validationSummary, {
-          hasNutritionId
-        })
+        validationSummary = Object.assign({},
+          validationSummary,
+          {hasNutritionId}
+        )
       }
     }
 
     // does processes field exist and does it contain nutr-change-id field(s)?
     // For each id, is there a nutr-change file with this id?
-    const hasNutritionChangeId = this.product.hasOwnProperty('processes') &&
-      this.product.processes[0].hasOwnProperty('nutr-change-id')
+
+    const hasNutritionChangeId = product.hasOwnProperty('processes') &&
+      product.processes[0].hasOwnProperty('nutr-change-id')
 
     if (hasNutritionChangeId) {
-      const processes = this.product.processes
+      const processes = product.processes
       const allNutritionChangeIds = processes.map(processesObj => {
         return processesObj['nutr-change-id']
       })
@@ -303,18 +311,22 @@ class ProductValidator {
           })
 
       if (linkedNutritionChangeIdsExist) {
-        validationSummary = Object.assign(validationSummary, {
-          hasNutritionChangeId,
-          linkedNutritionChangeIdsExist
-        })
+        validationSummary = Object.assign({},
+          validationSummary,
+          {hasNutritionChangeId, linkedNutritionChangeIdsExist}
+        )
       } else {
-        validationSummary = Object.assign(validationSummary, {
-          hasNutritionChangeId
-        })
+        validationSummary = Object.assign({},
+          validationSummary,
+          {hasNutritionChangeId}
+        )
       }
     }
 
-    const validatedProduct = Object.assign(this.product, {validationSummary})
+    const validatedProduct = Object.assign({},
+      product,
+      {validationSummary}
+    )
 
     this.validatedProduct = validatedProduct
 
@@ -386,8 +398,6 @@ class ProductValidator {
       return this.mandatoryFields.includes(field)
     })
 
-    // Array.some() resolves to true if the callback returns true for any
-    // of the arrays elements...
     const hasUnresolvableMandatoryFields = unresolvableMandatoryFields
       .length > 0
 
@@ -423,9 +433,12 @@ class ProductValidator {
       validationErrors
     })
 
-    this.fixedProduct = Object.assign(validatedProduct, ...resolvedFields, {
-      validationSummary
-    })
+    // deep clone the validatedProduct!
+    this.fixedProduct = Object.assign({},
+      validatedProduct,
+      ...resolvedFields,
+      {validationSummary}
+    )
 
     return this
   }
