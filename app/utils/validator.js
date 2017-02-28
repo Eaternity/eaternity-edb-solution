@@ -84,6 +84,17 @@ class ProductValidator {
     return this
   }
 
+  // reset product validation
+  resetProduct (product = this.product) {
+    const resetedProduct = Object.assign({}, product)
+
+    delete resetedProduct.validationSummary
+
+    this.product = resetedProduct
+
+    return this
+  }
+
   orderProduct (product = this.product) {
     const orderProcesses = processes => {
       const keys = ['process', 'nutr-change-id']

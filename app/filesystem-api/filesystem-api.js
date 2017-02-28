@@ -10,7 +10,7 @@ const fileSystemApi = {
     return new Promise(resolve => {
       ipcRenderer.send('choose-data-dir')
 
-      ipcRenderer.on('data-dir-choosen', (_, choosenDir) => {
+      ipcRenderer.once('data-dir-choosen', (_, choosenDir) => {
         if (choosenDir) resolve(choosenDir)
       })
     })
@@ -20,7 +20,8 @@ const fileSystemApi = {
     return new Promise((resolve, reject) => {
       ipcRenderer.send('fetch-product-schema', dataDir)
 
-      ipcRenderer.on('product-schema-fetched', (_, productSchema, keys) => {
+      ipcRenderer.once('product-schema-fetched', (_, productSchema, keys) => {
+        ipcRenderer.removeAllListeners('error-fetching-product-schema')
         const { properties } = productSchema
         let orderedProperties = {}
         keys.forEach(key => {
@@ -29,7 +30,8 @@ const fileSystemApi = {
         resolve({...productSchema, properties: orderedProperties})
       })
 
-      ipcRenderer.on('error-fetching-product-schema', (_, error) => {
+      ipcRenderer.once('error-fetching-product-schema', (_, error) => {
+        ipcRenderer.removeAllListeners('product-schema-fetched')
         console.error(error)
         reject(error)
       })
@@ -41,11 +43,13 @@ const fileSystemApi = {
     return new Promise((resolve, reject) => {
       ipcRenderer.send('fetch-all-products', dataDir)
 
-      ipcRenderer.on('all-products-fetched', (_, products) => {
+      ipcRenderer.once('all-products-fetched', (_, products) => {
+        ipcRenderer.removeAllListeners('error-fetching-prods')
         resolve(products)
       })
 
-      ipcRenderer.on('error-fetching-prods', (_, error) => {
+      ipcRenderer.once('error-fetching-prods', (_, error) => {
+        ipcRenderer.removeAllListeners('all-products-fetched')
         console.error(error)
         reject(error)
       })
@@ -57,11 +61,13 @@ const fileSystemApi = {
     return new Promise((resolve, reject) => {
       ipcRenderer.send('fetch-all-faos', dataDir)
 
-      ipcRenderer.on('all-faos-fetched', (_, faos) => {
+      ipcRenderer.once('all-faos-fetched', (_, faos) => {
+        ipcRenderer.removeAllListeners('error-fetching-faos')
         resolve(faos)
       })
 
-      ipcRenderer.on('error-fetching-faos', (_, error) => {
+      ipcRenderer.once('error-fetching-faos', (_, error) => {
+        ipcRenderer.removeAllListeners('all-faos-fetched')
         console.error(error)
         reject(error)
       })
@@ -73,11 +79,13 @@ const fileSystemApi = {
     return new Promise((resolve, reject) => {
       ipcRenderer.send('fetch-all-nutrients', dataDir)
 
-      ipcRenderer.on('all-nutrients-fetched', (_, nutrients) => {
+      ipcRenderer.once('all-nutrients-fetched', (_, nutrients) => {
+        ipcRenderer.removeAllListeners('error-fetching-nutrients')
         resolve(nutrients)
       })
 
-      ipcRenderer.on('error-fetching-nutrients', (_, error) => {
+      ipcRenderer.once('error-fetching-nutrients', (_, error) => {
+        ipcRenderer.removeAllListeners('all-nutrients-fetched')
         console.error(error)
         reject(error)
       })
@@ -92,11 +100,13 @@ const fileSystemApi = {
     return new Promise((resolve, reject) => {
       ipcRenderer.send('save-all-products', dataDir, products)
 
-      ipcRenderer.on('all-products-saved', (_, products) => {
+      ipcRenderer.once('all-products-saved', (_, products) => {
+        ipcRenderer.removeAllListeners('error-saving-products')
         resolve(products)
       })
 
-      ipcRenderer.on('error-saving-products', (_, error) => {
+      ipcRenderer.once('error-saving-products', (_, error) => {
+        ipcRenderer.removeAllListeners('all-products-saved')
         console.error(error)
         reject(error)
       })
@@ -110,11 +120,13 @@ const fileSystemApi = {
     return new Promise((resolve, reject) => {
       ipcRenderer.send('save-edited-product', dataDir, editedProduct)
 
-      ipcRenderer.on('edited-product-saved', () => {
+      ipcRenderer.once('edited-product-saved', () => {
+        ipcRenderer.removeAllListeners('error-saving-product')
         resolve()
       })
 
-      ipcRenderer.on('error-saving-product', (_, error) => {
+      ipcRenderer.once('error-saving-product', (_, error) => {
+        ipcRenderer.removeAllListeners('edited-product-saved')
         console.error(error)
         reject(error)
       })

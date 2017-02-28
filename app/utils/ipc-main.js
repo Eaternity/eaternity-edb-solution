@@ -31,7 +31,7 @@ ipcMain.on('fetch-product-schema', (event, dataDir) => {
   } catch (err) {
     event.sender.send(
       'error-fetching-product-schema',
-      `Error in ipc-main.js: ${err}`
+      `Error: ${err}`
     )
   }
 })
@@ -61,7 +61,7 @@ ipcMain.on('fetch-all-products', (event, dataDir) => {
   } catch (err) {
     event.sender.send(
       'error-fetching-prods',
-      `Error in ipc-main.js: ${err}`
+      `Error: ${err}`
     )
   }
 })
@@ -85,7 +85,7 @@ ipcMain.on('fetch-all-nutrients', (event, dataDir) => {
   } catch (err) {
     event.sender.send(
       'error-fetching-nutrients',
-      `Error in ipc-main.js: ${err}`
+      `Error: ${err}`
     )
   }
 })
@@ -98,7 +98,7 @@ ipcMain.on('fetch-all-faos', (event, dataDir) => {
   } catch (err) {
     event.sender.send(
       'error-fetching-faos',
-      `Error in ipc-main.js: ${err}`
+      `Error: ${err}`
     )
   }
 })
@@ -132,7 +132,7 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
   } catch (err) {
     event.sender.send(
       'error-saving-products',
-      `Error in ipc-main.js: ${err}`
+      `Error: ${err}`
     )
   }
 })
@@ -157,7 +157,7 @@ ipcMain.on('save-edited-product', (event, dataDir, editedProduct) => {
   } catch (err) {
     event.sender.send(
       'error-saving-product',
-      `Error in ipc-main.js: ${err}`
+      `Error: ${err}`
     )
   }
 })
