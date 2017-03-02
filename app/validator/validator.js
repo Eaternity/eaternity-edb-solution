@@ -6,34 +6,10 @@ import jsonschema from 'jsonschema'
 jsonfile.spaces = 2
 
 class ProductValidator {
-  constructor (config) {
-    this.dataDir = config.dataDir
-    this.productSchema = config.productSchema
+  constructor (dataDir) {
+    this.dataDir = dataDir
 
-    this.prodFilenames = fs.readdirSync(`${this.dataDir}/prods`)
-      .filter(filename => {
-        // http://regexr.com/ is awesome! Thanks Michi!
-        const filenameRegEx = /^\d.+(prod\.json)/g
-        return filenameRegEx.test(filename)
-      })
-    this.nutrsFilenames = fs.readdirSync(`${this.dataDir}/nutrs`)
-    this.nutrChangeFilenames = fs.readdirSync(`${this.dataDir}/nutr-change`)
-
-    this.prods = this.prodFilenames
-      .map(filename => {
-        const product = jsonfile.readFileSync(`${this.dataDir}/prods/${filename}`)
-        return Object.assign({}, product, {filename})
-      })
-
-    this.nutrs = this.nutrsFilenames.map(filename => {
-      return jsonfile.readFileSync(`${this.dataDir}/nutrs/${filename}`)
-    })
-
-    this.nutrChange = this.nutrChangeFilenames.map(filename => {
-      return jsonfile.readFileSync(`${this.dataDir}/nutr-change/${filename}`)
-    })
-
-    this.faos = jsonfile.readFileSync(`${this.dataDir}/fao-product-list.json`)
+    this.productSchema = jsonfile.readFileSync(`${dataDir}/prod.schema.json`)
 
     this.orderedKeys = [
       ...Object.keys(this.productSchema.properties),
@@ -50,7 +26,7 @@ class ProductValidator {
       'co2-value'
     ]
 
-    // these optional fields will be oulled from parent if possible
+    // these optional fields will be pulled from parent if possible
     this.optionalFields = [
       'fao-product-id',
       'waste-id',
@@ -72,6 +48,37 @@ class ProductValidator {
 
     // concat all fields
     this.allFields = this.mandatoryFields.concat(this.optionalFields)
+  }
+
+  loadAll (dataDir = this.dataDir) {
+    this.prodFilenames = fs.readdirSync(`${dataDir}/prods`)
+      .filter(filename => {
+        // http://regexr.com/ is awesome! Thanks Michi!
+        const filenameRegEx = /^\d.+(prod\.json)/g
+        return filenameRegEx.test(filename)
+      })
+
+    this.nutrsFilenames = fs.readdirSync(`${dataDir}/nutrs`)
+
+    this.nutrChangeFilenames = fs.readdirSync(`${dataDir}/nutr-change`)
+
+    this.prods = this.prodFilenames
+      .map(filename => {
+        const product = jsonfile.readFileSync(`${dataDir}/prods/${filename}`)
+        return Object.assign({}, product, {filename})
+      })
+
+    this.nutrs = this.nutrsFilenames.map(filename => {
+      return jsonfile.readFileSync(`${dataDir}/nutrs/${filename}`)
+    })
+
+    this.nutrChange = this.nutrChangeFilenames.map(filename => {
+      return jsonfile.readFileSync(`${dataDir}/nutr-change/${filename}`)
+    })
+
+    this.faos = jsonfile.readFileSync(`${dataDir}/fao-product-list.json`)
+
+    return this
   }
 
   setProduct (product) {
@@ -150,19 +157,20 @@ class ProductValidator {
     return this
   }
 
+  saveProduct (product = this.product) {
+    const filename = product.filename
+
+    delete product.filename
+    delete product.validationSummary
+
+    jsonfile.writeFileSync(`${this.dataDir}/prods/${filename}`, product)
+  }
+
   saveOrderedValidatedProducts () {
     this.orderedValidatedProducts
       // make a copy before deleting fields!
       .map(product => Object.assign({}, product))
-      .forEach(product => {
-        const filename = product.filename
-
-        delete product.filename
-        delete product.validationSummary
-
-      // write all files separately and overwrite original products
-        jsonfile.writeFileSync(`${this.dataDir}/prods/${filename}`, product)
-      })
+      .forEach(product => this.saveProduct(product))
 
     return this
   }
@@ -242,7 +250,7 @@ class ProductValidator {
     //  implemented!
     const validationErrors = jsonschema
       .validate(product, this.productSchema).errors.map(error => {
-        return error.stack.split('.')[1]
+        return error.stack
       })
 
     const hasValidationErrors = validationErrors.length > 0
@@ -301,6 +309,9 @@ class ProductValidator {
         )
       }
     }
+
+    // does processes field exist and does it contain nutr-change-id field(s)?
+    // For each id, is there a nutr-change file with this id?
 
     const hasNutritionChangeId = product.hasOwnProperty('processes') &&
       product.processes.length > 0 &&

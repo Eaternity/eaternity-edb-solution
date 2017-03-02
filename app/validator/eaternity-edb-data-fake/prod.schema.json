@@ -1,0 +1,211 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "title": "ID**",
+      "type": "integer"
+    },
+    "name": {
+      "title": "Name**",
+      "type": "string"
+    },
+    "specification": {
+      "title": "Specification",
+      "description": "Specifies the name. Is displayed in round brackets, e.g. \"Rind (gehacktes)\"",
+      "type": "string"
+    },
+    "synonyms": {
+      "title": "Synonyms",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "name-english": {
+      "title": "English name",
+      "type": "string"
+    },
+    "name-french": {
+      "title": "French name",
+      "type": "string"
+    },
+    "tags": {
+      "title": "Tags*",
+      "description": "Comma separated",
+      "type": "string"
+    },
+    "linked-id": {
+      "title": "Linked to product (parent product)",
+      "description": "Specific fields which are not filled are inherited from this linked product",
+      "type": "string"
+    },
+    "nutrition-id": {
+      "title": "Nutrition data link*",
+      "type": "string"
+    },
+    "fao-product-id": {
+      "title": "FAO product link*",
+      "type": "string"
+    },
+    "waste-id": {
+      "title": "Foodwaste link*",
+      "type": "string"
+    },
+    "perishability": {
+      "title": "Perishability*",
+      "type": "string"
+    },
+    "season-begin": {
+      "title": "Start of local season*",
+      "type": "string"
+    },
+    "season-end": {
+      "title": "End of local season*",
+      "type": "string"
+    },
+    "processes": {
+      "title": "Processes*",
+      "description": "For the moment only for nutrition processes",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "process": {
+            "type": "string"
+          },
+          "nutr-change-id": {
+            "type": "integer"
+          }
+        }
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "allergenes": {
+      "title": "Allergenes*",
+      "description": "Comma sepearted list of the allergenes this product contains (gluten, crustaceans, eggs, fish, peanuts, soy, milk, nuts, celery, mustard, sesame, sulphur, lupin, molluscs)",
+      "type": "string"
+    },
+    "unit-weight": {
+      "title": "Unit weight [g/piece]*",
+      "type": "number"
+    },
+    "density": {
+      "title": "Density [g/ml]*",
+      "type": "number"
+    },
+    "quantity-comments": {
+      "title": "Comments of density & unit weight",
+      "type": "string"
+    },
+    "quantity-references": {
+      "title": "References of density & unit weight",
+      "type": "string"
+    },
+    "alternatives": {
+      "title": "Alternatives",
+      "description": "Comma-separated list of other product id's",
+      "type": "string"
+    },
+    "co2-value": {
+      "title": "CO2-value [kg CO2-äq/kg]*",
+      "type": "number"
+    },
+    "co2-calculation": {
+      "title": "Co2 calculation path for basic CO2-value",
+      "type": "string"
+    },
+    "calculation-process-documentation": {
+      "title": "Calculation process documentation",
+      "description": "Description of data used for CO2-calculation and important product traits",
+      "type": "string"
+    },
+    "references": {
+      "title": "CO2-references (base value)",
+      "type": "string"
+    },
+    "production-names": {
+      "title": "Production methods*",
+      "description": "Comma-separated list of production methods",
+      "type": "string"
+    },
+    "production-values": {
+      "title": "Production method parameters*",
+      "description": "Comma-separated list of production values. Use S as placeholder for standard value.",
+      "type": "string"
+    },
+    "conservation-names": {
+      "title": "Conservation methods*",
+      "description": "Comma-separated list of conservation methods.",
+      "type": "string"
+    },
+    "conservation-values": {
+      "title": "Conservation method parameters*",
+      "description": "Comma-separated list of conservation values. Use S as placeholder for standard value.",
+      "type": "string"
+    },
+    "processing-names": {
+      "title": "Processing methods*",
+      "description": "Comma-separated list of processing methods.",
+      "type": "string"
+    },
+    "processing-values": {
+      "title": "Processing method parameters*",
+      "description": "Comma-separated list of processing values. Use S as placeholder for standard value.",
+      "type": "string"
+    },
+    "packaging-names": {
+      "title": "Packaging methods*",
+      "description": "Comma-separated list of packaging methods",
+      "type": "string"
+    },
+    "packaging-values": {
+      "title": "Packaging method parameters*",
+      "description": "Comma-separated list of packaging values. Use S as placeholder for standard value.",
+      "type": "string"
+    },
+    "references-parameters": {
+      "title": "References for CO2 processes",
+      "type": "string"
+    },
+    "co2-calculation-parameters": {
+      "title": "CO2 calculation path for CO2 other than base value",
+      "type": "string"
+    },
+    "info-text": {
+      "title": "Info text for cook",
+      "description": "This information about a product will be displayed for a consumer / cook, like interesting facts about the CO2 value. Not implemented yet.",
+      "type": "string"
+    },
+    "other-references": {
+      "title": "Other references",
+      "type": "string"
+    },
+    "comments": {
+      "title": "Comments",
+      "type": "string"
+    },
+    "data-quality": {
+      "title": "Data quality estimation",
+      "type": "string"
+    },
+    "author": {
+      "title": "Last analyst initials",
+      "type": "string"
+    },
+    "delete": {
+      "title": "To delete",
+      "type": "boolean"
+    },
+    "combined-product": {
+      "title": "Is a combined product",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "name"
+  ]
+}
