@@ -302,10 +302,8 @@ class ProductValidator {
       }
     }
 
-    // does processes field exist and does it contain nutr-change-id field(s)?
-    // For each id, is there a nutr-change file with this id?
-
     const hasNutritionChangeId = product.hasOwnProperty('processes') &&
+      product.processes.length > 0 &&
       product.processes[0].hasOwnProperty('nutr-change-id')
 
     if (hasNutritionChangeId) {
