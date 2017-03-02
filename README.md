@@ -1,5 +1,5 @@
 ![eaternity logo](./docu/logo.png)
-# eaternity-edb-solution
+# Eaternity database solution (EDB solution)
 
 [![Join the chat at https://gitter.im/Eaternity/eaternity-edb-solution](https://badges.gitter.im/Eaternity/eaternity-edb-solution.svg)](https://gitter.im/Eaternity/eaternity-edb-solution?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/Eaternity/eaternity-edb-solution.svg?branch=develop)](https://travis-ci.org/Eaternity/eaternity-edb-solution)
 

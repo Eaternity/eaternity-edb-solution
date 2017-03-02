@@ -79,7 +79,7 @@ class SynonymsField extends Component {
           onKeyDown={(e) => this.handleAddSynonym(e)}
           onChange={this.handleSynonymInput}
           value={this.state.newSynonym}
-          placeholder='add synonym' />
+          placeholder='add synonym and press enter' />
       </div>
     )
   }

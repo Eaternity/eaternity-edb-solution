@@ -1,7 +1,7 @@
 {
   "name": "EDB-solution",
-  "productName": "EDB-solution",
-  "version": "0.1.0",
+  "productName": "EDB-solution-v0.1.1",
+  "version": "0.1.1",
   "description": "Electron application for editing of eaternity database json files. Based on elecron-react-boilerplate",
   "main": "./app/main.js",
   "build": {
@@ -104,6 +104,7 @@
     "electron": "^1.4.15",
     "electron-builder": "^13.6.0",
     "electron-devtools-installer": "^2.1.0",
+    "electron-rebuild": "^1.5.7",
     "enzyme": "^2.7.1",
     "eslint": "^3.15.0",
     "eslint-config-standard": "^6.2.1",

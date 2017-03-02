@@ -35,7 +35,6 @@ class Edit extends Component {
     saveModalOpen: false,
     backModalOpen: false,
     errorModalOpen: false,
-    formData: {},
     errorMessages: []
   }
 

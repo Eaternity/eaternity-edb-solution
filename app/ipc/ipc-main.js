@@ -2,7 +2,7 @@ import { ipcMain, dialog } from 'electron'
 import fs from 'fs'
 import path from 'path'
 import jsonfile from 'jsonfile'
-import ProductValidator from './validator.js'
+import ProductValidator from '../validator/validator'
 
 // set indentation for jsonfile
 jsonfile.spaces = 2
@@ -31,7 +31,7 @@ ipcMain.on('fetch-product-schema', (event, dataDir) => {
   } catch (err) {
     event.sender.send(
       'error-fetching-product-schema',
-      `Error in ipc-main.js: ${err}`
+      `Error: ${err.stack.stack}`
     )
   }
 })
@@ -39,18 +39,14 @@ ipcMain.on('fetch-product-schema', (event, dataDir) => {
 // load and send all products
 ipcMain.on('fetch-all-products', (event, dataDir) => {
   try {
-    const productSchema = jsonfile.readFileSync(`${dataDir}/prod.schema.json`)
-
-    // pass config object to ProductValidator's constructor
-    const productValidator = new ProductValidator({
-      dataDir,
-      productSchema
-    })
+    const productValidator = new ProductValidator(dataDir)
 
     const orderedFixedProducts = productValidator
+      .loadAll()
       .validateAllProducts()
       .fixAllProducts()
       .orderFixedProducts()
+      .saveOrderedFixedProducts()
       .orderedFixedProducts
 
     // all arguments to event.sender.send will be serialized to json internally!
@@ -60,7 +56,7 @@ ipcMain.on('fetch-all-products', (event, dataDir) => {
   } catch (err) {
     event.sender.send(
       'error-fetching-prods',
-      `Error in ipc-main.js: ${err}`
+      `Error: ${err.stack}`
     )
   }
 })
@@ -84,7 +80,7 @@ ipcMain.on('fetch-all-nutrients', (event, dataDir) => {
   } catch (err) {
     event.sender.send(
       'error-fetching-nutrients',
-      `Error in ipc-main.js: ${err}`
+      `Error: ${err.stack}`
     )
   }
 })
@@ -97,7 +93,7 @@ ipcMain.on('fetch-all-faos', (event, dataDir) => {
   } catch (err) {
     event.sender.send(
       'error-fetching-faos',
-      `Error in ipc-main.js: ${err}`
+      `Error: ${err.stack}`
     )
   }
 })
@@ -107,15 +103,10 @@ ipcMain.on('fetch-all-faos', (event, dataDir) => {
 // fixed upon save and show up in the invalid product view when invalid
 ipcMain.on('save-all-products', (event, dataDir, products) => {
   try {
-    const productSchema = jsonfile.readFileSync(`${dataDir}/prod.schema.json`)
-
-    // pass config object to ProductValidator's constructor
-    const productValidator = new ProductValidator({
-      dataDir,
-      productSchema
-    })
+    const productValidator = new ProductValidator(dataDir)
 
     const orderedFixedProducts = productValidator
+      .loadAll()
       .setProducts(products)
       .validateAllProducts()
       .fixAllProducts()
@@ -131,22 +122,17 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
   } catch (err) {
     event.sender.send(
       'error-saving-products',
-      `Error in ipc-main.js: ${err}`
+      `Error: ${err.stack}`
     )
   }
 })
 
 ipcMain.on('save-edited-product', (event, dataDir, editedProduct) => {
   try {
-    const productSchema = jsonfile.readFileSync(`${dataDir}/prod.schema.json`)
-
-    // pass config object to ProductValidator's constructor
-    const productValidator = new ProductValidator({
-      dataDir,
-      productSchema
-    })
+    const productValidator = new ProductValidator(dataDir)
 
     productValidator
+      .loadAll()
       .setProduct(editedProduct)
       .validateProduct()
       .orderValidatedProduct()
@@ -156,7 +142,7 @@ ipcMain.on('save-edited-product', (event, dataDir, editedProduct) => {
   } catch (err) {
     event.sender.send(
       'error-saving-product',
-      `Error in ipc-main.js: ${err}`
+      `Error: ${err.stack}`
     )
   }
 })
