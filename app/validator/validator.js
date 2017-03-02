@@ -107,8 +107,7 @@ class ProductValidator {
       if (processes.length > 0) {
         const keys = ['process', 'nutr-change-id']
         const orderedProcesses = processes.map(process => {
-          if (process) {
-            const orderedProcess = keys
+          const orderedProcess = keys
           .map(key => {
             return {[key]: process[key]}
           })
@@ -116,8 +115,7 @@ class ProductValidator {
             return Object.assign({}, process, nutrChangeId)
           })
 
-            return orderedProcess
-          }
+          return orderedProcess
         })
         return orderedProcesses
       }
@@ -125,8 +123,11 @@ class ProductValidator {
 
     const orderedPairs = this.orderedKeys
       .map(key => {
-        if (key === 'processes') {
-          return {[key]: orderProcesses(product[key])}
+        if (key === 'processes' && product.hasOwnProperty(key)) {
+          const processesFieldEmpty = product[key].length === 0
+          if (!processesFieldEmpty) {
+            return {[key]: orderProcesses(product[key])}
+          }
         } else {
           return {[key]: product[key]}
         }
