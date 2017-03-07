@@ -2,7 +2,28 @@ import { ipcMain, dialog } from 'electron'
 import fs from 'fs'
 import path from 'path'
 import jsonfile from 'jsonfile'
-import ProductValidator from '../validator/validator'
+import {partial, pipe} from '../utils/utils'
+import {
+  loadAllProducts,
+  loadFAOs,
+  loadNutrs,
+  loadNutrChange,
+  loadProductSchema,
+  removeHelperFields
+} from './helpers/helpers'
+import {
+  _orderProcesses,
+  orderProduct,
+  addValidationSummary,
+  schemaValidate,
+  addParentProduct,
+  addMissingFields,
+  validateNutritionId,
+  validateNutrChangeId,
+  getFieldFromParent,
+  pullMissingFields,
+  pullAndAddMissingFields
+} from './validator'
 
 // set indentation for jsonfile
 jsonfile.spaces = 2
@@ -39,6 +60,18 @@ ipcMain.on('fetch-product-schema', (event, dataDir) => {
 // load and send all products
 ipcMain.on('fetch-all-products', (event, dataDir) => {
   try {
+    const prods = loadAllProducts(dataDir)
+    const nutrs = loadNutrs(dataDir)
+    const nutrChange = loadNutrChange(dataDir)
+    const productSchema = loadProductSchema(dataDir)
+
+    const validateProduct = pipe(
+      partial(schemaValidate, productSchema),
+      partial(addParentProduct, prods),
+      addMissingFields,
+      partial(validateNutritionId, nutrs),
+      partial(validateNutrChangeId, nutrChange)
+    )
     const productValidator = new ProductValidator(dataDir)
 
     const orderedFixedProducts = productValidator

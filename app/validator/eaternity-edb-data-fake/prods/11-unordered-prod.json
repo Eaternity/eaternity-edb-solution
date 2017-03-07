@@ -1,0 +1,28 @@
+{
+  "alternatives": "alt1, alt2",
+  "co2-value": 1,
+  "id": 9,
+  "name": "Wrong Types",
+  "processes": [
+    {
+      "nutr-change-id": 1,
+      "process": "unordered"
+    },
+    {
+      "nutr-change-id": 2,
+      "process": "unordered"
+    },
+    {
+      "process": "ordered",
+      "nutr-change-id": 3
+    }
+  ],
+  "tags": [
+    "tag1",
+    "tag2"
+  ],
+  "synonyms": [
+    "syn1",
+    "syn2"
+  ]
+}
