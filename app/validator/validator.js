@@ -249,10 +249,17 @@ export const validateNutrChangeId = partial(
 const _classify = (addValidationSummary, product) => {
   product = addValidationSummary(product)
   let {validationSummary} = product
-  const {missingMandatoryFields} = validationSummary
-  const hasBrokenLinks = validationSummary.brokenLinks.length > 0
+  const {
+    brokenLinks,
+    missingMandatoryFields,
+    validationErrors
+  } = validationSummary
+  const hasBrokenLinks = brokenLinks.length > 0
   const hasMissingMandatoryFields = missingMandatoryFields.length > 0
-  const isValid = !hasBrokenLinks && !hasMissingMandatoryFields
+  const hasValidationErrors = validationErrors.length > 0
+  const isValid = !hasBrokenLinks &&
+    !hasMissingMandatoryFields &&
+    !hasValidationErrors
   validationSummary = {...validationSummary, isValid}
   return {...product, validationSummary}
 }

@@ -17,6 +17,7 @@ import {
   addMissingFields,
   validateNutritionId,
   validateNutrChangeId,
+  classify,
   pullAndAddMissingFields
 } from '../validator/validator'
 
@@ -65,7 +66,8 @@ ipcMain.on('fetch-all-products', (event, dataDir) => {
       partial(addParentProduct, prods),
       addMissingFields,
       partial(validateNutritionId, nutrs),
-      partial(validateNutrChangeId, nutrChange)
+      partial(validateNutrChangeId, nutrChange),
+      classify
     )
 
     const validatedProducts = prods.map(prod => validateProduct(prod))
@@ -127,7 +129,8 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
       partial(addParentProduct, products),
       addMissingFields,
       partial(validateNutritionId, nutrs),
-      partial(validateNutrChangeId, nutrChange)
+      partial(validateNutrChangeId, nutrChange),
+      classify
     )
 
     // validated products without any pulled fields get send back to renderer
