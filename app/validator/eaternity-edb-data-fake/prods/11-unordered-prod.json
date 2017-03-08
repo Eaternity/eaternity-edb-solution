@@ -24,5 +24,14 @@
   "synonyms": [
     "syn1",
     "syn2"
-  ]
+  ],
+  "season-begin": "",
+  "unknown": "unknown",
+  "filename": "9-wrong-types-prod.json",
+  "validationSummary": {
+    "parentProduct": "",
+    "brokenLinks": [],
+    "missingFields": [],
+    "validationErrors": []
+  }
 }

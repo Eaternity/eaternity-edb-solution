@@ -24,5 +24,12 @@
     }
   ],
   "alternatives": "alt1, alt2",
-  "co2-value": 1
+  "co2-value": 1,
+  "filename": "9-wrong-types-prod.json",
+  "validationSummary": {
+    "parentProduct": "",
+    "brokenLinks": [],
+    "missingFields": [],
+    "validationErrors": []
+  }
 }

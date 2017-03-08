@@ -34,13 +34,18 @@ export const getVisibleProducts = createSelector(
         return products
           .filter(product => product.validationSummary.isValid === false)
           .map(product => {
-            const { id, name, validationSummary } = product
+            const {id, name, validationSummary} = product
+            const {
+              missingMandatoryFields,
+              brokenLinks,
+              validationErrors
+            } = validationSummary
             return {
               id,
               name,
-              missingFields: validationSummary.missingFields.join(', '),
-              brokenLinks: validationSummary.brokenLinks.join(', '),
-              validationErrors: validationSummary.validationErrors.join(', ')
+              missingFields: missingMandatoryFields.join(', '),
+              brokenLinks: brokenLinks.join(', '),
+              validationErrors: validationErrors.join(', ')
             }
           })
     }

@@ -35,34 +35,43 @@ const ALL_FIELDS = [...MANDATORY_FIELDS, ...OPTIONAL_FIELDS]
 
 export const _orderProcesses = processes => {
   const keys = ['process', 'nutr-change-id']
-  const orderedProcesses = processes.map(process => {
-    if (process) {
+  const orderedProcesses = processes
+    .filter(process => process)
+    .map(process => {
       const orderedProcess = keys
-      .map(key => {
-        return {[key]: process[key]}
-      })
-      .reduce((process, nutrChangeId) => {
-        return Object.assign({}, process, nutrChangeId)
-      })
+        .map(key => {
+          return {[key]: process[key]}
+        })
 
-      return orderedProcess
-    }
-  })
+      return Object.assign({}, ...orderedProcess)
+    })
+
   return orderedProcesses
 }
 
 const _orderProduct = (_orderProcesses, orderedKeys, product) => {
+  const hasFilename = product.hasOwnProperty('filename')
+  const hasValidationSummary = product.hasOwnProperty('validationSummary')
+
+  orderedKeys = hasFilename ? [...orderedKeys, 'filename'] : orderedKeys
+  orderedKeys = hasValidationSummary
+    ? [...orderedKeys, 'validationSummary']
+    : orderedKeys
+
   const orderedPairs = orderedKeys
-    .map(key => {
-      if (key === 'processes' && product[key]) {
-        return {[key]: _orderProcesses(product[key])}
-      } else {
-        return {[key]: product[key]}
-      }
-    })
+  .filter(key => {
+    return !(product[key] === undefined ||
+      product[key] === '' ||
+      product[key].length === 0
+    )
+  })
+  .map(key => {
+    return key === 'processes'
+      ? {[key]: _orderProcesses(product[key])}
+      : {[key]: product[key]}
+  })
 
   const orderedProduct = Object.assign({}, ...orderedPairs)
-
   return orderedProduct
 }
 
@@ -71,9 +80,11 @@ export const orderProduct = partial(_orderProduct, _orderProcesses)
 export const addValidationSummary = product => {
   // define a default validationSummary
   const validationSummary = {
+    isValid: false,
     parentProduct: '',
     brokenLinks: [],
     missingFields: [],
+    missingMandatoryFields: [],
     validationErrors: []
   }
   const hasValidationSummary = product.hasOwnProperty('validationSummary') && Object.keys(product.validationSummary).every(key => {
@@ -133,7 +144,7 @@ const _addParentProduct = (addValidationSummary, prods, product) => {
 
 export const addParentProduct = partial(_addParentProduct, addValidationSummary)
 
-const _addMissingFields = (allFields, product) => {
+const _addMissingFields = (allFields, MANDATORY_FIELDS, product) => {
   product = addValidationSummary(product)
   let {validationSummary} = product
 
@@ -141,16 +152,29 @@ const _addMissingFields = (allFields, product) => {
     return !product.hasOwnProperty(field)
   })
 
+  const missingMandatoryFields = missingFields.filter(field => {
+    return MANDATORY_FIELDS.includes(field)
+  })
+
   const fieldsMissing = missingFields.length > 0
+  const mandatoryFieldsMissing = missingMandatoryFields.length > 0
 
   if (fieldsMissing) {
     validationSummary = {...validationSummary, missingFields}
   }
 
+  if (mandatoryFieldsMissing) {
+    validationSummary = {...validationSummary, missingMandatoryFields}
+  }
+
   return {...product, validationSummary}
 }
 
-export const addMissingFields = partial(_addMissingFields, ALL_FIELDS)
+export const addMissingFields = partial(
+  _addMissingFields,
+  ALL_FIELDS,
+  MANDATORY_FIELDS
+)
 
 const _validateNutritionId = (addValidationSummary, nutrs, product) => {
   product = addValidationSummary(product)
@@ -186,9 +210,12 @@ const _validateNutrChangeId = (addValidationSummary, nutrChange, product) => {
   let {validationSummary} = product
   const {brokenLinks} = validationSummary
 
-  const hasNutritionChangeId = product.hasOwnProperty('processes') &&
-    product.processes.length > 0 &&
-    product.processes[0].hasOwnProperty('nutr-change-id')
+  const hasProcesses = product.hasOwnProperty('processes') && product.processes
+
+  const hasNutritionChangeId = hasProcesses
+    ? product.processes.length > 0 &&
+      product.processes[0].hasOwnProperty('nutr-change-id')
+    : false
 
   if (hasNutritionChangeId) {
     const {processes} = product
@@ -218,6 +245,19 @@ export const validateNutrChangeId = partial(
   _validateNutrChangeId,
   addValidationSummary
 )
+
+const _classify = (addValidationSummary, product) => {
+  product = addValidationSummary(product)
+  let {validationSummary} = product
+  const {missingMandatoryFields} = validationSummary
+  const hasBrokenLinks = validationSummary.brokenLinks.length > 0
+  const hasMissingMandatoryFields = missingMandatoryFields.length > 0
+  const isValid = !hasBrokenLinks && !hasMissingMandatoryFields
+  validationSummary = {...validationSummary, isValid}
+  return {...product, validationSummary}
+}
+
+export const classify = partial(_classify, addValidationSummary)
 
 export const getFieldFromParent = (prods, parentProduct, field) => {
   const validatedParentProduct = addParentProduct(prods, parentProduct)

@@ -6,9 +6,10 @@ import {
   isValidProductFilename,
   addFilename,
   removeHelperFields,
+  resetValidation,
   loadProduct,
   loadAllProducts,
-  loadFAOS,
+  loadFaos,
   loadNutrs,
   loadNutrChange,
   loadProductSchema,
@@ -93,8 +94,8 @@ describe('helpers', () => {
     expect(prodsContainRandomCorrectProduct).toBeTruthy()
   })
 
-  test('loadFAOS loads fao-product-list.json correctly', () => {
-    const faos = loadFAOS(dataDir)
+  test('loadFaos loads fao-product-list.json correctly', () => {
+    const faos = loadFaos(dataDir)
     const expectedFaos = [
       {
         'fao-code': 1,
@@ -111,36 +112,26 @@ describe('helpers', () => {
     expect(faos).toEqual(expectedFaos)
   })
 
-  test('loadNutrs loads all nutrient files correctly', () => {
+  test('loadNutrs only loads files with correct filename', () => {
     const nutrs = loadNutrs(dataDir)
     const expectedNutrs = [
       {
         'name': 'Fake nutr',
         'id': '1'
-      },
-      {
-        'name': 'Wrong Filename',
-        'id': '2'
       }
     ]
-
     expect(nutrs).toEqual(expectedNutrs)
   })
 
-  test('loadNutrChange loads all nutr-change files correctly', () => {
+  test('loadNutrChange only loads files with correct filename', () => {
     const nutrChange = loadNutrChange(dataDir)
     const expectedNutrChange = [
       {
         'id': 1,
         'name': 'fake',
         'process': 'cooked'
-      },
-      {
-        'id': 2,
-        'name': 'Wrong Filename'
       }
     ]
-
     expect(nutrChange).toEqual(expectedNutrChange)
   })
 
@@ -152,7 +143,7 @@ describe('helpers', () => {
     expect(productSchema).toEqual(expectedProductschema)
   })
 
-  test('_removeHelperFields removes filename an validationSummary', () => {
+  test('_removeHelperFields removes filename and validationSummary', () => {
     const productWithHelperFields = jsonfile.readFileSync(
       `${dataDir}/prods/13-helpers-prod.json`
     )
@@ -164,10 +155,22 @@ describe('helpers', () => {
     expect(productWithoutHelpers).toEqual(expectedProductWithoutHelpers)
   })
 
+  test('resetValidation removes validationSummary', () => {
+    const productWithValidation = jsonfile.readFileSync(
+      `${dataDir}/prods/13-helpers-prod.json`
+    )
+    const expectedProductWithoutValidation = {
+      id: 13,
+      name: 'Helpers',
+      filename: '13-helpers-prod.json'
+    }
+    const productWithoutValidation = resetValidation(productWithValidation)
+    expect(productWithoutValidation).toEqual(expectedProductWithoutValidation)
+  })
+
   it('_saveProduct removes helper fields and saves product', () => {
-    const targetDir = `${dataDir}/prods`
     const filename = '100000-save-me-prod.json'
-    const pathToFile = `${targetDir}/${filename}`
+    const pathToFile = `${dataDir}/prods/${filename}`
     const productToSave = {
       id: 100000,
       name: 'save me',
@@ -175,9 +178,9 @@ describe('helpers', () => {
       validationSummary: {}
     }
 
-    _saveProduct(removeHelperFields, targetDir, productToSave)
+    _saveProduct(removeHelperFields, dataDir, productToSave)
 
-    const prodFilenames = fs.readdirSync(targetDir)
+    const prodFilenames = fs.readdirSync(`${dataDir}/prods`)
     expect(prodFilenames.includes(filename)).toBeTruthy()
 
     // clean up, maybe should be done in afterEach to account for async?
@@ -185,9 +188,8 @@ describe('helpers', () => {
   })
 
   it('partially applied saveProduct works like _saveProduct', () => {
-    const targetDir = `${dataDir}/prods`
     const filename = '100000-save-me-prod.json'
-    const pathToFile = `${targetDir}/${filename}`
+    const pathToFile = `${dataDir}/prods/${filename}`
     const productToSave = {
       id: 100000,
       name: 'save me',
@@ -195,9 +197,9 @@ describe('helpers', () => {
       validationSummary: {}
     }
 
-    saveProduct(targetDir, productToSave)
+    saveProduct(dataDir, productToSave)
 
-    const prodFilenames = fs.readdirSync(targetDir)
+    const prodFilenames = fs.readdirSync(`${dataDir}/prods`)
     expect(prodFilenames.includes(filename)).toBeTruthy()
 
     // clean up, maybe should be done in afterEach to account for async?

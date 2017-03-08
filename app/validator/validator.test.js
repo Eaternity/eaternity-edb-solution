@@ -18,13 +18,19 @@ import {
   addMissingFields,
   validateNutritionId,
   validateNutrChangeId,
+  classify,
   getFieldFromParent,
   pullMissingFields,
   pullAndAddMissingFields
 } from './validator'
 
-// Point to fake test resources
+// Point to fake test resources and load some standard resources
 const dataDir = path.resolve(`${__dirname}`, './eaternity-edb-data-fake')
+const prods = loadAllProducts(dataDir)
+const nutrs = loadNutrs(dataDir)
+const nutrChange = loadNutrChange(dataDir)
+const productSchema = loadProductSchema(dataDir)
+const orderedKeys = Object.keys(productSchema.properties)
 
 describe('validator', () => {
   test('_orderProcesses correctly orders processes array', () => {
@@ -41,8 +47,28 @@ describe('validator', () => {
   })
 
   test('orderProduct orders a product according to a list of keys', () => {
-    const productSchema = jsonfile.readFileSync(`${dataDir}/prod.schema.json`)
-    const orderedKeys = Object.keys(productSchema.properties)
+    const unorderedProduct = jsonfile.readFileSync(
+      `${dataDir}/prods/11-unordered-prod.json`
+    )
+    const expectedOrderedProduct = jsonfile.readFileSync(
+      `${dataDir}/prods/12-ordered-prod.json`
+    )
+    const orderedProduct = orderProduct(orderedKeys, unorderedProduct)
+    expect(orderedProduct).toEqual(expectedOrderedProduct)
+  })
+
+  test('orderProduct orders a product according to a list of keys', () => {
+    const unorderedProduct = jsonfile.readFileSync(
+      `${dataDir}/prods/11-unordered-prod.json`
+    )
+    const expectedOrderedProduct = jsonfile.readFileSync(
+      `${dataDir}/prods/12-ordered-prod.json`
+    )
+    const orderedProduct = orderProduct(orderedKeys, unorderedProduct)
+    expect(orderedProduct).toEqual(expectedOrderedProduct)
+  })
+
+  test('orderProduct does not remove filename and validationSummary', () => {
     const unorderedProduct = jsonfile.readFileSync(
       `${dataDir}/prods/11-unordered-prod.json`
     )
@@ -56,9 +82,11 @@ describe('validator', () => {
   test('addValidationSummary adds validationSummary to product', () => {
     // define a validationResult
     const expectedValidationSummary = {
+      isValid: false,
       parentProduct: '',
       brokenLinks: [],
       missingFields: [],
+      missingMandatoryFields: [],
       validationErrors: []
     }
 
@@ -78,6 +106,7 @@ describe('validator', () => {
   test('addValidationSummary does not overwrite existing summary', () => {
     // define a validationResult
     const existingValidationSummary = {
+      isValid: false,
       parentProduct: '2-parent-prod.json',
       brokenLinks: ['nutr-change-id'],
       missingFields: ['perishability'],
@@ -94,7 +123,6 @@ describe('validator', () => {
   })
 
   test('schemaValidate catches schema errors and adds them to summary', () => {
-    const productSchema = jsonfile.readFileSync(`${dataDir}/prod.schema.json`)
     const expectedValidationErrors = [
       'instance.synonyms[0] is not of a type(s) string',
       'instance.tags is not of a type(s) string',
@@ -112,7 +140,6 @@ describe('validator', () => {
   })
 
   it('addParentProduct adds name of parent product to summary', () => {
-    const prods = loadAllProducts(dataDir)
     const expectedParentProduct = '2-parent-prod.json'
     const pathToChild = `${dataDir}/prods/3-child-prod.json`
     const child = jsonfile.readFileSync(pathToChild)
@@ -122,7 +149,6 @@ describe('validator', () => {
   })
 
   it('addParentProduct adds name of parent product to summary', () => {
-    const prods = loadAllProducts(dataDir)
     const expectedParentProduct = '2-parent-prod.json'
     const pathToChild = `${dataDir}/prods/3-child-prod.json`
     const child = loadProduct(pathToChild)
@@ -135,7 +161,6 @@ describe('validator', () => {
     const expectedParentProduct = ''
     const pathToGrandParent = `${dataDir}/prods/1-grand-parent-prod.json`
     const grandParent = loadProduct(pathToGrandParent)
-    const prods = loadAllProducts(dataDir)
     const validatedGrandParent = addParentProduct(prods, grandParent)
     const {parentProduct} = validatedGrandParent.validationSummary
     expect(parentProduct).toEqual(expectedParentProduct)
@@ -145,7 +170,6 @@ describe('validator', () => {
     const expectedParentProduct = ''
     const pathToLonelychild = `${dataDir}/prods/4-lonely-child-prod.json`
     const lonelyChild = loadProduct(pathToLonelychild)
-    const prods = loadAllProducts(dataDir)
     const validatedLonelyChild = addParentProduct(prods, lonelyChild)
     const {parentProduct} = validatedLonelyChild.validationSummary
     expect(parentProduct).toEqual(expectedParentProduct)
@@ -185,7 +209,6 @@ describe('validator', () => {
 
   test('validateNutritionId finds and adds broken nutrition-id links', () => {
     const expectedBrokenLinks = ['nutrition-id']
-    const nutrs = loadNutrs(dataDir)
     const productWithBrokenNutritionId = jsonfile.readFileSync(
       `${dataDir}/prods/5-broken-nutrition-id-prod.json`
     )
@@ -200,7 +223,6 @@ describe('validator', () => {
 
   test('validateNutritionId adds nothing when nutrition-id missing', () => {
     const expectedBrokenLinks = []
-    const nutrs = loadNutrs(dataDir)
     const productWithNoNutritionId = jsonfile.readFileSync(
       `${dataDir}/prods/3-child-prod.json`
     )
@@ -215,7 +237,6 @@ describe('validator', () => {
 
   test('validateNutrChangeId finds and adds broken nutr-change links', () => {
     const expectedBrokenLinks = ['nutr-change-id']
-    const nutrChange = loadNutrChange(dataDir)
     const productWithBrokenNutrChangeId = jsonfile.readFileSync(
       `${dataDir}/prods/6-broken-nutr-change-id-prod.json`
     )
@@ -230,7 +251,6 @@ describe('validator', () => {
 
   test('validateNutrChangeId adds nothing when nutr-change-id missing', () => {
     const expectedBrokenLinks = []
-    const nutrChange = loadNutrChange(dataDir)
     const productWithNoNutrChangeId = jsonfile.readFileSync(
       `${dataDir}/prods/3-child-prod.json`
     )
@@ -243,48 +263,46 @@ describe('validator', () => {
     expect(brokenLinks).toEqual(expectedBrokenLinks)
   })
 
+  it('classify sets isValid to true if product is valid', () => {
+    const pathToFullProduct = `${dataDir}/prods/14-full-prod.json`
+    const fullProduct = loadProduct(pathToFullProduct)
+    const validateProduct = pipe(
+      partial(orderProduct, orderedKeys),
+      partial(schemaValidate, productSchema),
+      partial(addParentProduct, prods),
+      addMissingFields,
+      partial(validateNutritionId, nutrs),
+      partial(validateNutrChangeId, nutrChange),
+      classify
+    )
+    const validatedProduct = validateProduct(fullProduct)
+    expect(validatedProduct.validationSummary.isValid).toBeTruthy()
+  })
+
   it('pipe yourself a validator', () => {
-    const prods = loadAllProducts(dataDir)
-    const nutrs = loadNutrs(dataDir)
-    const nutrChange = loadNutrChange(dataDir)
-    const productSchema = loadProductSchema(dataDir)
+    const pathToFullProduct = `${dataDir}/prods/14-full-prod.json`
+    const fullProduct = loadProduct(pathToFullProduct)
 
     const validatorPipeline = pipe(
       partial(schemaValidate, productSchema),
       partial(addParentProduct, prods),
       addMissingFields,
       partial(validateNutritionId, nutrs),
-      partial(validateNutrChangeId, nutrChange)
+      partial(validateNutrChangeId, nutrChange),
+      classify
     )
 
     const expectedValidationSummary = {
-      parentProduct: '1-grand-parent-prod.json',
+      isValid: true,
+      parentProduct: '',
       brokenLinks: [],
-      missingFields: [
-        'nutrition-id',
-        'fao-product-id',
-        'waste-id',
-        'season-begin',
-        'season-end',
-        'allergenes',
-        'unit-weight',
-        'density',
-        'production-names',
-        'production-values',
-        'conservation-names',
-        'conservation-values',
-        'processing-names',
-        'processing-values',
-        'packaging-names',
-        'packaging-values'
-      ],
+      missingFields: [],
+      missingMandatoryFields: [],
       validationErrors: []
     }
-    const parentProduct = jsonfile.readFileSync(
-      `${dataDir}/prods/2-parent-prod.json`
-    )
-    const validatedParentProduct = validatorPipeline(parentProduct)
-    const {validationSummary} = validatedParentProduct
+
+    const validatedProduct = validatorPipeline(fullProduct)
+    const {validationSummary} = validatedProduct
     expect(validationSummary).toEqual(expectedValidationSummary)
   })
 
