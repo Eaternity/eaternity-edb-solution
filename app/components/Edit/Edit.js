@@ -13,7 +13,7 @@ import {
 } from 'reactstrap'
 import Form from 'react-jsonschema-form'
 import ConfirmRejectModal from '../ConfirmRejectModal/ConfirmRejectModal'
-import CustomFieldTemplate from './CustomFieldTemlpate'
+import CustomFieldTemplate from './CustomFieldTemplate'
 import CustomArrayTemplate from './CustomArrayTemplate'
 import SynonymsField from './SynonymsField'
 import EditBar from '../EditBar/EditBar'
@@ -73,12 +73,14 @@ class Edit extends Component {
     const {
       mergeEditedToProducts,
       saveAllProducts,
-      saveEditedProduct
+      saveEditedProduct,
+      setProductType
     } = this.props.actions
 
     mergeEditedToProducts()
     saveAllProducts()
     saveEditedProduct()
+    setProductType('old')
     this.toggleSaveModal()
   }
 

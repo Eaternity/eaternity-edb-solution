@@ -1,0 +1,35 @@
+{
+  "id": 9,
+  "name": "Wrong Types",
+  "synonyms": [
+    "syn1",
+    "syn2"
+  ],
+  "tags": [
+    "tag1",
+    "tag2"
+  ],
+  "processes": [
+    {
+      "process": "unordered",
+      "nutr-change-id": 1
+    },
+    {
+      "process": "unordered",
+      "nutr-change-id": 2
+    },
+    {
+      "nutr-change-id": 3,
+      "process": "ordered"
+    }
+  ],
+  "alternatives": "alt1, alt2",
+  "co2-value": 1,
+  "filename": "9-wrong-types-prod.json",
+  "validationSummary": {
+    "parentProduct": "",
+    "brokenLinks": [],
+    "missingFields": [],
+    "validationErrors": []
+  }
+}

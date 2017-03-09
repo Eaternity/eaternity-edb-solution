@@ -2,5 +2,13 @@
   "id": 2,
   "name": "Parent",
   "linked-id": "1",
-  "tags": "parent, tagged"
+  "tags": "from, parent",
+  "processes": [
+    {
+      "process": "from parent",
+      "nutr-change-id": 1
+    }
+  ],
+  "perishability": "from parent",
+  "co2-value": 1
 }
