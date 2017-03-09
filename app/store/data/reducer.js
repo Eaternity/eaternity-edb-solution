@@ -59,7 +59,6 @@ const data = (state = initialState, action) => {
       } else {
         updatedProducts = [...state.products, editedProduct]
       }
-
       return {...state, products: updatedProducts}
 
     case actionTypes.SET_EDITED_PRODUCT_TO_NEW:

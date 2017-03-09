@@ -2,10 +2,15 @@
   "id": 1,
   "name": "Grand Parent",
   "nutrition-id": "1",
+  "tags": "from, grandparent",
   "processes": [
     {
-      "process": "cooked",
+      "process": "from grandparent",
       "nutr-change-id": 1
     }
-  ]
+  ],
+  "perishability": "from grandparent",
+  "season-begin": "from grandparent",
+  "season-end": "from grandparent",
+  "co2-value": 1
 }

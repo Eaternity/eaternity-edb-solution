@@ -44,7 +44,7 @@
   },
   "scripts": {
     "reinstall": "yarn add rimraf && rimraf ./node_modules && yarn install",
-    "test": "cross-env NODE_ENV=test jest",
+    "test": "cross-env NODE_ENV=test jest --coverage",
     "lint": "eslint --ignore-path .gitignore --format=node_modules/eslint-formatter-pretty app test *.js",
     "hot-server": "cross-env NODE_ENV=development node --max_old_space_size=2096 -r babel-register server.js",
     "build-main": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config ./config/webpack.config.electron.js --progress --profile --colors",
@@ -148,6 +148,7 @@
     "history": "^4.5.1",
     "jsonfile": "^2.4.0",
     "jsonschema": "^1.1.1",
+    "ramda": "^0.23.0",
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.2",
     "react-addons-transition-group": "^15.4.2",

@@ -1,486 +1,322 @@
-import fs from 'fs'
-import jsonfile from 'jsonfile'
+// let's' try to write the complete validator in funvtional style
 import jsonschema from 'jsonschema'
+import {curry} from 'ramda'
 
-// set indentation for jsonfile
-jsonfile.spaces = 2
+const MANDATORY_FIELDS = [
+  'id',
+  'name',
+  'nutrition-id',
+  'tags',
+  'perishability',
+  'co2-value'
+]
 
-class ProductValidator {
-  constructor (dataDir) {
-    this.dataDir = dataDir
+// these optional fields will be pulled from parent if possible
+const OPTIONAL_FIELDS = [
+  'fao-product-id',
+  'waste-id',
+  'season-begin',
+  'season-end',
+  'processes',
+  'allergenes',
+  'unit-weight',
+  'density',
+  'production-names',
+  'production-values',
+  'conservation-names',
+  'conservation-values',
+  'processing-names',
+  'processing-values',
+  'packaging-names',
+  'packaging-values'
+]
 
-    this.productSchema = jsonfile.readFileSync(`${dataDir}/prod.schema.json`)
+const ALL_FIELDS = [...MANDATORY_FIELDS, ...OPTIONAL_FIELDS]
 
-    this.orderedKeys = [
-      ...Object.keys(this.productSchema.properties),
-      'filename',
-      'validationSummary'
-    ]
-
-    this.mandatoryFields = [
-      'name',
-      'id',
-      'nutrition-id',
-      'tags',
-      'perishability',
-      'co2-value'
-    ]
-
-    // these optional fields will be pulled from parent if possible
-    this.optionalFields = [
-      'fao-product-id',
-      'waste-id',
-      'season-begin',
-      'season-end',
-      'processes',
-      'allergenes',
-      'unit-weight',
-      'density',
-      'production-names',
-      'production-values',
-      'conservation-names',
-      'conservation-values',
-      'processing-names',
-      'processing-values',
-      'packaging-names',
-      'packaging-values'
-    ]
-
-    // concat all fields
-    this.allFields = this.mandatoryFields.concat(this.optionalFields)
-  }
-
-  loadAll (dataDir = this.dataDir) {
-    this.prodFilenames = fs.readdirSync(`${dataDir}/prods`)
-      .filter(filename => {
-        // http://regexr.com/ is awesome! Thanks Michi!
-        const filenameRegEx = /^\d.+(prod\.json)/g
-        return filenameRegEx.test(filename)
-      })
-
-    this.nutrsFilenames = fs.readdirSync(`${dataDir}/nutrs`)
-
-    this.nutrChangeFilenames = fs.readdirSync(`${dataDir}/nutr-change`)
-
-    this.prods = this.prodFilenames
-      .map(filename => {
-        const product = jsonfile.readFileSync(`${dataDir}/prods/${filename}`)
-        return Object.assign({}, product, {filename})
-      })
-
-    this.nutrs = this.nutrsFilenames.map(filename => {
-      return jsonfile.readFileSync(`${dataDir}/nutrs/${filename}`)
-    })
-
-    this.nutrChange = this.nutrChangeFilenames.map(filename => {
-      return jsonfile.readFileSync(`${dataDir}/nutr-change/${filename}`)
-    })
-
-    this.faos = jsonfile.readFileSync(`${dataDir}/fao-product-list.json`)
-
-    return this
-  }
-
-  setProduct (product) {
-    this.product = product
-    return this
-  }
-
-  setProducts (products) {
-    this.prods = products
-    return this
-  }
-
-  // reset product validation
-  resetProduct (product = this.product) {
-    const resetedProduct = Object.assign({}, product)
-
-    delete resetedProduct.validationSummary
-
-    this.product = resetedProduct
-
-    return this
-  }
-
-  orderProduct (product = this.product) {
-    const orderProcesses = processes => {
-      if (processes.length > 0) {
-        const keys = ['process', 'nutr-change-id']
-        const orderedProcesses = processes.map(process => {
-          const orderedProcess = keys
-          .map(key => {
-            return {[key]: process[key]}
-          })
-          .reduce((process, nutrChangeId) => {
-            return Object.assign({}, process, nutrChangeId)
-          })
-
-          return orderedProcess
+export const orderProcesses = processes => {
+  const keys = ['process', 'nutr-change-id']
+  const orderedProcesses = processes
+    .filter(process => process)
+    .map(process => {
+      const orderedProcess = keys
+        .map(key => {
+          return {[key]: process[key]}
         })
-        return orderedProcesses
-      }
-    }
 
-    const orderedPairs = this.orderedKeys
-      .map(key => {
-        if (key === 'processes' && product.hasOwnProperty(key)) {
-          const processesFieldEmpty = product[key].length === 0
-          if (!processesFieldEmpty) {
-            return {[key]: orderProcesses(product[key])}
-          }
-        } else {
-          return {[key]: product[key]}
-        }
-      })
-
-    this.orderedProduct = Object.assign({}, ...orderedPairs)
-    return this
-  }
-
-  orderValidatedProduct (validatedProduct = this.validatedProduct) {
-    this.orderedValidatedProduct = this.orderProduct(validatedProduct)
-      .orderedProduct
-
-    return this
-  }
-
-  orderValidatedProducts (validatedProducts = this.validatedProducts) {
-    this.orderedValidatedProducts = validatedProducts.map(product => {
-      return this.orderProduct(product).orderedProduct
+      return Object.assign({}, ...orderedProcess)
     })
 
-    return this
-  }
-
-  orderFixedProducts (fixedProducts = this.fixedProducts) {
-    this.orderedFixedProducts = fixedProducts.map(product => {
-      return this.orderProduct(product).orderedProduct
-    })
-
-    return this
-  }
-
-  saveProduct (product = this.product) {
-    const filename = product.filename
-
-    delete product.filename
-    delete product.validationSummary
-
-    jsonfile.writeFileSync(`${this.dataDir}/prods/${filename}`, product)
-  }
-
-  saveOrderedValidatedProducts () {
-    this.orderedValidatedProducts
-      // make a copy before deleting fields!
-      .map(product => Object.assign({}, product))
-      .forEach(product => this.saveProduct(product))
-
-    return this
-  }
-
-  saveOrderedFixedProducts (dataDir = this.dataDir) {
-    // remove filename and validation Summary from products getting saved to
-    // prods.all.json
-    // const cleanProducts = this.orderedFixedProducts
-    //   .map(product => {
-    //     // make a copy before deleting fields!
-    //     const cleanProduct = Object.assign({}, product)
-    //
-    //     delete cleanProduct.filename
-    //     delete cleanProduct.validationSummary
-    //
-    //     return cleanProduct
-    //   })
-
-    // write all products to a single file
-    // jsonfile.writeFileSync(`${this.dataDir}/prods.all.json`, cleanProducts)
-
-    // write all products to a single file
-    jsonfile.writeFileSync(
-      `${dataDir}/prods.all.json`,
-      this.orderedFixedProducts
-    )
-
-    return this
-  }
-
-  saveValidatedProduct (validatedProduct = this.validatedProduct) {
-    // make a copy, before deleting fields
-    const cleanProduct = Object.assign({}, validatedProduct)
-    const filename = validatedProduct.filename
-
-    delete cleanProduct.filename
-    delete cleanProduct.validationSummary
-
-    jsonfile.writeFileSync(
-      `${this.dataDir}/prods/${filename}`,
-      cleanProduct
-    )
-
-    return this
-  }
-
-  saveOrderedValidatedProduct (product = this.orderedValidatedProduct) {
-    // make a copy, before deleting fields
-    const cleanProduct = Object.assign({}, product)
-    const filename = product.filename
-
-    delete cleanProduct.filename
-    delete cleanProduct.validationSummary
-
-    jsonfile.writeFileSync(
-      `${this.dataDir}/prods/${filename}`,
-      cleanProduct
-    )
-
-    return this
-  }
-
-  // method to validate a product
-  validateProduct (product = this.product) {
-    // define a validationResult
-    let validationSummary = {
-      parentProduct: '',
-      hasNutritionId: false,
-      hasNutritionChangeId: false,
-      linkedNutritionIdExists: false,
-      linkedNutritionChangeIdsExist: false,
-      missingFields: [],
-      validationErrors: []
-    }
-
-    // // There should be no schema errors once the json ui schema is
-    //  implemented!
-    const validationErrors = jsonschema
-      .validate(product, this.productSchema).errors.map(error => {
-        return error.stack
-      })
-
-    const hasValidationErrors = validationErrors.length > 0
-
-    if (hasValidationErrors) {
-      validationSummary = Object.assign({},
-        validationSummary,
-        {validationErrors}
-      )
-    }
-
-    const missingFields = this.allFields.filter(field => {
-      return !product.hasOwnProperty(field)
-    })
-
-    const isLinked = product.hasOwnProperty('linked-id')
-    const fieldsMissing = missingFields.length > 0
-
-    if (fieldsMissing) {
-      validationSummary = Object.assign({},
-        validationSummary,
-        {missingFields}
-      )
-    }
-
-    if (isLinked) {
-      const parentName = this.prodFilenames.filter(filename => {
-        return filename.split('-')[0] === product['linked-id']
-      })
-
-      validationSummary = Object.assign({},
-        validationSummary,
-        {parentProduct: parentName[0]}
-      )
-    }
-
-    // does a nutrient-id field exist? Is there a corresponding file?
-
-    const hasNutritionId = product.hasOwnProperty('nutrition-id')
-
-    if (hasNutritionId) {
-      const nutritionId = product['nutrition-id']
-      const linkedNutritionIdExists = this.nutrs.some(nutrObj => {
-        return nutrObj.id === nutritionId
-      })
-
-      if (linkedNutritionIdExists) {
-        validationSummary = Object.assign({},
-          validationSummary,
-          {hasNutritionId, linkedNutritionIdExists}
-        )
-      } else {
-        validationSummary = Object.assign({},
-          validationSummary,
-          {hasNutritionId}
-        )
-      }
-    }
-
-    // does processes field exist and does it contain nutr-change-id field(s)?
-    // For each id, is there a nutr-change file with this id?
-
-    const hasNutritionChangeId = product.hasOwnProperty('processes') &&
-      product.processes.length > 0 &&
-      product.processes[0].hasOwnProperty('nutr-change-id')
-
-    if (hasNutritionChangeId) {
-      const processes = product.processes
-      const allNutritionChangeIds = processes.map(processesObj => {
-        return processesObj['nutr-change-id']
-      })
-
-      const linkedNutritionChangeIdsExist = allNutritionChangeIds
-          .every(nutritionChangeId => {
-            return this.nutrChange.some(nutrChangeObj => {
-              return nutrChangeObj.id === nutritionChangeId
-            })
-          })
-
-      if (linkedNutritionChangeIdsExist) {
-        validationSummary = Object.assign({},
-          validationSummary,
-          {hasNutritionChangeId, linkedNutritionChangeIdsExist}
-        )
-      } else {
-        validationSummary = Object.assign({},
-          validationSummary,
-          {hasNutritionChangeId}
-        )
-      }
-    }
-
-    const validatedProduct = Object.assign({},
-      product,
-      {validationSummary}
-    )
-
-    this.validatedProduct = validatedProduct
-
-    return this
-  }
-
-  getFieldsFromParent (validatedProduct) {
-    const validationSummary = validatedProduct.validationSummary
-    const missingFields = validationSummary.missingFields
-
-    const getFieldFromParent = (parent, missingField) => {
-      const validationSummaryParent = parent.validationSummary
-      const isLinked = !!validationSummaryParent.parentProduct
-
-      if (isLinked) {
-        const parentProduct = this.prods.filter(product => {
-          return product.filename === validationSummaryParent.parentProduct
-        })[0]
-
-        // calling this.validateProduct(parentProduct) is essential because it
-        // sets the parent product as this.validatedProduct in each recursive
-        // call...
-        const validatedParentProduct = this.validateProduct(parentProduct).validatedProduct
-
-        const fieldExistsInParent = parentProduct.hasOwnProperty(missingField)
-
-        if (fieldExistsInParent) {
-          return {
-            [missingField]: parentProduct[missingField]
-          }
-        } else {
-          return getFieldFromParent(validatedParentProduct, missingField)
-        }
-      } else {
-        return {
-          [missingField]: 'NOT_RESOLVABLE'
-        }
-      }
-    }
-
-    return missingFields.map(missingField => {
-      return getFieldFromParent(validatedProduct, missingField)
-    })
-  }
-
-  fixProduct (validatedProduct = this.validatedProduct) {
-    let { validationSummary } = validatedProduct
-    const { validationErrors } = validationSummary
-    let isValid = true
-    let brokenLinks = []
-    const fieldsFromParent = this.getFieldsFromParent(validatedProduct)
-
-    // check for unresolvable fields
-    const unresolvableFields = fieldsFromParent
-      .filter(field => {
-        // get only keys for validation summary
-        const key = Object.keys(field)[0]
-        return field[key] === 'NOT_RESOLVABLE'
-      })
-      .map(field => Object.keys(field)[0])
-
-    const resolvedFields = fieldsFromParent
-      .filter(field => {
-        const key = Object.keys(field)
-        return field[key] !== 'NOT_RESOLVABLE'
-      })
-
-    const unresolvableMandatoryFields = unresolvableFields.filter(field => {
-      return this.mandatoryFields.includes(field)
-    })
-
-    const hasUnresolvableMandatoryFields = unresolvableMandatoryFields
-      .length > 0
-
-    if (hasUnresolvableMandatoryFields) {
-      isValid = false
-    }
-
-    // check for broken links
-    if (validationSummary.hasNutritionId &&
-      !validationSummary.linkedNutritionIdExists) {
-      brokenLinks = [...brokenLinks, 'nutrition-id']
-    } else if (validationSummary.hasNutritionChangeId &&
-      !validationSummary.linkedNutritionChangeIdsExist) {
-      brokenLinks = [...brokenLinks, 'nutr-change-id']
-    }
-
-    const hasBrokenLinks = brokenLinks.length > 0
-
-    if (hasBrokenLinks) {
-      isValid = false
-    }
-
-    const hasValidationErrors = validationErrors.length > 0
-
-    if (hasValidationErrors) {
-      isValid = false
-    }
-
-    validationSummary = Object.assign({}, {
-      isValid,
-      brokenLinks,
-      missingFields: unresolvableMandatoryFields,
-      validationErrors
-    })
-
-    // deep clone the validatedProduct!
-    this.fixedProduct = Object.assign({},
-      validatedProduct,
-      ...resolvedFields,
-      {validationSummary}
-    )
-
-    return this
-  }
-
-  validateAllProducts (products = this.prods) {
-    this.validatedProducts = products.map(product => {
-      return this.validateProduct(product).validatedProduct
-    })
-
-    return this
-  }
-
-  fixAllProducts (validatedProducts = this.validatedProducts) {
-    this.fixedProducts = validatedProducts.map(validatedProduct => {
-      return this.fixProduct(validatedProduct).fixedProduct
-    })
-
-    return this
-  }
+  return orderedProcesses
 }
 
-export default ProductValidator
+const _orderProduct = (orderProcesses, orderedKeys, product) => {
+  const hasFilename = product.hasOwnProperty('filename')
+  const hasValidationSummary = product.hasOwnProperty('validationSummary')
+
+  orderedKeys = hasFilename ? [...orderedKeys, 'filename'] : orderedKeys
+  orderedKeys = hasValidationSummary
+    ? [...orderedKeys, 'validationSummary']
+    : orderedKeys
+
+  const orderedPairs = orderedKeys
+  .filter(key => {
+    return !(product[key] === undefined ||
+      product[key] === '' ||
+      product[key].length === 0
+    )
+  })
+  .map(key => {
+    return key === 'processes'
+      ? {[key]: orderProcesses(product[key])}
+      : {[key]: product[key]}
+  })
+
+  const orderedProduct = Object.assign({}, ...orderedPairs)
+  return orderedProduct
+}
+
+const curriedOrderProduct = curry(_orderProduct)
+export const orderProduct = curriedOrderProduct(orderProcesses)
+
+export const addValidationSummary = product => {
+  // define a default validationSummary
+  const validationSummary = {
+    isValid: false,
+    parentProduct: '',
+    brokenLinks: [],
+    missingFields: [],
+    missingMandatoryFields: [],
+    validationErrors: []
+  }
+  const hasValidationSummary = product.hasOwnProperty('validationSummary') && Object.keys(product.validationSummary).every(key => {
+    return Object.keys(validationSummary).includes(key)
+  })
+
+  if (!hasValidationSummary) {
+    product = {...product, validationSummary}
+  }
+
+  return product
+}
+
+const _schemaValidate = (jsonschema, addValidationSummary, schema, product) => {
+  product = addValidationSummary(product)
+  let {validationSummary} = product
+
+  const validationErrors = jsonschema
+    .validate(product, schema).errors.map(error => {
+      return error.stack
+    })
+
+  const hasValidationErrors = validationErrors.length > 0
+
+  if (hasValidationErrors) {
+    validationSummary = {...validationSummary, validationErrors}
+  }
+
+  return {...product, validationSummary}
+}
+
+const curriedSchemaValidate = curry(_schemaValidate)
+export const schemaValidate = curriedSchemaValidate(
+  jsonschema,
+  addValidationSummary
+)
+
+const _addParentProduct = (addValidationSummary, prods, product) => {
+  product = addValidationSummary(product)
+  let {validationSummary} = product
+
+  const isLinked = product.hasOwnProperty('linked-id')
+
+  if (isLinked) {
+    const parentName = prods
+      .map(product => product.filename)
+      .filter(filename => filename.split('-')[0] === product['linked-id'])
+
+    validationSummary = {
+      ...validationSummary,
+      parentProduct: parentName[0] || ''
+    }
+  }
+
+  return {...product, validationSummary}
+}
+
+const curriedAddParentProduct = curry(_addParentProduct)
+export const addParentProduct = curriedAddParentProduct(addValidationSummary)
+
+const _addMissingFields = (allFields, MANDATORY_FIELDS, product) => {
+  product = addValidationSummary(product)
+  let {validationSummary} = product
+
+  const missingFields = allFields.filter(field => {
+    return !product.hasOwnProperty(field)
+  })
+
+  const missingMandatoryFields = missingFields.filter(field => {
+    return MANDATORY_FIELDS.includes(field)
+  })
+
+  const fieldsMissing = missingFields.length > 0
+  const mandatoryFieldsMissing = missingMandatoryFields.length > 0
+
+  if (fieldsMissing) {
+    validationSummary = {...validationSummary, missingFields}
+  }
+
+  if (mandatoryFieldsMissing) {
+    validationSummary = {...validationSummary, missingMandatoryFields}
+  }
+
+  return {...product, validationSummary}
+}
+
+const curriedAddMissingFields = curry(_addMissingFields)
+export const addMissingFields = curriedAddMissingFields(
+  ALL_FIELDS,
+  MANDATORY_FIELDS
+)
+
+const _validateNutritionId = (addValidationSummary, nutrs, product) => {
+  product = addValidationSummary(product)
+  let {validationSummary} = product
+  const {brokenLinks} = validationSummary
+
+  const hasNutritionId = product.hasOwnProperty('nutrition-id')
+
+  if (hasNutritionId) {
+    const nutritionId = product['nutrition-id']
+    const linkedNutritionIdExists = nutrs.some(nutrObj => {
+      return nutrObj.id === nutritionId
+    })
+
+    if (!linkedNutritionIdExists) {
+      validationSummary = {
+        ...validationSummary,
+        brokenLinks: [...brokenLinks, 'nutrition-id']
+      }
+    }
+  }
+
+  return {...product, validationSummary}
+}
+
+const curriedValidateNutritionId = curry(_validateNutritionId)
+export const validateNutritionId = curriedValidateNutritionId(
+  addValidationSummary
+)
+
+const _validateNutrChangeId = (addValidationSummary, nutrChange, product) => {
+  product = addValidationSummary(product)
+  let {validationSummary} = product
+  const {brokenLinks} = validationSummary
+
+  const hasProcesses = product.hasOwnProperty('processes') && product.processes
+
+  const hasNutritionChangeId = hasProcesses
+    ? product.processes.length > 0 &&
+      product.processes[0].hasOwnProperty('nutr-change-id')
+    : false
+
+  if (hasNutritionChangeId) {
+    const {processes} = product
+    const allNutritionChangeIds = processes.map(processesObj => {
+      return processesObj['nutr-change-id']
+    })
+
+    const linkedNutritionChangeIdsExist = allNutritionChangeIds
+        .every(nutritionChangeId => {
+          return nutrChange.some(nutrChangeObj => {
+            return nutrChangeObj.id === nutritionChangeId
+          })
+        })
+
+    if (!linkedNutritionChangeIdsExist) {
+      validationSummary = {
+        ...validationSummary,
+        brokenLinks: [...brokenLinks, 'nutr-change-id']
+      }
+    }
+  }
+
+  return {...product, validationSummary}
+}
+
+const curriedValidateNutritionChangeId = curry(_validateNutrChangeId)
+export const validateNutrChangeId = curriedValidateNutritionChangeId(
+  addValidationSummary
+)
+
+export const classify = (product) => {
+  let {validationSummary} = product
+
+  if (!validationSummary) {
+    throw new Error('Cannot classify product without validationSummary')
+  }
+
+  const {
+    brokenLinks,
+    missingMandatoryFields,
+    validationErrors
+  } = validationSummary
+  const hasBrokenLinks = brokenLinks.length > 0
+  const hasMissingMandatoryFields = missingMandatoryFields.length > 0
+  const hasValidationErrors = validationErrors.length > 0
+  const isValid = !hasBrokenLinks &&
+    !hasMissingMandatoryFields &&
+    !hasValidationErrors
+  validationSummary = {...validationSummary, isValid}
+  return {...product, validationSummary}
+}
+
+const _getFieldFromParent = (prods, parentProduct, field) => {
+  const validatedParentProduct = addParentProduct(prods, parentProduct)
+  const {validationSummary} = validatedParentProduct
+  let pulledField = {}
+
+  const fieldExistsInParent = parentProduct.hasOwnProperty(field)
+  // parentProduct is '' (falsy) when no linked-id is given or no product with
+  // the linked id exists
+  const isLinked = validationSummary.parentProduct
+
+  if (fieldExistsInParent) {
+    pulledField = {[field]: parentProduct[field]}
+  } else if (isLinked) {
+    const grandParent = prods.filter(product => {
+      return product.filename === validationSummary.parentProduct
+    })[0]
+    const validatedGrandParent = addParentProduct(prods, grandParent)
+    return _getFieldFromParent(prods, validatedGrandParent, field)
+  } else {
+    pulledField = {[field]: 'NOT_RESOLVABLE'}
+  }
+
+  return pulledField
+}
+
+export const getFieldFromParent = curry(_getFieldFromParent)
+
+const _pullMissingFields = (getFieldFromParent, prods, validatedProduct) => {
+  const {missingFields} = validatedProduct.validationSummary
+
+  const pulledFields = missingFields
+    .map(field => getFieldFromParent(prods, validatedProduct, field))
+    .filter(field => field[Object.keys(field)] !== 'NOT_RESOLVABLE')
+    .reduce((prev, curr) => ({...prev, ...curr}), {})
+
+  return pulledFields
+}
+
+const curriedPullMissingFields = curry(_pullMissingFields)
+export const pullMissingFields = curriedPullMissingFields(getFieldFromParent)
+
+const _pullAndAddMissingFields = (pullMissingFields, prods, product) => {
+  const pulledFields = pullMissingFields(prods, product)
+  return {...product, ...pulledFields}
+}
+
+const curriedPullAndAddMissingFields = curry(_pullAndAddMissingFields)
+export const pullAndAddMissingFields = curriedPullAndAddMissingFields(
+  pullMissingFields
+)
