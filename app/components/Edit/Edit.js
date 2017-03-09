@@ -73,12 +73,14 @@ class Edit extends Component {
     const {
       mergeEditedToProducts,
       saveAllProducts,
-      saveEditedProduct
+      saveEditedProduct,
+      setProductType
     } = this.props.actions
 
     mergeEditedToProducts()
     saveAllProducts()
     saveEditedProduct()
+    setProductType('old')
     this.toggleSaveModal()
   }
 
