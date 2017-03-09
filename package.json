@@ -148,6 +148,7 @@
     "history": "^4.5.1",
     "jsonfile": "^2.4.0",
     "jsonschema": "^1.1.1",
+    "ramda": "^0.23.0",
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.2",
     "react-addons-transition-group": "^15.4.2",

@@ -1,6 +1,6 @@
 import fs from 'fs'
 import jsonfile from 'jsonfile'
-import {partial} from '../../utils/utils'
+import {curry} from 'ramda'
 
 // set indentation for jsonfile
 jsonfile.spaces = 2
@@ -25,7 +25,8 @@ const _loadProduct = (addFilename, pathToProduct) => {
   }
 }
 
-export const loadProduct = partial(_loadProduct, addFilename)
+const curriedLoadProduct = curry(_loadProduct)
+export const loadProduct = curriedLoadProduct(addFilename)
 
 const _loadAllProducts = (isValidProductFilename, dataDir) => {
   const filenames = fs.readdirSync(`${dataDir}/prods`)
@@ -40,7 +41,8 @@ const _loadAllProducts = (isValidProductFilename, dataDir) => {
   return prods
 }
 
-export const loadAllProducts = partial(_loadAllProducts, isValidProductFilename)
+const curriedLoadAllProducts = curry(_loadAllProducts)
+export const loadAllProducts = curriedLoadAllProducts(isValidProductFilename)
 
 export const loadFaos = dataDir => {
   const faos = jsonfile.readFileSync(`${dataDir}/fao-product-list.json`)
@@ -97,7 +99,8 @@ export const _saveProduct = (removeHelperFields, dataDir, product) => {
 // Hey future me: what's the (dis)advantage of doing this vs. just using
 // _removeHelperFields from the enclosiong scope? It's not a pure function
 // anyway because it saves a file which is an obvious side effect...
-export const saveProduct = partial(_saveProduct, removeHelperFields)
+const curriedSaveProduct = curry(_saveProduct)
+export const saveProduct = curriedSaveProduct(removeHelperFields)
 
 export const saveAllProducts = (dataDir, prods) => {
   jsonfile.writeFileSync(`${dataDir}/prods.all.json`, prods)

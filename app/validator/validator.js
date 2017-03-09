@@ -1,6 +1,6 @@
 // let's' try to write the complete validator in funvtional style
 import jsonschema from 'jsonschema'
-import {partial} from '../utils/utils'
+import {curry} from 'ramda'
 
 const MANDATORY_FIELDS = [
   'id',
@@ -33,7 +33,7 @@ const OPTIONAL_FIELDS = [
 
 const ALL_FIELDS = [...MANDATORY_FIELDS, ...OPTIONAL_FIELDS]
 
-export const _orderProcesses = processes => {
+export const orderProcesses = processes => {
   const keys = ['process', 'nutr-change-id']
   const orderedProcesses = processes
     .filter(process => process)
@@ -49,7 +49,7 @@ export const _orderProcesses = processes => {
   return orderedProcesses
 }
 
-const _orderProduct = (_orderProcesses, orderedKeys, product) => {
+const _orderProduct = (orderProcesses, orderedKeys, product) => {
   const hasFilename = product.hasOwnProperty('filename')
   const hasValidationSummary = product.hasOwnProperty('validationSummary')
 
@@ -67,7 +67,7 @@ const _orderProduct = (_orderProcesses, orderedKeys, product) => {
   })
   .map(key => {
     return key === 'processes'
-      ? {[key]: _orderProcesses(product[key])}
+      ? {[key]: orderProcesses(product[key])}
       : {[key]: product[key]}
   })
 
@@ -75,7 +75,8 @@ const _orderProduct = (_orderProcesses, orderedKeys, product) => {
   return orderedProduct
 }
 
-export const orderProduct = partial(_orderProduct, _orderProcesses)
+const curriedOrderProduct = curry(_orderProduct)
+export const orderProduct = curriedOrderProduct(orderProcesses)
 
 export const addValidationSummary = product => {
   // define a default validationSummary
@@ -116,8 +117,8 @@ const _schemaValidate = (jsonschema, addValidationSummary, schema, product) => {
   return {...product, validationSummary}
 }
 
-export const schemaValidate = partial(
-  _schemaValidate,
+const curriedSchemaValidate = curry(_schemaValidate)
+export const schemaValidate = curriedSchemaValidate(
   jsonschema,
   addValidationSummary
 )
@@ -142,7 +143,8 @@ const _addParentProduct = (addValidationSummary, prods, product) => {
   return {...product, validationSummary}
 }
 
-export const addParentProduct = partial(_addParentProduct, addValidationSummary)
+const curriedAddParentProduct = curry(_addParentProduct)
+export const addParentProduct = curriedAddParentProduct(addValidationSummary)
 
 const _addMissingFields = (allFields, MANDATORY_FIELDS, product) => {
   product = addValidationSummary(product)
@@ -170,8 +172,8 @@ const _addMissingFields = (allFields, MANDATORY_FIELDS, product) => {
   return {...product, validationSummary}
 }
 
-export const addMissingFields = partial(
-  _addMissingFields,
+const curriedAddMissingFields = curry(_addMissingFields)
+export const addMissingFields = curriedAddMissingFields(
   ALL_FIELDS,
   MANDATORY_FIELDS
 )
@@ -200,8 +202,8 @@ const _validateNutritionId = (addValidationSummary, nutrs, product) => {
   return {...product, validationSummary}
 }
 
-export const validateNutritionId = partial(
-  _validateNutritionId,
+const curriedValidateNutritionId = curry(_validateNutritionId)
+export const validateNutritionId = curriedValidateNutritionId(
   addValidationSummary
 )
 
@@ -241,14 +243,18 @@ const _validateNutrChangeId = (addValidationSummary, nutrChange, product) => {
   return {...product, validationSummary}
 }
 
-export const validateNutrChangeId = partial(
-  _validateNutrChangeId,
+const curriedValidateNutritionChangeId = curry(_validateNutrChangeId)
+export const validateNutrChangeId = curriedValidateNutritionChangeId(
   addValidationSummary
 )
 
-const _classify = (addValidationSummary, product) => {
-  product = addValidationSummary(product)
+export const classify = (product) => {
   let {validationSummary} = product
+
+  if (!validationSummary) {
+    throw new Error('Cannot classify product without validationSummary')
+  }
+
   const {
     brokenLinks,
     missingMandatoryFields,
@@ -264,9 +270,7 @@ const _classify = (addValidationSummary, product) => {
   return {...product, validationSummary}
 }
 
-export const classify = partial(_classify, addValidationSummary)
-
-export const getFieldFromParent = (prods, parentProduct, field) => {
+const _getFieldFromParent = (prods, parentProduct, field) => {
   const validatedParentProduct = addParentProduct(prods, parentProduct)
   const {validationSummary} = validatedParentProduct
   let pulledField = {}
@@ -283,13 +287,15 @@ export const getFieldFromParent = (prods, parentProduct, field) => {
       return product.filename === validationSummary.parentProduct
     })[0]
     const validatedGrandParent = addParentProduct(prods, grandParent)
-    return getFieldFromParent(prods, validatedGrandParent, field)
+    return _getFieldFromParent(prods, validatedGrandParent, field)
   } else {
     pulledField = {[field]: 'NOT_RESOLVABLE'}
   }
 
   return pulledField
 }
+
+export const getFieldFromParent = curry(_getFieldFromParent)
 
 const _pullMissingFields = (getFieldFromParent, prods, validatedProduct) => {
   const {missingFields} = validatedProduct.validationSummary
@@ -302,17 +308,15 @@ const _pullMissingFields = (getFieldFromParent, prods, validatedProduct) => {
   return pulledFields
 }
 
-export const pullMissingFields = partial(
-  _pullMissingFields,
-  getFieldFromParent
-)
+const curriedPullMissingFields = curry(_pullMissingFields)
+export const pullMissingFields = curriedPullMissingFields(getFieldFromParent)
 
 const _pullAndAddMissingFields = (pullMissingFields, prods, product) => {
   const pulledFields = pullMissingFields(prods, product)
   return {...product, ...pulledFields}
 }
 
-export const pullAndAddMissingFields = partial(
-  _pullAndAddMissingFields,
+const curriedPullAndAddMissingFields = curry(_pullAndAddMissingFields)
+export const pullAndAddMissingFields = curriedPullAndAddMissingFields(
   pullMissingFields
 )

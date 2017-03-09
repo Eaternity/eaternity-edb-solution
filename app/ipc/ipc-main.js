@@ -1,6 +1,6 @@
 import { ipcMain, dialog } from 'electron'
 import jsonfile from 'jsonfile'
-import {partial, pipe} from '../utils/utils'
+import {pipe} from 'ramda'
 import {
   loadAllProducts,
   loadFaos,
@@ -62,11 +62,11 @@ ipcMain.on('fetch-all-products', (event, dataDir) => {
     const productSchema = loadProductSchema(dataDir)
 
     const validateProduct = pipe(
-      partial(schemaValidate, productSchema),
-      partial(addParentProduct, prods),
+      schemaValidate(productSchema),
+      addParentProduct(prods),
       addMissingFields,
-      partial(validateNutritionId, nutrs),
-      partial(validateNutrChangeId, nutrChange),
+      validateNutritionId(nutrs),
+      validateNutrChangeId(nutrChange),
       classify
     )
 
@@ -124,12 +124,12 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
     // the products coming from the client/renderer contain exactly one
     // new or edited product. All products get validated again against products.
     const validateProduct = pipe(
-      partial(orderProduct, orderedKeys),
-      partial(schemaValidate, productSchema),
-      partial(addParentProduct, products),
+      orderProduct(orderedKeys),
+      schemaValidate(productSchema),
+      addParentProduct(products),
       addMissingFields,
-      partial(validateNutritionId, nutrs),
-      partial(validateNutrChangeId, nutrChange),
+      validateNutritionId(nutrs),
+      validateNutrChangeId(nutrChange),
       classify
     )
 
@@ -157,8 +157,8 @@ ipcMain.on('save-edited-product', (event, dataDir, editedProduct) => {
     const orderedKeys = Object.keys(productSchema.properties)
 
     const orderAndSave = pipe(
-      partial(orderProduct, orderedKeys),
-      partial(saveProduct, dataDir)
+      orderProduct(orderedKeys),
+      saveProduct(dataDir)
     )
 
     orderAndSave(editedProduct)

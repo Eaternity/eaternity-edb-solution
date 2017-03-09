@@ -1,6 +1,6 @@
 import path from 'path'
 import jsonfile from 'jsonfile'
-import {partial, pipe} from '../utils/utils'
+import {pipe} from 'ramda'
 import {
   loadProduct,
   loadAllProducts,
@@ -10,7 +10,7 @@ import {
   removeHelperFields
 } from './helpers/helpers'
 import {
-  _orderProcesses,
+  orderProcesses,
   orderProduct,
   addValidationSummary,
   schemaValidate,
@@ -42,7 +42,7 @@ describe('validator', () => {
     )
     const unorderedProcesses = unorderedProduct.processes
     const expectedOrderedProcesses = orderedProduct.processes
-    const orderedProcesses = _orderProcesses(unorderedProcesses)
+    const orderedProcesses = orderProcesses(unorderedProcesses)
     expect(orderedProcesses).toEqual(expectedOrderedProcesses)
   })
 
@@ -53,7 +53,7 @@ describe('validator', () => {
     const expectedOrderedProduct = jsonfile.readFileSync(
       `${dataDir}/prods/12-ordered-prod.json`
     )
-    const orderedProduct = orderProduct(orderedKeys, unorderedProduct)
+    const orderedProduct = orderProduct(orderedKeys)(unorderedProduct)
     expect(orderedProduct).toEqual(expectedOrderedProduct)
   })
 
@@ -267,16 +267,24 @@ describe('validator', () => {
     const pathToFullProduct = `${dataDir}/prods/14-full-prod.json`
     const fullProduct = loadProduct(pathToFullProduct)
     const validateProduct = pipe(
-      partial(orderProduct, orderedKeys),
-      partial(schemaValidate, productSchema),
-      partial(addParentProduct, prods),
+      orderProduct(orderedKeys),
+      schemaValidate(productSchema),
+      addParentProduct(prods),
       addMissingFields,
-      partial(validateNutritionId, nutrs),
-      partial(validateNutrChangeId, nutrChange),
+      validateNutritionId(nutrs),
+      validateNutrChangeId(nutrChange),
       classify
     )
     const validatedProduct = validateProduct(fullProduct)
     expect(validatedProduct.validationSummary.isValid).toBeTruthy()
+  })
+
+  it('classify throws Error when passed product without summary', () => {
+    const pathToProduct = `${dataDir}/prods/3-child-prod.json`
+    const productWithoutSummary = loadProduct(pathToProduct)
+    const classifyProd = () => classify(productWithoutSummary)
+    expect(classifyProd)
+      .toThrow('Cannot classify product without validationSummary')
   })
 
   it('pipe yourself a validator', () => {
@@ -284,11 +292,11 @@ describe('validator', () => {
     const fullProduct = loadProduct(pathToFullProduct)
 
     const validatorPipeline = pipe(
-      partial(schemaValidate, productSchema),
-      partial(addParentProduct, prods),
+      schemaValidate(productSchema),
+      addParentProduct(prods),
       addMissingFields,
-      partial(validateNutritionId, nutrs),
-      partial(validateNutrChangeId, nutrChange),
+      validateNutritionId(nutrs),
+      validateNutrChangeId(nutrChange),
       classify
     )
 
@@ -312,7 +320,7 @@ describe('validator', () => {
     const pathToParent = `${dataDir}/prods/2-parent-prod.json`
     const parent = loadProduct(pathToParent)
     const expectedReturnValue = {'co2-value': 1}
-    const getField = partial(getFieldFromParent, prods)
+    const getField = getFieldFromParent(prods)
     const returnValue = getField(parent, field)
     expect(returnValue).toEqual(expectedReturnValue)
   })
@@ -323,7 +331,7 @@ describe('validator', () => {
     const pathToParent = `${dataDir}/prods/2-parent-prod.json`
     const parent = loadProduct(pathToParent)
     const expectedReturnValue = {'nutrition-id': '1'}
-    const getField = partial(getFieldFromParent, prods)
+    const getField = getFieldFromParent(prods)
     const returnValue = getField(parent, field)
     expect(returnValue).toEqual(expectedReturnValue)
   })
@@ -333,7 +341,7 @@ describe('validator', () => {
     const pathToParent = `${dataDir}/prods/2-parent-prod.json`
     const parent = loadProduct(pathToParent)
     const validateParent = pipe(
-      partial(addParentProduct, prods),
+      addParentProduct(prods),
       addMissingFields,
     )
     const validatedParent = validateParent(parent)
@@ -351,7 +359,7 @@ describe('validator', () => {
     const pathToChild = `${dataDir}/prods/3-child-prod.json`
     const child = loadProduct(pathToChild)
     const validateChild = pipe(
-      partial(addParentProduct, prods),
+      addParentProduct(prods),
       addMissingFields,
     )
     const validatedChild = validateChild(child)
@@ -375,9 +383,9 @@ describe('validator', () => {
     const pathToChild = `${dataDir}/prods/3-child-prod.json`
     const child = loadProduct(pathToChild)
     const enhanceChild = pipe(
-      partial(addParentProduct, prods),
+      addParentProduct(prods),
       addMissingFields,
-      partial(pullAndAddMissingFields, prods),
+      pullAndAddMissingFields(prods),
       removeHelperFields
     )
     const expectedReturnValue = {
