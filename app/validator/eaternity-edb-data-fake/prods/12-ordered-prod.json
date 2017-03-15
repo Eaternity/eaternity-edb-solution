@@ -1,31 +1,32 @@
 {
   "id": 9,
-  "name": "Wrong Types",
+  "name": "Name",
   "synonyms": [
     "syn1",
     "syn2"
   ],
+  "season-begin": "",
   "tags": [
     "tag1",
     "tag2"
   ],
   "processes": [
     {
-      "process": "unordered",
+      "process": "process",
       "nutr-change-id": 1
     },
     {
-      "process": "unordered",
+      "process": "process",
       "nutr-change-id": 2
     },
     {
       "nutr-change-id": 3,
-      "process": "ordered"
+      "process": "process"
     }
   ],
   "alternatives": "alt1, alt2",
   "co2-value": 1,
-  "filename": "9-wrong-types-prod.json",
+  "filename": "filename-prod.json",
   "validationSummary": {
     "parentProduct": "",
     "brokenLinks": [],
