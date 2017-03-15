@@ -2,18 +2,18 @@
   "alternatives": "alt1, alt2",
   "co2-value": 1,
   "id": 9,
-  "name": "Wrong Types",
+  "name": "Name",
   "processes": [
     {
       "nutr-change-id": 1,
-      "process": "unordered"
+      "process": "process"
     },
     {
       "nutr-change-id": 2,
-      "process": "unordered"
+      "process": "process"
     },
     {
-      "process": "ordered",
+      "process": "process",
       "nutr-change-id": 3
     }
   ],
@@ -27,7 +27,7 @@
   ],
   "season-begin": "",
   "unknown": "unknown",
-  "filename": "9-wrong-types-prod.json",
+  "filename": "filename-prod.json",
   "validationSummary": {
     "parentProduct": "",
     "brokenLinks": [],
