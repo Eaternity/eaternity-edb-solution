@@ -46,7 +46,7 @@ describe('validator', () => {
     expect(orderedProcesses).toEqual(expectedOrderedProcesses)
   })
 
-  test('orderProduct orders a product according to a list of keys', () => {
+  it('orderProduct orders a product according to a list of keys', () => {
     const unorderedProduct = jsonfile.readFileSync(
       `${dataDir}/prods/11-unordered-prod.json`
     )
@@ -54,18 +54,8 @@ describe('validator', () => {
       `${dataDir}/prods/12-ordered-prod.json`
     )
     const orderedProduct = orderProduct(orderedKeys)(unorderedProduct)
-    expect(orderedProduct).toEqual(expectedOrderedProduct)
-  })
-
-  test('orderProduct orders a product according to a list of keys', () => {
-    const unorderedProduct = jsonfile.readFileSync(
-      `${dataDir}/prods/11-unordered-prod.json`
-    )
-    const expectedOrderedProduct = jsonfile.readFileSync(
-      `${dataDir}/prods/12-ordered-prod.json`
-    )
-    const orderedProduct = orderProduct(orderedKeys, unorderedProduct)
-    expect(orderedProduct).toEqual(expectedOrderedProduct)
+    expect(removeHelperFields(orderedProduct))
+      .toEqual(removeHelperFields(expectedOrderedProduct))
   })
 
   test('orderProduct does not remove filename and validationSummary', () => {
