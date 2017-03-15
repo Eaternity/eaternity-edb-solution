@@ -59,12 +59,9 @@ const _orderProduct = (orderProcesses, orderedKeys, product) => {
     : orderedKeys
 
   const orderedPairs = orderedKeys
-  .filter(key => {
-    return !(product[key] === undefined ||
-      product[key] === '' ||
-      product[key].length === 0
-    )
-  })
+  // TODO: the following filter is actually in the wrong place. Function name
+  // says order product but product gets ordered + empty fields are removed...
+  .filter(key => product[key] !== undefined)
   .map(key => {
     return key === 'processes'
       ? {[key]: orderProcesses(product[key])}
