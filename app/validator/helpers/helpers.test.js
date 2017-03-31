@@ -231,7 +231,7 @@ describe('helpers', () => {
 
   it('saveAllProductsToCsv saves prods to prods.all.csv', () => {
     const prods = loadAllProducts(dataDir)
-    const filename = 'prods.all.csv'
+    const filename = 'EDB_Products-Export.csv'
     const fields = [...orderedKeys]
 
     // calling saveAllProductsToCsv saves the file and returns the csv data

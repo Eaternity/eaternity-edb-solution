@@ -108,13 +108,10 @@ export const saveAllProducts = (dataDir, prods) => {
 }
 
 const _saveAllProductsToCsv = (fields, dataDir, prods) => {
-  try {
-    const result = json2csv({ data: prods, fields: fields })
-    fs.writeFileSync(`${dataDir}/prods.all.csv`, result)
-    return result
-  } catch (err) {
-    console.error(err)
-  }
+  const filename = 'EDB_Products-Export.csv'
+  const result = json2csv({ data: prods, fields: fields })
+  fs.writeFileSync(`${dataDir}/${filename}`, result)
+  return result
 }
 
 export const saveAllProductsToCsv = curry(_saveAllProductsToCsv)
