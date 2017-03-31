@@ -8,7 +8,8 @@ import {
   loadNutrChange,
   loadProductSchema,
   saveProduct,
-  saveAllProducts
+  saveAllProducts,
+  saveAllProductsToCsv
 } from '../validator/helpers/helpers'
 import {
   orderProduct,
@@ -60,6 +61,7 @@ ipcMain.on('fetch-all-products', (event, dataDir) => {
     const nutrs = loadNutrs(dataDir)
     const nutrChange = loadNutrChange(dataDir)
     const productSchema = loadProductSchema(dataDir)
+    const fields = Object.keys(productSchema.properties)
 
     const validateProduct = pipe(
       schemaValidate(productSchema),
@@ -71,6 +73,10 @@ ipcMain.on('fetch-all-products', (event, dataDir) => {
     )
 
     const validatedProducts = prods.map(prod => validateProduct(prod))
+
+    // save all producst to csv when app starts so Isa can start using the csv
+    // file straight away
+    saveAllProductsToCsv(fields, dataDir, validatedProducts)
 
     // all arguments to event.sender.send will be serialized to json internally!
     // https://github.com/electron/electron/blob/master/docs/api/ipc-renderer.md
@@ -141,6 +147,7 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
       .map(prod => pullAndAddMissingFields(products, prod))
 
     saveAllProducts(dataDir, enhancedProds)
+    saveAllProductsToCsv(orderedKeys, dataDir, validatedProducts)
 
     event.sender.send('all-products-saved', validatedProducts)
   } catch (err) {

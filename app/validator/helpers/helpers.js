@@ -1,6 +1,7 @@
 import fs from 'fs'
 import jsonfile from 'jsonfile'
 import {curry} from 'ramda'
+import json2csv from 'json2csv'
 
 // set indentation for jsonfile
 jsonfile.spaces = 2
@@ -105,3 +106,15 @@ export const saveProduct = curriedSaveProduct(removeHelperFields)
 export const saveAllProducts = (dataDir, prods) => {
   jsonfile.writeFileSync(`${dataDir}/prods.all.json`, prods)
 }
+
+const _saveAllProductsToCsv = (fields, dataDir, prods) => {
+  try {
+    const result = json2csv({ data: prods, fields: fields })
+    fs.writeFileSync(`${dataDir}/prods.all.csv`, result)
+    return result
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+export const saveAllProductsToCsv = curry(_saveAllProductsToCsv)

@@ -15,11 +15,14 @@ import {
   loadProductSchema,
   _saveProduct,
   saveProduct,
-  saveAllProducts
+  saveAllProducts,
+  saveAllProductsToCsv
 } from './helpers'
 
 // Point to fake test resources
 const dataDir = path.resolve(`${__dirname}`, '../eaternity-edb-data-fake')
+const productSchema = loadProductSchema(dataDir)
+const orderedKeys = Object.keys(productSchema.properties)
 
 describe('helpers', () => {
   test('addFilename adds filename field to object', () => {
@@ -221,6 +224,27 @@ describe('helpers', () => {
     expect(productsReloaded).toHaveLength(13)
     expect(productsReloaded.find(randomProduct)).toEqual(sampleProduct)
     expect(filenames.includes(filename)).toBeTruthy()
+
+    // clean up, maybe should be done in afterEach to account for async?
+    fs.unlinkSync(`${dataDir}/${filename}`)
+  })
+
+  it('saveAllProductsToCsv saves prods to prods.all.csv', () => {
+    const prods = loadAllProducts(dataDir)
+    const filename = 'prods.all.csv'
+    const fields = [...orderedKeys]
+
+    // calling saveAllProductsToCsv saves the file and returns the csv data
+    const result = saveAllProductsToCsv(fields, dataDir, prods)
+
+    const filenames = fs.readdirSync(dataDir)
+    const csvReloaded = fs.readFileSync(`${dataDir}/${filename}`, {
+      encoding: 'utf8'
+    })
+
+    expect(result).toMatchSnapshot()
+    expect(filenames.includes(filename)).toBeTruthy()
+    expect(csvReloaded).toEqual(result)
 
     // clean up, maybe should be done in afterEach to account for async?
     fs.unlinkSync(`${dataDir}/${filename}`)
