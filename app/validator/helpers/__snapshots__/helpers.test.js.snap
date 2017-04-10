@@ -1,0 +1,16 @@
+exports[`helpers saveAllProductsToCsv saves prods to prods.all.csv 1`] = `
+"\"id\",\"name\",\"specification\",\"synonyms\",\"name-english\",\"name-french\",\"tags\",\"linked-id\",\"nutrition-id\",\"fao-product-id\",\"waste-id\",\"perishability\",\"season-begin\",\"season-end\",\"processes\",\"allergenes\",\"unit-weight\",\"density\",\"quantity-comments\",\"quantity-references\",\"alternatives\",\"co2-value\",\"co2-calculation\",\"calculation-process-documentation\",\"references\",\"production-names\",\"production-values\",\"conservation-names\",\"conservation-values\",\"processing-names\",\"processing-values\",\"packaging-names\",\"packaging-values\",\"references-parameters\",\"co2-calculation-parameters\",\"info-text\",\"other-references\",\"comments\",\"data-quality\",\"author\",\"delete\",\"combined-product\"
+1,\"Grand Parent\",,,,,\"from, grandparent\",,\"1\",,,\"from grandparent\",\"from grandparent\",\"from grandparent\",\"[{\"\"process\"\":\"\"from grandparent\"\",\"\"nutr-change-id\"\":1}]\",,,,,,,1,,,,,,,,,,,,,,,,,,,,
+9,\"Name\",,\"[\"\"syn1\"\",\"\"syn2\"\"]\",,,\"[\"\"tag1\"\",\"\"tag2\"\"]\",,,,,,\"\",,\"[{\"\"nutr-change-id\"\":1,\"\"process\"\":\"\"process\"\"},{\"\"nutr-change-id\"\":2,\"\"process\"\":\"\"process\"\"},{\"\"process\"\":\"\"process\"\",\"\"nutr-change-id\"\":3}]\",,,,,,\"alt1, alt2\",1,,,,,,,,,,,,,,,,,,,,
+9,\"Name\",,\"[\"\"syn1\"\",\"\"syn2\"\"]\",,,\"[\"\"tag1\"\",\"\"tag2\"\"]\",,,,,,\"\",,\"[{\"\"process\"\":\"\"process\"\",\"\"nutr-change-id\"\":1},{\"\"process\"\":\"\"process\"\",\"\"nutr-change-id\"\":2},{\"\"nutr-change-id\"\":3,\"\"process\"\":\"\"process\"\"}]\",,,,,,\"alt1, alt2\",1,,,,,,,,,,,,,,,,,,,,
+13,\"Helpers\",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+14,\"Full product\",,,,,\"tag1, tag2\",,\"1\",\"1\",\"1\",\"high\",\"April\",\"October\",\"[{\"\"process\"\":\"\"cooked\"\",\"\"nutr-change-id\"\":1}]\",\"celery\",1,1,,,,1,,,,\"organic\",\"S\",\"frozen\",\"S\",\"filetiert\",\"1\",\"Dose\",\"1\",,,,,,,,,
+2,\"Parent\",,,,,\"from, parent\",\"1\",,,,\"from parent\",,,\"[{\"\"process\"\":\"\"from parent\"\",\"\"nutr-change-id\"\":1}]\",,,,,,,1,,,,,,,,,,,,,,,,,,,,
+3,\"Child\",,,,,,\"2\",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+4,\"Lonely Child\",,,,,,\"1000\",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+5,\"Broken Nutrition ID\",,,,,,,\"1000\",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+6,\"Broken Nutr Change ID\",,,,,,,,,,,,,\"[{\"\"process\"\":\"\"broken\"\",\"\"nutr-change-id\"\":1000}]\",,,,,,,,,,,,,,,,,,,,,,,,,,,
+7,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+1,\"Duplicate ID\",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+9,\"Wrong Types\",,\"[1]\",,,\"[\"\"tag1\"\",\"\"tag2\"\"]\",,,,,,,,,,,,,,,\"1\",,,,,,,,,,,,,,,,,,,,"
+`;
