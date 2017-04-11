@@ -1,11 +1,11 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import Autosuggest from 'react-autosuggest'
 import theme from './Oracle.css'
 
 class Oracle extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
     formContext: PropTypes.object.isRequired,
     options: PropTypes.object.isRequired,
     value: PropTypes.string,

@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import {
   Button,
   Card,
@@ -22,7 +23,6 @@ import styles from './Edit.css'
 
 class Edit extends Component {
   static propTypes = {
-    dataDir: PropTypes.string.isRequired,
     productSchema: PropTypes.object.isRequired,
     editedProduct: PropTypes.object.isRequired,
     products: PropTypes.array.isRequired,

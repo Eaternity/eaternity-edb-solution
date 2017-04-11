@@ -1,11 +1,11 @@
-/* @flow */
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import { clipboard } from 'electron'
 import { Table, Tr, Td } from 'reactable'
 import { Button, Col, Container, Row } from 'reactstrap'
 import DropArea from '../DropArea/DropArea'
 
-const NutrientTable = (props: Object) => {
+const NutrientTable = props => {
   const handleCopyClick = (id) => {
     clipboard.writeText(id.toString())
   }

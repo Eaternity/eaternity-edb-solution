@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import SearchBar from '../SearchBar/SearchBar'
 import NavGroup from '../NavGroup/NavGroup'
 import ProductTable from '../ProductTable/ProductTable'
@@ -8,31 +9,43 @@ import InvalidTable from '../InvalidTable/InvalidTable'
 import styles from './Home.css'
 
 const Home = props => {
+  const {
+    actions,
+    dataDir,
+    editedProduct,
+    visibleTable,
+    products,
+    nutrients,
+    faos,
+    searchInput,
+    searchFilter
+  } = props
+
   const renderTable = table => {
     switch (table) {
       case 'products':
         return <ProductTable
-          actions={props.actions}
-          products={props.products}
-          searchInput={props.searchInput}
-          searchFilter={props.searchFilter} />
+          actions={actions}
+          products={products}
+          searchInput={searchInput}
+          searchFilter={searchFilter} />
       case 'fao':
         return <FaoTable
-          actions={props.actions}
-          faos={props.faos}
-          searchInput={props.searchInput} />
+          actions={actions}
+          faos={faos}
+          searchInput={searchInput} />
 
       case 'nutrition':
         return <NutrientTable
-          actions={props.actions}
-          nutrients={props.nutrients}
-          searchInput={props.searchInput} />
+          actions={actions}
+          nutrients={nutrients}
+          searchInput={searchInput} />
 
       case 'invalid':
         return <InvalidTable
-          actions={props.actions}
-          products={props.products}
-          searchInput={props.searchInput} />
+          actions={actions}
+          products={products}
+          searchInput={searchInput} />
 
       default:
         return <h1>Default case should not exist! Check Home.js</h1>
@@ -42,12 +55,12 @@ const Home = props => {
   return (
     <div className={styles.container}>
       <SearchBar
-        dataDir={props.dataDir}
-        editedProduct={props.editedProduct}
-        actions={props.actions} />
+        dataDir={dataDir}
+        editedProduct={editedProduct}
+        actions={actions} />
       <NavGroup
-        actions={props.actions} />
-      {renderTable(props.visibleTable)}
+        actions={actions} />
+      {renderTable(visibleTable)}
     </div>
   )
 }

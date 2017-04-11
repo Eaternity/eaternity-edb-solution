@@ -1,12 +1,14 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import { Table, Tr, Td } from 'reactable'
 import { Button, Col, Container, Row } from 'reactstrap'
 import DropArea from '../DropArea/DropArea'
 
 const InvalidTable = props => {
   const handleEditClick = (id) => {
-    props.actions.selectProduct(id)
-    props.actions.changeLocation(`/edit/${id}`)
+    const { selectProduct, changeLocation } = props.actions
+    selectProduct(id)
+    changeLocation(`/edit/${id}`)
   }
 
   const renderTableRows = () => {

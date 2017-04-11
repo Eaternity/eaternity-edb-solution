@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import { Table, Tr, Td } from 'reactable'
 import { Button, Col, Container, Row } from 'reactstrap'
 import DropArea from '../DropArea/DropArea'
@@ -6,8 +7,9 @@ import styles from './ProductTable.css'
 
 const ProductTable = props => {
   const handleEditClick = (id) => {
-    props.actions.selectProduct(id)
-    props.actions.changeLocation(`/edit/${id}`)
+    const { selectProduct, changeLocation } = props.actions
+    selectProduct(id)
+    changeLocation(`/edit/${id}`)
   }
 
   const renderTableRows = () => {
@@ -42,10 +44,11 @@ const ProductTable = props => {
   }
 
   const renderView = () => {
-    if (props.products.length === 0) {
+    const {actions, searchInput, searchFilter, products} = props
+    if (products.length === 0) {
       return (
         <div className='drop-container'>
-          <DropArea actions={props.actions} />
+          <DropArea actions={actions} />
         </div>
       )
     }
@@ -56,9 +59,9 @@ const ProductTable = props => {
         columns={['Id', 'Name', 'Synonyms', 'Tags', 'Co2-value', 'Actions']}
         itemsPerPage={100}
         pageButtonLimit={5}
-        filterable={props.searchFilter}
+        filterable={searchFilter}
         sortable={['Id', 'Name', 'Synonyms', 'Tags', 'Co2-value']}
-        filterBy={props.searchInput}
+        filterBy={searchInput}
         hideFilterInput >
         {renderTableRows()}
       </Table>
