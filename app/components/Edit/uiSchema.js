@@ -1,10 +1,10 @@
 import Oracle from '../Oracle/Oracle'
 
 const uiSchema = {
-  'id': {
+  id: {
     'ui:readonly': true
   },
-  'name': {
+  name: {
     'ui:widget': 'text'
   },
   'name-english': {
@@ -13,8 +13,8 @@ const uiSchema = {
   'name-french': {
     'ui:widget': 'text'
   },
-  'synonyms': {
-    'items': {
+  synonyms: {
+    items: {
       'ui:widget': 'text'
     },
     'ui:field': 'synonyms',
@@ -26,35 +26,31 @@ const uiSchema = {
   'co2-value': {
     'ui:widget': 'text'
   },
-  'allergenes': {
+  allergenes: {
     'ui:widget': 'text'
   },
-  'tags': {
+  tags: {
     'ui:widget': 'text'
   },
-  'specification': {
+  specification: {
     'ui:widget': 'text'
   },
   'linked-id': {
     'ui:widget': Oracle,
     'ui:options': {
-      'dataSelector': 'products',
-      'searchFor': 'name',
-      'autocomplete': 'id',
-      'additionalRenderedFields': [
-        'id'
-      ]
+      dataSelector: 'products',
+      searchFor: 'name',
+      autocomplete: 'id',
+      additionalRenderedFields: ['id']
     }
   },
   'nutrition-id': {
     'ui:widget': Oracle,
     'ui:options': {
-      'dataSelector': 'nutrients',
-      'searchFor': 'name',
-      'autocomplete': 'id',
-      'additionalRenderedFields': [
-        'id'
-      ]
+      dataSelector: 'nutrients',
+      searchFor: 'name',
+      autocomplete: 'id',
+      additionalRenderedFields: ['id']
     }
   },
   'waste-id': {
@@ -63,15 +59,13 @@ const uiSchema = {
   'fao-product-id': {
     'ui:widget': Oracle,
     'ui:options': {
-      'dataSelector': 'faos',
-      'searchFor': 'fao-name',
-      'autocomplete': 'fao-code',
-      'additionalRenderedFields': [
-        'fao-code'
-      ]
+      dataSelector: 'faos',
+      searchFor: 'fao-name',
+      autocomplete: 'fao-code',
+      additionalRenderedFields: ['fao-code']
     }
   },
-  'alternatives': {
+  alternatives: {
     'ui:widget': 'text'
   },
   'production-names': {
@@ -107,7 +101,7 @@ const uiSchema = {
   'combined-product': {
     'ui:widget': 'select'
   },
-  'density': {
+  density: {
     'ui:widget': 'text'
   },
   'unit-weight': {
@@ -122,7 +116,7 @@ const uiSchema = {
   'co2-calculation': {
     'ui:widget': 'textarea'
   },
-  'perishability': {
+  perishability: {
     'ui:widget': 'text'
   },
   'calculation-process-documentation': {
@@ -131,17 +125,17 @@ const uiSchema = {
   'info-text': {
     'ui:widget': 'textarea'
   },
-  'references': {
+  references: {
     'ui:widget': 'textarea'
   },
   'other-references': {
     'ui:widget': 'textarea'
   },
-  'comments': {
+  comments: {
     'ui:widget': 'textarea'
   },
-  'processes': {
-    'items': {
+  processes: {
+    items: {
       'ui:widget': 'text',
       'ui:order': ['process', 'nutr-change-id']
     },
@@ -158,10 +152,10 @@ const uiSchema = {
   'data-quality': {
     'ui:widget': 'text'
   },
-  'author': {
+  author: {
     'ui:widget': 'text'
   },
-  'delete': {
+  delete: {
     'ui:widget': 'select'
   }
 }
