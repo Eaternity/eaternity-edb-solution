@@ -45,38 +45,25 @@ const ALL_FIELDS = [...MANDATORY_FIELDS, ...OPTIONAL_FIELDS]
 
 export const orderProcesses = processes => {
   const keys = ['process', 'nutr-change-id']
-  const orderedProcesses = processes
-    .filter(process => process)
-    .map(process => {
-      const orderedProcess = keys
-        .map(key => {
-          return {[key]: process[key]}
-        })
-
-      return Object.assign({}, ...orderedProcess)
+  const orderedProcesses = processes.filter(process => process).map(process => {
+    const orderedProcess = keys.map(key => {
+      return {[key]: process[key]}
     })
+
+    return Object.assign({}, ...orderedProcess)
+  })
 
   return orderedProcesses
 }
 
 const _orderProduct = (orderProcesses, orderedKeys, product) => {
-  const hasFilename = product.hasOwnProperty('filename')
-  const hasValidationSummary = product.hasOwnProperty('validationSummary')
-
-  orderedKeys = hasFilename ? [...orderedKeys, 'filename'] : orderedKeys
-  orderedKeys = hasValidationSummary
-    ? [...orderedKeys, 'validationSummary']
-    : orderedKeys
-
   const orderedPairs = orderedKeys
-  // TODO: the following filter is actually in the wrong place. Function name
-  // says order product but product gets ordered + empty fields are removed...
-  .filter(key => product[key] !== undefined)
-  .map(key => {
-    return key === 'processes'
-      ? {[key]: orderProcesses(product[key])}
-      : {[key]: product[key]}
-  })
+    .filter(key => product[key] !== undefined)
+    .map(key => {
+      return key === 'processes'
+        ? {[key]: orderProcesses(product[key])}
+        : {[key]: product[key]}
+    })
 
   const orderedProduct = Object.assign({}, ...orderedPairs)
   return orderedProduct
@@ -84,6 +71,27 @@ const _orderProduct = (orderProcesses, orderedKeys, product) => {
 
 const curriedOrderProduct = curry(_orderProduct)
 export const orderProduct = curriedOrderProduct(orderProcesses)
+
+const _removeEmptyFields = (orderedKeys, product) =>
+  orderedKeys
+    // I really think we should also remove empty strings...
+    // .filter(key => product[key] !== '')
+    // and empty arrays
+    // .filter(key => product[key] === 'object' && product[key].length !== 0)
+    // remove arrays with empty object as only item
+    .filter(key => {
+      const value = product[key]
+      return !(typeof value === 'object' &&
+        value.length === 1 &&
+        // is the only item in the array an empty object?
+        Object.keys(value[0]).length === 0 &&
+        value[0].constructor === Object)
+    })
+    .map(key => ({[key]: product[key]}))
+    .filter(field => field[Object.keys(field)] !== undefined)
+    .reduce((obj, newField) => Object.assign(obj, newField), {})
+
+export const removeEmptyFields = curry(_removeEmptyFields)
 
 export const addValidationSummary = product => {
   // define a default validationSummary
@@ -95,9 +103,11 @@ export const addValidationSummary = product => {
     missingMandatoryFields: [],
     validationErrors: []
   }
-  const hasValidationSummary = product.hasOwnProperty('validationSummary') && Object.keys(product.validationSummary).every(key => {
-    return Object.keys(validationSummary).includes(key)
-  })
+  const hasValidationSummary =
+    product.hasOwnProperty('validationSummary') &&
+    Object.keys(product.validationSummary).every(key => {
+      return Object.keys(validationSummary).includes(key)
+    })
 
   if (!hasValidationSummary) {
     product = {...product, validationSummary}
@@ -111,7 +121,8 @@ const _schemaValidate = (jsonschema, addValidationSummary, schema, product) => {
   let {validationSummary} = product
 
   const validationErrors = jsonschema
-    .validate(product, schema).errors.map(error => {
+    .validate(product, schema)
+    .errors.map(error => {
       return error.stack
     })
 
@@ -223,7 +234,7 @@ const _validateNutrChangeId = (addValidationSummary, nutrChange, product) => {
 
   const hasNutritionChangeId = hasProcesses
     ? product.processes.length > 0 &&
-      product.processes[0].hasOwnProperty('nutr-change-id')
+        product.processes[0].hasOwnProperty('nutr-change-id')
     : false
 
   if (hasNutritionChangeId) {
@@ -232,12 +243,13 @@ const _validateNutrChangeId = (addValidationSummary, nutrChange, product) => {
       return processesObj['nutr-change-id']
     })
 
-    const linkedNutritionChangeIdsExist = allNutritionChangeIds
-        .every(nutritionChangeId => {
-          return nutrChange.some(nutrChangeObj => {
-            return nutrChangeObj.id === nutritionChangeId
-          })
+    const linkedNutritionChangeIdsExist = allNutritionChangeIds.every(
+      nutritionChangeId => {
+        return nutrChange.some(nutrChangeObj => {
+          return nutrChangeObj.id === nutritionChangeId
         })
+      }
+    )
 
     if (!linkedNutritionChangeIdsExist) {
       validationSummary = {
@@ -255,7 +267,7 @@ export const validateNutrChangeId = curriedValidateNutritionChangeId(
   addValidationSummary
 )
 
-export const classify = (product) => {
+export const classify = product => {
   let {validationSummary} = product
 
   if (!validationSummary) {
@@ -270,9 +282,8 @@ export const classify = (product) => {
   const hasBrokenLinks = brokenLinks.length > 0
   const hasMissingMandatoryFields = missingMandatoryFields.length > 0
   const hasValidationErrors = validationErrors.length > 0
-  const isValid = !hasBrokenLinks &&
-    !hasMissingMandatoryFields &&
-    !hasValidationErrors
+  const isValid =
+    !hasBrokenLinks && !hasMissingMandatoryFields && !hasValidationErrors
   validationSummary = {...validationSummary, isValid}
   return {...product, validationSummary}
 }

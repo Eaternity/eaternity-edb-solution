@@ -1,0 +1,5 @@
+exports[`validator removeEmptyFields removes [{}] 1`] = `
+Object {
+  "id": 15,
+}
+`;
