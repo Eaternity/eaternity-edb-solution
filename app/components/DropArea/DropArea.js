@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Button } from 'reactstrap'
+import {Button} from 'reactstrap'
 import fileSystemApi from '../../filesystem-api/filesystem-api'
 import styles from './DropArea.css'
 
@@ -30,27 +30,24 @@ const DropArea = props => {
   }
 
   const handleChooseDir = () => {
-    fileSystemApi.chooseDataDir()
-      .then(dataDir => {
-        setDataDir(dataDir)
-        fetchProductSchema()
-        fetchAllProducts()
-        fetchAllFAOs()
-        fetchAllNutrients()
-      })
+    fileSystemApi.chooseDataDir().then(dataDir => {
+      setDataDir(dataDir)
+      fetchProductSchema()
+      fetchAllProducts()
+      fetchAllFAOs()
+      fetchAllNutrients()
+    })
   }
 
   return (
     <div
       className={styles.droparea}
       onDragOver={handleDragOver}
-      onDrop={handleDrop}>
+      onDrop={handleDrop}
+    >
       <h3>Nothing here yet...</h3>
       <p>Choose data folder or drop it here!</p>
-      <Button
-        onClick={handleChooseDir}
-        outline
-        color='success' >
+      <Button onClick={handleChooseDir} outline color='success'>
         Choose data dir
       </Button>
     </div>

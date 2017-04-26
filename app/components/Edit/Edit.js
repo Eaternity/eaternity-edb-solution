@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {
   Button,
@@ -85,14 +85,13 @@ class Edit extends Component {
   }
 
   handleError = errors => {
-    const errorMessages = errors
-      .map(error => {
-        return (
-          <p key={error.stack}>
-            {error.stack.split('.')[1]}
-          </p>
-        )
-      })
+    const errorMessages = errors.map(error => {
+      return (
+        <p key={error.stack}>
+          {error.stack.split('.')[1]}
+        </p>
+      )
+    })
 
     this.setState({
       errorMessages
@@ -102,7 +101,7 @@ class Edit extends Component {
   }
 
   handleSubmit = ({formData}) => {
-    const { updateEditedProduct } = this.props.actions
+    const {updateEditedProduct} = this.props.actions
 
     // the formData object passed to handleSubmit never has any
     // errors??!! This means invalid values get removed?!
@@ -142,7 +141,8 @@ class Edit extends Component {
           actions={actions}
           backModalOpen={this.state.backModalOpen}
           toggleBackModal={this.toggleBackModal}
-          handleBackConfirmClick={this.handleBackConfirmClick} />
+          handleBackConfirmClick={this.handleBackConfirmClick}
+        />
         <div className={styles.container}>
           <Card>
             <CardBlock>
@@ -161,16 +161,18 @@ class Edit extends Component {
                 liveValidate
                 onError={this.handleError}
                 onSubmit={this.handleSubmit}
-                fields={fields} >
+                fields={fields}
+              >
                 <p>* required field </p>
                 <CardBlock>
                   <div className={styles.editBtnGroup}>
-                    <Col xs={{ size: 'auto', offset: 8 }}>
+                    <Col xs={{size: 'auto', offset: 8}}>
                       <Button
                         type='button'
                         outline
                         color='warning'
-                        onClick={this.toggleBackModal}>
+                        onClick={this.toggleBackModal}
+                      >
                         Back
                       </Button>
                       <ConfirmRejectModal
@@ -179,30 +181,31 @@ class Edit extends Component {
                         onConfirmClick={this.handleBackConfirmClick}
                         onRejectClick={this.toggleBackModal}
                         header='Did you save your changes?'
-                        body={'Changes will be lost when you go back to the table view without saving!'}
+                        body={
+                          'Changes will be lost when you go back to the table view without saving!'
+                        }
                         confirmBtnText='Back to table view'
-                        rejectBtnText='Cancel' />{' '}
-                      <Button
-                        type='submit'
-                        outline
-                        color='success'>
+                        rejectBtnText='Cancel'
+                      />
+                      {' '}
+                      <Button type='submit' outline color='success'>
                         Save changes
                       </Button>
                       <Modal
                         isOpen={this.state.errorModalOpen}
-                        toggle={this.toggleErrorModal} >
-                        <ModalHeader
-                          toggle={this.toggleErrorModal} >
+                        toggle={this.toggleErrorModal}
+                      >
+                        <ModalHeader toggle={this.toggleErrorModal}>
                           {'Cannot save product. Form contains errors:'}
                         </ModalHeader>
-                        <ModalBody
-                          className={styles.errorModalText} >
+                        <ModalBody className={styles.errorModalText}>
                           {this.state.errorMessages}
                         </ModalBody>
                         <ModalFooter>
                           <Button
                             color='success'
-                            onClick={this.toggleErrorModal} >
+                            onClick={this.toggleErrorModal}
+                          >
                             Fix Errors
                           </Button>
                         </ModalFooter>
@@ -215,7 +218,8 @@ class Edit extends Component {
                         header='Saving will overwrite file!'
                         body={`Clicking save will overwrite ${editedProduct.filename}! Are you sure?`}
                         confirmBtnText='Save!'
-                        rejectBtnText='Cancel' />
+                        rejectBtnText='Cancel'
+                      />
                     </Col>
                   </div>
                 </CardBlock>
