@@ -1,45 +1,44 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Table, Tr, Td } from 'reactable'
-import { Button, Col, Container, Row } from 'reactstrap'
+import {Table, Tr, Td} from 'reactable'
+import {Button, Col, Container, Row} from 'reactstrap'
 import DropArea from '../DropArea/DropArea'
 
 const InvalidTable = props => {
-  const handleEditClick = (id) => {
-    const { selectProduct, changeLocation } = props.actions
+  const handleEditClick = id => {
+    const {selectProduct, changeLocation} = props.actions
     selectProduct(id)
     changeLocation(`/edit/${id}`)
   }
 
   const renderTableRows = () => {
-    const { products } = props
-    return (
-      products.map(prod => {
-        const { id, name, brokenLinks, missingFields, validationErrors } = prod
-        return (
-          <Tr key={id} >
-            <Td column='Id' data={id} />
-            <Td column='Name' data={name} />
-            <Td column='Broken Links' data={brokenLinks} />
-            <Td column='Missing Fields' data={missingFields} />
-            <Td column='Validation Errors' data={validationErrors} />
-            <Td column='Actions'>
-              <Button
-                outline
-                color='info'
-                size='sm'
-                onClick={() => handleEditClick(id)} >
-                Fix product
-              </Button>
-            </Td>
-          </Tr>
-        )
-      })
-    )
+    const {products} = props
+    return products.map(prod => {
+      const {id, name, brokenLinks, missingFields, validationErrors} = prod
+      return (
+        <Tr key={id}>
+          <Td column='Id' data={id} />
+          <Td column='Name' data={name} />
+          <Td column='Broken Links' data={brokenLinks} />
+          <Td column='Missing Fields' data={missingFields} />
+          <Td column='Validation Errors' data={validationErrors} />
+          <Td column='Actions'>
+            <Button
+              outline
+              color='info'
+              size='sm'
+              onClick={() => handleEditClick(id)}
+            >
+              Fix product
+            </Button>
+          </Td>
+        </Tr>
+      )
+    })
   }
 
   const renderView = () => {
-    const { searchInput } = props
+    const {searchInput} = props
 
     if (props.products.length === 0) {
       return (
@@ -77,7 +76,8 @@ const InvalidTable = props => {
           'Validation Errors'
         ]}
         filterBy={searchInput}
-        hideFilterInput >
+        hideFilterInput
+      >
         {renderTableRows()}
       </Table>
     )
@@ -87,7 +87,7 @@ const InvalidTable = props => {
     <div className='table-container'>
       <Container>
         <Row>
-          <Col sm={{ size: '10', offset: 1 }}>
+          <Col sm={{size: '10', offset: 1}}>
             {renderView()}
           </Col>
         </Row>
