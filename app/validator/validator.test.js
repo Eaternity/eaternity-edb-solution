@@ -12,7 +12,7 @@ import {
 import {
   orderProcesses,
   orderProduct,
-  removeEmptyFields,
+  removeEmptyObjectsFromArrays,
   addValidationSummary,
   schemaValidate,
   addParentProduct,
@@ -60,13 +60,13 @@ describe('validator', () => {
     )
   })
 
-  test('removeEmptyFields removes [{}]', () => {
+  test('removeEmptyObjectsFromArrays removes [{}]', () => {
     const productWithArrayWithEmptyObject = {
       id: 15,
-      processes: [{}]
+      processes: [{key: 'value'}, {}]
     }
 
-    const result = removeEmptyFields(orderedKeys)(
+    const result = removeEmptyObjectsFromArrays(orderedKeys)(
       productWithArrayWithEmptyObject
     )
     expect(result).toMatchSnapshot()
