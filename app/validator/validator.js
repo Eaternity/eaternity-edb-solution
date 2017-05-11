@@ -72,26 +72,32 @@ const _orderProduct = (orderProcesses, orderedKeys, product) => {
 const curriedOrderProduct = curry(_orderProduct)
 export const orderProduct = curriedOrderProduct(orderProcesses)
 
-const _removeEmptyFields = (orderedKeys, product) =>
+const _removeEmptyObjectsFromArrays = (orderedKeys, product) =>
   orderedKeys
     // I really think we should also remove empty strings...
     // .filter(key => product[key] !== '')
     // and empty arrays
-    // .filter(key => product[key] === 'object' && product[key].length !== 0)
-    // remove arrays with empty object as only item
-    .filter(key => {
-      const value = product[key]
-      return !(typeof value === 'object' &&
-        value.length === 1 &&
-        // is the only item in the array an empty object?
-        Object.keys(value[0]).length === 0 &&
-        value[0].constructor === Object)
+    // .filter(key => Array.isArray(product[key] && product[key].length !== 0)
+    // and empty objects
+    // .filter(key => !(Object.keys(product[key]).length === 0 &&
+    //    product[key].constructor === Object)
+    // remove empty objects from arrays
+    .map(key => {
+      return Array.isArray(product[key])
+        ? {
+          [key]: product[key].filter(
+              element =>
+                // remove emty objects from array
+                !(Object.keys(element).length === 0 &&
+                  element.constructor === Object)
+            )
+        }
+        : {[key]: product[key]}
     })
-    .map(key => ({[key]: product[key]}))
     .filter(field => field[Object.keys(field)] !== undefined)
     .reduce((obj, newField) => Object.assign(obj, newField), {})
 
-export const removeEmptyFields = curry(_removeEmptyFields)
+export const removeEmptyObjectsFromArrays = curry(_removeEmptyObjectsFromArrays)
 
 export const addValidationSummary = product => {
   // define a default validationSummary

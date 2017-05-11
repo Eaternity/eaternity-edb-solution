@@ -1,5 +1,10 @@
-exports[`validator removeEmptyFields removes [{}] 1`] = `
+exports[`validator removeEmptyObjectsFromArrays removes [{}] 1`] = `
 Object {
   "id": 15,
+  "processes": Array [
+    Object {
+      "key": "value",
+    },
+  ],
 }
 `;

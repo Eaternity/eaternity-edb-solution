@@ -13,7 +13,7 @@ import {
 } from '../validator/helpers/helpers'
 import {
   orderProduct,
-  removeEmptyFields,
+  removeEmptyObjectsFromArrays,
   schemaValidate,
   addParentProduct,
   addMissingFields,
@@ -123,7 +123,7 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
     // the products coming from the client/renderer contain exactly one
     // new or edited product. All products get validated again against products.
     const validateProduct = pipe(
-      removeEmptyFields(enhancedKeys),
+      removeEmptyObjectsFromArrays(enhancedKeys),
       orderProduct(enhancedKeys),
       schemaValidate(productSchema),
       addParentProduct(products),
@@ -157,7 +157,7 @@ ipcMain.on('save-edited-product', (event, dataDir, editedProduct) => {
     const enhancedKeys = [...orderedKeys, 'filename', 'validationSummary']
 
     const orderAndSave = pipe(
-      removeEmptyFields(enhancedKeys),
+      removeEmptyObjectsFromArrays(enhancedKeys),
       orderProduct(enhancedKeys),
       saveProduct(dataDir)
     )
