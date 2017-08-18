@@ -92,6 +92,9 @@ npm run package-all # packaging for all platforms
 
 Packaging for operating systems other than your local OS requires additional steps. See [here](https://github.com/electron-userland/electron-builder/wiki/Multi-Platform-Build) for more information.
 
+## Adding a new field
+The edb-solution reads the prod.schema.json from the data directory. So field changes and adding new fields needs to be done in eaternity-edb-data/prod.schema.json and in the uiSchema.js as well as validator.js and test's if necessary.
+
 ---
 # Copyright and license
 
