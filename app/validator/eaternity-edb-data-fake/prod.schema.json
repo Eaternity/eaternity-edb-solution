@@ -49,6 +49,11 @@
       "title": "FAO product link*",
       "type": "string"
     },
+    "water-scarcity-footprint-id": {
+      "title": "Water scarcity footprint link*",
+      "description": "This WSF link overwrites the FAO link. If empty, the FAO link is used to determine the WSF value",
+      "type": "string"
+    },
     "waste-id": {
       "title": "Foodwaste link*",
       "type": "string"

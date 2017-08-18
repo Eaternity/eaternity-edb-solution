@@ -71,6 +71,9 @@ const uiSchema = {
       ]
     }
   },
+  'water-scarcity-footprint-id': {
+    'ui:widget': 'text'
+  },
   'alternatives': {
     'ui:widget': 'text'
   },

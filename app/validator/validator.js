@@ -1,7 +1,16 @@
-// let's' try to write the complete validator in funvtional style
+// let's' try to write the complete validator in functional style
 import jsonschema from 'jsonschema'
 import {curry} from 'ramda'
 
+/*
+ TODO actually the water scarcity link is also mandatory, but consists
+ of two fields combined together, which makes it much harder to analyze.
+
+ The logic is: Either fao-product-id OR water-scarcity-footprint-id
+ need to be provided by either the product itself or through the product
+ tree.
+
+ */
 const MANDATORY_FIELDS = [
   'id',
   'name',
@@ -14,6 +23,7 @@ const MANDATORY_FIELDS = [
 // these optional fields will be pulled from parent if possible
 const OPTIONAL_FIELDS = [
   'fao-product-id',
+  'water-scarcity-footprint-id',
   'waste-id',
   'season-begin',
   'season-end',
