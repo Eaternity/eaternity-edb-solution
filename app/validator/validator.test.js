@@ -13,6 +13,7 @@ import {
   orderProcesses,
   orderProduct,
   removeEmptyObjectsFromArrays,
+  removeEmptyArrays,
   addValidationSummary,
   schemaValidate,
   addParentProduct,
@@ -58,6 +59,20 @@ describe('validator', () => {
     expect(removeHelperFields(orderedProduct)).toEqual(
       removeHelperFields(expectedOrderedProduct)
     )
+  })
+
+  test('removeEmptyArrays removes all fields holding []', () => {
+    const productWithEmptyArrays = {
+      id: 1234,
+      name: 'test',
+      synonyms: [],
+      'co2-value': 42,
+      processes: []
+    }
+
+    const result = removeEmptyArrays(orderedKeys)(productWithEmptyArrays)
+    expect(result).toMatchSnapshot()
+    expect(result.keys().length).toBe(productWithEmptyArrays.keys().length - 2)
   })
 
   test('removeEmptyObjectsFromArrays removes [{}]', () => {
