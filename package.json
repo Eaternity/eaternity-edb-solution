@@ -2,7 +2,8 @@
   "name": "EDB-solution",
   "productName": "EDB-solution",
   "version": "1.1.0",
-  "description": "Electron application for editing of eaternity database json files. Based on elecron-react-boilerplate",
+  "description":
+    "Electron application for editing of eaternity database json files. Based on elecron-react-boilerplate",
   "main": "./app/main.js",
   "build": {
     "appId": "com.electron.edb-solution",
@@ -44,15 +45,21 @@
   },
   "scripts": {
     "reinstall": "yarn add rimraf && rimraf ./node_modules && yarn install",
-    "test": "cross-env NODE_ENV=test jest --coverage",
-    "lint": "./node_modules/.bin/eslint --ignore-path .gitignore --format=node_modules/eslint-formatter-pretty app test *.js",
-    "hot-server": "cross-env NODE_ENV=development node --max_old_space_size=2096 -r babel-register server.js",
-    "build-main": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config ./config/webpack.config.electron.js --progress --profile --colors",
-    "build-renderer": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config ./config/webpack.config.production.js --progress --profile --colors",
+    "test": "cross-env NODE_ENV=test jest --watch",
+    "lint":
+      "./node_modules/.bin/eslint --ignore-path .gitignore --format=node_modules/eslint-formatter-pretty app test *.js",
+    "hot-server":
+      "cross-env NODE_ENV=development node --max_old_space_size=2096 -r babel-register server.js",
+    "build-main":
+      "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config ./config/webpack.config.electron.js --progress --profile --colors",
+    "build-renderer":
+      "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config ./config/webpack.config.production.js --progress --profile --colors",
     "build": "npm run build-main && npm run build-renderer",
     "start": "cross-env NODE_ENV=production electron ./app/",
-    "start-hot": "cross-env HOT=1 NODE_ENV=development electron -r babel-register -r babel-polyfill ./app/main.development",
-    "postinstall": "concurrently \"install-app-deps\" \"node node_modules/fbjs-scripts/node/check-dev-engines.js package.json\"",
+    "start-hot":
+      "cross-env HOT=1 NODE_ENV=development electron -r babel-register -r babel-polyfill ./app/main.development",
+    "postinstall":
+      "concurrently \"install-app-deps\" \"node node_modules/fbjs-scripts/node/check-dev-engines.js package.json\"",
     "dev": "npm run hot-server -- --start-hot",
     "package": "npm run build && build --publish never",
     "package-win": "npm run build && build --win --x64",
@@ -73,12 +80,7 @@
   "bugs": {
     "url": "https://github.com/Eaternity/eaternity-edb-solution.git/issues"
   },
-  "keywords": [
-    "electron",
-    "react",
-    "eaternity",
-    "edb-solution"
-  ],
+  "keywords": ["electron", "react", "eaternity", "edb-solution"],
   "license": "MIT",
   "devDependencies": {
     "asar": "^0.13.0",

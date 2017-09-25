@@ -70,9 +70,17 @@ describe('validator', () => {
       processes: []
     }
 
-    const result = removeEmptyArrays(orderedKeys)(productWithEmptyArrays)
+    const validateProduct = pipe(
+      removeEmptyArrays(orderedKeys),
+      // this is just to remove the empty fields
+      orderProduct(orderedKeys)
+    )
+
+    const result = validateProduct(productWithEmptyArrays)
     expect(result).toMatchSnapshot()
-    expect(result.keys().length).toBe(productWithEmptyArrays.keys().length - 2)
+    expect(Object.keys(result).length).toBe(
+      Object.keys(productWithEmptyArrays).length - 2
+    )
   })
 
   test('removeEmptyObjectsFromArrays removes [{}]', () => {
