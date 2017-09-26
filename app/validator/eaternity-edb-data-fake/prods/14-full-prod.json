@@ -6,6 +6,7 @@
   "perishability": "high",
   "co2-value": 1,
   "fao-product-id": "1",
+  "water-scarcity-footprint-id": "123",
   "waste-id": "1",
   "season-begin": "April",
   "season-end": "October",

@@ -194,6 +194,7 @@ describe('validator', () => {
   test('addMissingFields adds all missing fields', () => {
     const expectedMissingFields = [
       'fao-product-id',
+      'water-scarcity-footprint-id',
       'waste-id',
       'allergenes',
       'unit-weight',
