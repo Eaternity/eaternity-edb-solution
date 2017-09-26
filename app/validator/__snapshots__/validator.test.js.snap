@@ -1,3 +1,11 @@
+exports[`validator removeEmptyArrays removes all fields holding [] 1`] = `
+Object {
+  "co2-value": 42,
+  "id": 1234,
+  "name": "test",
+}
+`;
+
 exports[`validator removeEmptyObjectsFromArrays removes [{}] 1`] = `
 Object {
   "id": 15,

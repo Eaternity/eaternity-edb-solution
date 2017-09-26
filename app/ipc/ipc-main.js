@@ -13,6 +13,7 @@ import {
 } from '../validator/helpers/helpers'
 import {
   orderProduct,
+  removeEmptyArrays,
   removeEmptyObjectsFromArrays,
   schemaValidate,
   addParentProduct,
@@ -124,6 +125,7 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
     // new or edited product. All products get validated again against products.
     const validateProduct = pipe(
       removeEmptyObjectsFromArrays(enhancedKeys),
+      removeEmptyArrays(enhancedKeys),
       orderProduct(enhancedKeys),
       schemaValidate(productSchema),
       addParentProduct(products),
@@ -158,6 +160,7 @@ ipcMain.on('save-edited-product', (event, dataDir, editedProduct) => {
 
     const orderAndSave = pipe(
       removeEmptyObjectsFromArrays(enhancedKeys),
+      removeEmptyArrays(enhancedKeys),
       orderProduct(enhancedKeys),
       saveProduct(dataDir)
     )

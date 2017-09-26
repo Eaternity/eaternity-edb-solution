@@ -13,6 +13,7 @@ import {
   orderProcesses,
   orderProduct,
   removeEmptyObjectsFromArrays,
+  removeEmptyArrays,
   addValidationSummary,
   schemaValidate,
   addParentProduct,
@@ -57,6 +58,28 @@ describe('validator', () => {
     const orderedProduct = orderProduct(orderedKeys)(unorderedProduct)
     expect(removeHelperFields(orderedProduct)).toEqual(
       removeHelperFields(expectedOrderedProduct)
+    )
+  })
+
+  test('removeEmptyArrays removes all fields holding []', () => {
+    const productWithEmptyArrays = {
+      id: 1234,
+      name: 'test',
+      synonyms: [],
+      'co2-value': 42,
+      processes: []
+    }
+
+    const validateProduct = pipe(
+      removeEmptyArrays(orderedKeys),
+      // this is just to remove the empty fields
+      orderProduct(orderedKeys)
+    )
+
+    const result = validateProduct(productWithEmptyArrays)
+    expect(result).toMatchSnapshot()
+    expect(Object.keys(result).length).toBe(
+      Object.keys(productWithEmptyArrays).length - 2
     )
   })
 

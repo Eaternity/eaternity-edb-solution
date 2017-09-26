@@ -72,12 +72,20 @@ const _orderProduct = (orderProcesses, orderedKeys, product) => {
 const curriedOrderProduct = curry(_orderProduct)
 export const orderProduct = curriedOrderProduct(orderProcesses)
 
+const _removeEmptyArrays = (orderedKeys, product) =>
+  orderedKeys
+    .filter(key => !(Array.isArray(product[key]) && product[key].length === 0))
+    .map(key => {
+      return {[key]: product[key]}
+    })
+    .reduce((obj, newField) => Object.assign(obj, newField), {})
+
+export const removeEmptyArrays = curry(_removeEmptyArrays)
+
 const _removeEmptyObjectsFromArrays = (orderedKeys, product) =>
   orderedKeys
     // I really think we should also remove empty strings...
     // .filter(key => product[key] !== '')
-    // and empty arrays
-    // .filter(key => Array.isArray(product[key] && product[key].length !== 0)
     // and empty objects
     // .filter(key => !(Object.keys(product[key]).length === 0 &&
     //    product[key].constructor === Object)
@@ -88,8 +96,10 @@ const _removeEmptyObjectsFromArrays = (orderedKeys, product) =>
           [key]: product[key].filter(
               element =>
                 // remove emty objects from array
-                !(Object.keys(element).length === 0 &&
-                  element.constructor === Object)
+                !(
+                  Object.keys(element).length === 0 &&
+                  element.constructor === Object
+                )
             )
         }
         : {[key]: product[key]}
@@ -240,7 +250,7 @@ const _validateNutrChangeId = (addValidationSummary, nutrChange, product) => {
 
   const hasNutritionChangeId = hasProcesses
     ? product.processes.length > 0 &&
-        product.processes[0].hasOwnProperty('nutr-change-id')
+      product.processes[0].hasOwnProperty('nutr-change-id')
     : false
 
   if (hasNutritionChangeId) {
