@@ -41,7 +41,7 @@ const uiSchema = {
       dataSelector: 'products',
       searchFor: 'name',
       autocomplete: 'id',
-      additionalRenderedFields: ['id']
+      additionalRenderedFields: ['id', 'specification', 'synonyms']
     }
   },
   'nutrition-id': {
