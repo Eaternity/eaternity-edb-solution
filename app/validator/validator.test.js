@@ -12,6 +12,8 @@ import {
 import {
   orderProcesses,
   orderProduct,
+  removeEmptyObjectsFromArrays,
+  removeEmptyArrays,
   addValidationSummary,
   schemaValidate,
   addParentProduct,
@@ -54,19 +56,43 @@ describe('validator', () => {
       `${dataDir}/prods/12-ordered-prod.json`
     )
     const orderedProduct = orderProduct(orderedKeys)(unorderedProduct)
-    expect(removeHelperFields(orderedProduct))
-      .toEqual(removeHelperFields(expectedOrderedProduct))
+    expect(removeHelperFields(orderedProduct)).toEqual(
+      removeHelperFields(expectedOrderedProduct)
+    )
   })
 
-  test('orderProduct does not remove filename and validationSummary', () => {
-    const unorderedProduct = jsonfile.readFileSync(
-      `${dataDir}/prods/11-unordered-prod.json`
+  test('removeEmptyArrays removes all fields holding []', () => {
+    const productWithEmptyArrays = {
+      id: 1234,
+      name: 'test',
+      synonyms: [],
+      'co2-value': 42,
+      processes: []
+    }
+
+    const validateProduct = pipe(
+      removeEmptyArrays(orderedKeys),
+      // this is just to remove the empty fields
+      orderProduct(orderedKeys)
     )
-    const expectedOrderedProduct = jsonfile.readFileSync(
-      `${dataDir}/prods/12-ordered-prod.json`
+
+    const result = validateProduct(productWithEmptyArrays)
+    expect(result).toMatchSnapshot()
+    expect(Object.keys(result).length).toBe(
+      Object.keys(productWithEmptyArrays).length - 2
     )
-    const orderedProduct = orderProduct(orderedKeys, unorderedProduct)
-    expect(orderedProduct).toEqual(expectedOrderedProduct)
+  })
+
+  test('removeEmptyObjectsFromArrays removes [{}]', () => {
+    const productWithArrayWithEmptyObject = {
+      id: 15,
+      processes: [{key: 'value'}, {}]
+    }
+
+    const result = removeEmptyObjectsFromArrays(orderedKeys)(
+      productWithArrayWithEmptyObject
+    )
+    expect(result).toMatchSnapshot()
   })
 
   test('addValidationSummary adds validationSummary to product', () => {
@@ -168,6 +194,7 @@ describe('validator', () => {
   test('addMissingFields adds all missing fields', () => {
     const expectedMissingFields = [
       'fao-product-id',
+      'water-scarcity-footprint-id',
       'waste-id',
       'allergenes',
       'unit-weight',
@@ -273,8 +300,9 @@ describe('validator', () => {
     const pathToProduct = `${dataDir}/prods/3-child-prod.json`
     const productWithoutSummary = loadProduct(pathToProduct)
     const classifyProd = () => classify(productWithoutSummary)
-    expect(classifyProd)
-      .toThrow('Cannot classify product without validationSummary')
+    expect(classifyProd).toThrow(
+      'Cannot classify product without validationSummary'
+    )
   })
 
   it('pipe yourself a validator', () => {
@@ -330,10 +358,7 @@ describe('validator', () => {
     const prods = loadAllProducts(dataDir)
     const pathToParent = `${dataDir}/prods/2-parent-prod.json`
     const parent = loadProduct(pathToParent)
-    const validateParent = pipe(
-      addParentProduct(prods),
-      addMissingFields,
-    )
+    const validateParent = pipe(addParentProduct(prods), addMissingFields)
     const validatedParent = validateParent(parent)
     const expectedReturnValue = {
       'nutrition-id': '1',
@@ -348,21 +373,16 @@ describe('validator', () => {
     const prods = loadAllProducts(dataDir)
     const pathToChild = `${dataDir}/prods/3-child-prod.json`
     const child = loadProduct(pathToChild)
-    const validateChild = pipe(
-      addParentProduct(prods),
-      addMissingFields,
-    )
+    const validateChild = pipe(addParentProduct(prods), addMissingFields)
     const validatedChild = validateChild(child)
     const expectedReturnValue = {
       'nutrition-id': '1',
-      'tags': 'from, parent',
-      'perishability': 'from parent',
+      tags: 'from, parent',
+      perishability: 'from parent',
       'co2-value': 1,
       'season-begin': 'from grandparent',
       'season-end': 'from grandparent',
-      'processes': [
-        {'nutr-change-id': 1, 'process': 'from parent'}
-      ]
+      processes: [{'nutr-change-id': 1, process: 'from parent'}]
     }
     const returnValue = pullMissingFields(prods, validatedChild)
     expect(returnValue).toEqual(expectedReturnValue)
@@ -388,9 +408,7 @@ describe('validator', () => {
       'co2-value': 1,
       'season-begin': 'from grandparent',
       'season-end': 'from grandparent',
-      processes: [
-        {process: 'from parent', 'nutr-change-id': 1}
-      ]
+      processes: [{process: 'from parent', 'nutr-change-id': 1}]
     }
     const returnValue = enhanceChild(child)
     expect(returnValue).toEqual(expectedReturnValue)

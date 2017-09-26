@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import styles from './Edit.css'
 
 const CustomFieldTemplate = props => {
@@ -28,7 +29,6 @@ CustomFieldTemplate.propTypes = {
   classNames: PropTypes.string,
   label: PropTypes.string,
   description: PropTypes.object.isRequired,
-  required: PropTypes.bool,
   children: PropTypes.object,
   errors: PropTypes.object,
   rawErrors: PropTypes.array

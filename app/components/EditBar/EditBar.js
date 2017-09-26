@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import { Button, Nav, Navbar, NavbarBrand } from 'reactstrap'
 import ConfirmRejectModal from '../ConfirmRejectModal/ConfirmRejectModal'
 import logo from './logo.png'

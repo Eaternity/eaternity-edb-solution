@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import { Button, ButtonGroup } from 'reactstrap'
 import styles from './NavGroup.css'
 

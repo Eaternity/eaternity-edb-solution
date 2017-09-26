@@ -1,4 +1,4 @@
-import { ipcMain, dialog } from 'electron'
+import {ipcMain, dialog} from 'electron'
 import jsonfile from 'jsonfile'
 import {pipe} from 'ramda'
 import {
@@ -13,6 +13,8 @@ import {
 } from '../validator/helpers/helpers'
 import {
   orderProduct,
+  removeEmptyArrays,
+  removeEmptyObjectsFromArrays,
   schemaValidate,
   addParentProduct,
   addMissingFields,
@@ -28,7 +30,7 @@ jsonfile.spaces = 2
 // choose the _data directory
 ipcMain.on('choose-data-dir', event => {
   // dialog.showOpenDialog always returns an array of files/dirs!
-  dialog.showOpenDialog({ properties: ['openDirectory'] }, dataDirs => {
+  dialog.showOpenDialog({properties: ['openDirectory']}, dataDirs => {
     if (!dataDirs) return
     const dataDir = dataDirs[0]
     event.sender.send('data-dir-choosen', dataDir)
@@ -83,10 +85,7 @@ ipcMain.on('fetch-all-products', (event, dataDir) => {
     // So the order get lost in ipc... Reorder on the other side!!!
     event.sender.send('all-products-fetched', validatedProducts)
   } catch (err) {
-    event.sender.send(
-      'error-fetching-prods',
-      `Error: ${err.stack}`
-    )
+    event.sender.send('error-fetching-prods', `Error: ${err.stack}`)
   }
 })
 
@@ -96,10 +95,7 @@ ipcMain.on('fetch-all-nutrients', (event, dataDir) => {
     const nutrs = loadNutrs(dataDir)
     event.sender.send('all-nutrients-fetched', nutrs)
   } catch (err) {
-    event.sender.send(
-      'error-fetching-nutrients',
-      `Error: ${err.stack}`
-    )
+    event.sender.send('error-fetching-nutrients', `Error: ${err.stack}`)
   }
 })
 
@@ -109,10 +105,7 @@ ipcMain.on('fetch-all-faos', (event, dataDir) => {
     const faos = loadFaos(dataDir)
     event.sender.send('all-faos-fetched', faos)
   } catch (err) {
-    event.sender.send(
-      'error-fetching-faos',
-      `Error: ${err.stack}`
-    )
+    event.sender.send('error-fetching-faos', `Error: ${err.stack}`)
   }
 })
 
@@ -126,11 +119,14 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
     const nutrChange = loadNutrChange(dataDir)
     const productSchema = loadProductSchema(dataDir)
     const orderedKeys = Object.keys(productSchema.properties)
+    const enhancedKeys = [...orderedKeys, 'filename', 'validationSummary']
 
     // the products coming from the client/renderer contain exactly one
     // new or edited product. All products get validated again against products.
     const validateProduct = pipe(
-      orderProduct(orderedKeys),
+      removeEmptyObjectsFromArrays(enhancedKeys),
+      removeEmptyArrays(enhancedKeys),
+      orderProduct(enhancedKeys),
       schemaValidate(productSchema),
       addParentProduct(products),
       addMissingFields,
@@ -143,18 +139,16 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
     const validatedProducts = products.map(prod => validateProduct(prod))
 
     // pull all fields from parent and save as prods.all.json
-    const enhancedProds = validatedProducts
-      .map(prod => pullAndAddMissingFields(products, prod))
+    const enhancedProds = validatedProducts.map(prod =>
+      pullAndAddMissingFields(products, prod)
+    )
 
     saveAllProducts(dataDir, enhancedProds)
     saveAllProductsToCsv(orderedKeys, dataDir, validatedProducts)
 
     event.sender.send('all-products-saved', validatedProducts)
   } catch (err) {
-    event.sender.send(
-      'error-saving-products',
-      `Error: ${err.stack}`
-    )
+    event.sender.send('error-saving-products', `Error: ${err.stack}`)
   }
 })
 
@@ -162,9 +156,12 @@ ipcMain.on('save-edited-product', (event, dataDir, editedProduct) => {
   try {
     const productSchema = loadProductSchema(dataDir)
     const orderedKeys = Object.keys(productSchema.properties)
+    const enhancedKeys = [...orderedKeys, 'filename', 'validationSummary']
 
     const orderAndSave = pipe(
-      orderProduct(orderedKeys),
+      removeEmptyObjectsFromArrays(enhancedKeys),
+      removeEmptyArrays(enhancedKeys),
+      orderProduct(enhancedKeys),
       saveProduct(dataDir)
     )
 
@@ -172,9 +169,6 @@ ipcMain.on('save-edited-product', (event, dataDir, editedProduct) => {
 
     event.sender.send('edited-product-saved')
   } catch (err) {
-    event.sender.send(
-      'error-saving-product',
-      `Error: ${err.stack}`
-    )
+    event.sender.send('error-saving-product', `Error: ${err.stack}`)
   }
 })

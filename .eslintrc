@@ -1,6 +1,9 @@
 {
   "parser": "babel-eslint",
-  "extends": ["standard", "standard-react"],
+  "extends": [
+    "standard",
+    "standard-react"
+  ],
   "env": {
     "browser": true,
     "node": true,
@@ -9,8 +12,17 @@
   "rules": {
     "consistent-return": "off",
     "comma-dangle": "off",
-    "generator-star-spacing": ["error", {"before": true, "after": true}],
-    "space-before-function-paren": ["error", "always"],
+    "generator-star-spacing": [
+      "error",
+      {
+        "before": true,
+        "after": true
+      }
+    ],
+    "space-before-function-paren": [
+      "error",
+      "always"
+    ],
     "import/first": 1,
     "import/default": 0,
     "import/named": 0,
@@ -22,7 +34,16 @@
     "promise/catch-or-return": 0,
     "promise/no-native": 0,
     "react/jsx-no-bind": "off",
-    "react/jsx-filename-extension": ["error", { "extensions": [".js", ".jsx"] }],
+    "react/no-unused-prop-types": 1,
+    "react/jsx-filename-extension": [
+      "error",
+      {
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
+      }
+    ],
     "react/prefer-stateless-function": 1,
     "flowtype-errors/show-errors": 2
   },

@@ -1,5 +1,6 @@
-import React, { PropTypes } from 'react'
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
+import React from 'react'
+import PropTypes from 'prop-types'
+import {Button, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap'
 
 const ConfirmRejectModal = props => {
   const {
@@ -13,9 +14,7 @@ const ConfirmRejectModal = props => {
     onRejectClick
   } = props
   return (
-    <Modal
-      isOpen={isOpen}
-      toggle={toggle} >
+    <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader>
         {header}
       </ModalHeader>
@@ -23,16 +22,10 @@ const ConfirmRejectModal = props => {
         {body}
       </ModalBody>
       <ModalFooter>
-        <Button
-          color='success'
-          outline
-          onClick={() => onConfirmClick()}>
+        <Button color='success' outline onClick={() => onConfirmClick()}>
           {confirmBtnText}
         </Button>{' '}
-        <Button
-          color='warning'
-          outline
-          onClick={() => onRejectClick()}>
+        <Button color='warning' outline onClick={() => onRejectClick()}>
           {rejectBtnText}
         </Button>
       </ModalFooter>

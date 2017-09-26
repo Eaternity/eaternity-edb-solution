@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import { Button, Col } from 'reactstrap'
 import styles from './Edit.css'
 
@@ -44,7 +45,6 @@ const CustomArrayTemplate = props => {
 
 CustomArrayTemplate.propTypes = {
   items: PropTypes.string,
-  canAdd: PropTypes.func.isRequired,
   onAddClick: PropTypes.func.isRequired
 }
 
