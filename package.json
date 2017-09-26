@@ -172,7 +172,7 @@
     "styled-components": "^1.4.3"
   },
   "devEngines": {
-    "node": ">=6.x",
-    "npm": ">=3.x"
+    "node": ">=8.x",
+    "npm": ">=5.x"
   }
 }
