@@ -45,7 +45,7 @@
   },
   "scripts": {
     "reinstall": "yarn add rimraf && rimraf ./node_modules && yarn install",
-    "test": "cross-env NODE_ENV=test jest --watch",
+    "test": "cross-env NODE_ENV=test jest --coverage",
     "lint":
       "./node_modules/.bin/eslint --ignore-path .gitignore --format=node_modules/eslint-formatter-pretty app test *.js",
     "hot-server":
