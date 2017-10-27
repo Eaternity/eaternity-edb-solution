@@ -29,22 +29,22 @@ label {
   color: red;
 }
 
-.processesContainer {
+.arrayContainer {
   margin-left: 5%;
 }
 
-.processContainer {
+.itemContainer {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: flex-start;
 }
 
-.processRemoveBtn {
+.itemRemoveBtn {
   padding-top: 30px;
   margin-left: 5%;
 }
 
-.process {
+.item {
   width: 100%;
 }
