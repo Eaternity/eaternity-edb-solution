@@ -142,6 +142,7 @@
   },
   "dependencies": {
     "bootstrap": "4.0.0-alpha.5",
+    "edb-solution-validator": "git+https://github.com/Eaternity/edb-solution-validator.git#feature/contains",
     "electron-debug": "^1.1.0",
     "history": "^4.5.1",
     "json2csv": "^3.7.3",

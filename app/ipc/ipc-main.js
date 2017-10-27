@@ -9,9 +9,7 @@ import {
   loadProductSchema,
   saveProduct,
   saveAllProducts,
-  saveAllProductsToCsv
-} from '../validator/helpers/helpers'
-import {
+  saveAllProductsToCsv,
   orderProduct,
   removeEmptyArrays,
   removeEmptyObjectsFromArrays,
@@ -22,7 +20,7 @@ import {
   validateNutrChangeId,
   classify,
   pullAndAddFieldsFromParent
-} from '../validator/validator'
+} from 'edb-solution-validator'
 
 // set indentation for jsonfile
 jsonfile.spaces = 2
