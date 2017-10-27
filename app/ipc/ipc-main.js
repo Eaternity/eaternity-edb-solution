@@ -17,11 +17,11 @@ import {
   removeEmptyObjectsFromArrays,
   schemaValidate,
   addParentProduct,
-  addMissingFields,
+  fillValidationSummary,
   validateNutritionId,
   validateNutrChangeId,
   classify,
-  pullAndAddMissingFields
+  pullAndAddFieldsFromParent
 } from '../validator/validator'
 
 // set indentation for jsonfile
@@ -68,7 +68,7 @@ ipcMain.on('fetch-all-products', (event, dataDir) => {
     const validateProduct = pipe(
       schemaValidate(productSchema),
       addParentProduct(prods),
-      addMissingFields,
+      fillValidationSummary,
       validateNutritionId(nutrs),
       validateNutrChangeId(nutrChange),
       classify
@@ -129,7 +129,7 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
       orderProduct(enhancedKeys),
       schemaValidate(productSchema),
       addParentProduct(products),
-      addMissingFields,
+      fillValidationSummary,
       validateNutritionId(nutrs),
       validateNutrChangeId(nutrChange),
       classify
@@ -140,7 +140,7 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
 
     // pull all fields from parent and save as prods.all.json
     const enhancedProds = validatedProducts.map(prod =>
-      pullAndAddMissingFields(products, prod)
+      pullAndAddFieldsFromParent(products, prod)
     )
 
     saveAllProducts(dataDir, enhancedProds)

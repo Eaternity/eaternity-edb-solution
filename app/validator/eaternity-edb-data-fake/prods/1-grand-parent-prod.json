@@ -12,5 +12,10 @@
   "perishability": "from grandparent",
   "season-begin": "from grandparent",
   "season-end": "from grandparent",
-  "co2-value": 1
+  "co2-value": 1,
+  "contains": [{
+    "substance": "from grandparent",
+    "percentage": 4
+    }
+  ]
 }

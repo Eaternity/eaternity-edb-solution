@@ -17,14 +17,16 @@ import {
   addValidationSummary,
   schemaValidate,
   addParentProduct,
-  addMissingFields,
+  fillValidationSummary,
   validateNutritionId,
   validateNutrChangeId,
   classify,
   getFieldFromParent,
-  pullMissingFields,
-  pullAndAddMissingFields
+  pullFieldsFromParent,
+  pullAndAddFieldsFromParent
 } from './validator'
+import {OPTIONAL_FIELDS_FROM_LINKED_PRODUCT} from './validator'
+import {ALL_FIELDS_FROM_LINKED_PRODUCT} from "./validator";
 
 // Point to fake test resources and load some standard resources
 const dataDir = path.resolve(`${__dirname}`, './eaternity-edb-data-fake')
@@ -191,35 +193,20 @@ describe('validator', () => {
     expect(parentProduct).toEqual(expectedParentProduct)
   })
 
-  test('addMissingFields adds all missing fields', () => {
-    const expectedMissingFields = [
-      'fao-product-id',
-      'water-scarcity-footprint-id',
-      'waste-id',
-      'allergenes',
-      'unit-weight',
-      'density',
-      'production-names',
-      'production-values',
-      'conservation-names',
-      'conservation-values',
-      'processing-names',
-      'processing-values',
-      'packaging-names',
-      'packaging-values'
-    ]
-    const pathToGrandParent = `${dataDir}/prods/1-grand-parent-prod.json`
+  test('addMissingLinkedFieldsToValidationSummary adds all missing fields', () => {
+    const expectedMissingFields = ALL_FIELDS_FROM_LINKED_PRODUCT
+    const pathToGrandParent = `${dataDir}/prods/3-child-prod.json`
     const grandParent = loadProduct(pathToGrandParent)
-    const validatedGrandParent = addMissingFields(grandParent)
+    const validatedGrandParent = fillValidationSummary(grandParent)
     const {missingFields} = validatedGrandParent.validationSummary
     expect(missingFields).toEqual(expectedMissingFields)
   })
 
-  test('addMissingFields adds nothing when no missing fields', () => {
+  test('addMissingLinkedFieldsToValidationSummary adds nothing when no missing fields', () => {
     const expectedMissingFields = []
     const pathToFullProduct = `${dataDir}/prods/14-full-prod.json`
     const fullProduct = loadProduct(pathToFullProduct)
-    const validatedFullProduct = addMissingFields(fullProduct)
+    const validatedFullProduct = fillValidationSummary(fullProduct)
     const {missingFields} = validatedFullProduct.validationSummary
     expect(missingFields).toEqual(expectedMissingFields)
   })
@@ -287,7 +274,7 @@ describe('validator', () => {
       orderProduct(orderedKeys),
       schemaValidate(productSchema),
       addParentProduct(prods),
-      addMissingFields,
+      fillValidationSummary,
       validateNutritionId(nutrs),
       validateNutrChangeId(nutrChange),
       classify
@@ -312,7 +299,7 @@ describe('validator', () => {
     const validatorPipeline = pipe(
       schemaValidate(productSchema),
       addParentProduct(prods),
-      addMissingFields,
+      fillValidationSummary,
       validateNutritionId(nutrs),
       validateNutrChangeId(nutrChange),
       classify
@@ -354,26 +341,26 @@ describe('validator', () => {
     expect(returnValue).toEqual(expectedReturnValue)
   })
 
-  it('pullMissingFields pulls all missing fields from parent', () => {
+  it('pullFieldsFromParent pulls all missing fields from parent', () => {
     const prods = loadAllProducts(dataDir)
     const pathToParent = `${dataDir}/prods/2-parent-prod.json`
     const parent = loadProduct(pathToParent)
-    const validateParent = pipe(addParentProduct(prods), addMissingFields)
+    const validateParent = pipe(addParentProduct(prods), fillValidationSummary)
     const validatedParent = validateParent(parent)
     const expectedReturnValue = {
       'nutrition-id': '1',
       'season-begin': 'from grandparent',
       'season-end': 'from grandparent'
     }
-    const returnValue = pullMissingFields(prods, validatedParent)
+    const returnValue = pullFieldsFromParent(prods, validatedParent)
     expect(returnValue).toEqual(expectedReturnValue)
   })
 
-  it('pullMissingFields pulls fields from parent and grandparent', () => {
+  it('pullFieldsFromParent pulls fields from parent and grandparent', () => {
     const prods = loadAllProducts(dataDir)
     const pathToChild = `${dataDir}/prods/3-child-prod.json`
     const child = loadProduct(pathToChild)
-    const validateChild = pipe(addParentProduct(prods), addMissingFields)
+    const validateChild = pipe(addParentProduct(prods), fillValidationSummary)
     const validatedChild = validateChild(child)
     const expectedReturnValue = {
       'nutrition-id': '1',
@@ -382,20 +369,25 @@ describe('validator', () => {
       'co2-value': 1,
       'season-begin': 'from grandparent',
       'season-end': 'from grandparent',
-      processes: [{'nutr-change-id': 1, process: 'from parent'}]
+      processes: [{'nutr-change-id': 1, process: 'from parent'}],
+      contains: [{
+        substance: 'from parent',
+        percentage: 4
+      }
+      ]
     }
-    const returnValue = pullMissingFields(prods, validatedChild)
+    const returnValue = pullFieldsFromParent(prods, validatedChild)
     expect(returnValue).toEqual(expectedReturnValue)
   })
 
-  it('pullAndAddMissingFields pulls and adds fields from summary', () => {
+  it('pullAndAddFieldsFromParent pulls and adds fields from summary', () => {
     const prods = loadAllProducts(dataDir)
     const pathToChild = `${dataDir}/prods/3-child-prod.json`
     const child = loadProduct(pathToChild)
     const enhanceChild = pipe(
       addParentProduct(prods),
-      addMissingFields,
-      pullAndAddMissingFields(prods),
+      fillValidationSummary,
+      pullAndAddFieldsFromParent(prods),
       removeHelperFields
     )
     const expectedReturnValue = {
@@ -408,7 +400,12 @@ describe('validator', () => {
       'co2-value': 1,
       'season-begin': 'from grandparent',
       'season-end': 'from grandparent',
-      processes: [{process: 'from parent', 'nutr-change-id': 1}]
+      processes: [{process: 'from parent', 'nutr-change-id': 1}],
+      contains: [{
+        substance: 'from parent',
+        percentage: 4
+      }
+      ]
     }
     const returnValue = enhanceChild(child)
     expect(returnValue).toEqual(expectedReturnValue)

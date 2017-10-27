@@ -10,5 +10,10 @@
     }
   ],
   "perishability": "from parent",
-  "co2-value": 1
+  "co2-value": 1,
+  "contains": [{
+    "substance": "from parent",
+    "percentage": 4
+  }
+  ]
 }

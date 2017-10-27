@@ -2,26 +2,30 @@
 import jsonschema from 'jsonschema'
 import {curry} from 'ramda'
 
+// Definition of product fields.
+
 /*
- TODO actually the water scarcity link is also mandatory, but consists
- of two fields combined together, which makes it much harder to analyze.
-
- The logic is: Either fao-product-id OR water-scarcity-footprint-id
- need to be provided by either the product itself or through the product
- tree.
-
+These fields are mandatory and NOT allowed to pull from the linked product.
  */
-const MANDATORY_FIELDS = [
+const UNIQUE_FIELDS = [
   'id',
   'name',
+]
+
+/*
+These fields are mandatory, but are allowed to pull from the linked product.
+ */
+const MANDATORY_FIELDS_FROM_LINKED_PRODUCT = [
   'nutrition-id',
   'tags',
   'perishability',
   'co2-value'
 ]
 
-// these optional fields will be pulled from parent if possible
-const OPTIONAL_FIELDS = [
+/*
+ These fields are optional, but are allowed to pull from the linked product.
+  */
+export const OPTIONAL_FIELDS_FROM_LINKED_PRODUCT = [
   'fao-product-id',
   'water-scarcity-footprint-id',
   'waste-id',
@@ -31,6 +35,7 @@ const OPTIONAL_FIELDS = [
   'allergenes',
   'unit-weight',
   'density',
+  'contains',
   'production-names',
   'production-values',
   'conservation-names',
@@ -41,7 +46,15 @@ const OPTIONAL_FIELDS = [
   'packaging-values'
 ]
 
-const ALL_FIELDS = [...MANDATORY_FIELDS, ...OPTIONAL_FIELDS]
+/*
+Every product which can be exported shall contain this fields
+ */
+export const MANDATORY_FIELDS = [...UNIQUE_FIELDS, ...MANDATORY_FIELDS_FROM_LINKED_PRODUCT]
+
+/*
+All these fields are pulled from the linked product.
+ */
+export const ALL_FIELDS_FROM_LINKED_PRODUCT = [...MANDATORY_FIELDS_FROM_LINKED_PRODUCT, ...OPTIONAL_FIELDS_FROM_LINKED_PRODUCT]
 
 export const orderProcesses = processes => {
   const keys = ['process', 'nutr-change-id']
@@ -56,13 +69,35 @@ export const orderProcesses = processes => {
   return orderedProcesses
 }
 
-const _orderProduct = (orderProcesses, orderedKeys, product) => {
+// TODO this is code duplication with above - how to handle that?
+export const orderContains = contains => {
+  const keys = ['substance', 'percentage']
+  const orderedSubstances = contains.filter(substance => substance).map(substance => {
+    const orderedSubstance = keys.map(key => {
+      return {[key]: substance[key]}
+    })
+
+    return Object.assign({}, ...orderedSubstance)
+  })
+
+  return orderedSubstances
+}
+
+const _orderProduct = (orderProcesses, orderContains, orderedKeys, product) => {
   const orderedPairs = orderedKeys
     .filter(key => product[key] !== undefined)
     .map(key => {
-      return key === 'processes'
-        ? {[key]: orderProcesses(product[key])}
-        : {[key]: product[key]}
+      if (key === 'processes') {
+        return {
+          [key]: orderProcesses(product[key])
+        }
+      } else if (key === 'contains') {
+        return {
+          [key]: orderContains(product[key])
+        }
+      } else {
+        return {[key]: product[key]}
+      }
     })
 
   const orderedProduct = Object.assign({}, ...orderedPairs)
@@ -70,7 +105,7 @@ const _orderProduct = (orderProcesses, orderedKeys, product) => {
 }
 
 const curriedOrderProduct = curry(_orderProduct)
-export const orderProduct = curriedOrderProduct(orderProcesses)
+export const orderProduct = curriedOrderProduct(orderProcesses, orderContains)
 
 const _removeEmptyArrays = (orderedKeys, product) =>
   orderedKeys
@@ -180,11 +215,11 @@ const _addParentProduct = (addValidationSummary, prods, product) => {
 const curriedAddParentProduct = curry(_addParentProduct)
 export const addParentProduct = curriedAddParentProduct(addValidationSummary)
 
-const _addMissingFields = (allFields, MANDATORY_FIELDS, product) => {
+const _fillValidationSummary = (allFieldsFromLinkedProduct, MANDATORY_FIELDS, product) => {
   product = addValidationSummary(product)
   let {validationSummary} = product
 
-  const missingFields = allFields.filter(field => {
+  const missingFields = allFieldsFromLinkedProduct.filter(field => {
     return !product.hasOwnProperty(field)
   })
 
@@ -206,9 +241,9 @@ const _addMissingFields = (allFields, MANDATORY_FIELDS, product) => {
   return {...product, validationSummary}
 }
 
-const curriedAddMissingFields = curry(_addMissingFields)
-export const addMissingFields = curriedAddMissingFields(
-  ALL_FIELDS,
+const curriedFillValidationSummary = curry(_fillValidationSummary)
+export const fillValidationSummary = curriedFillValidationSummary(
+  ALL_FIELDS_FROM_LINKED_PRODUCT,
   MANDATORY_FIELDS
 )
 
@@ -331,7 +366,7 @@ const _getFieldFromParent = (prods, parentProduct, field) => {
 
 export const getFieldFromParent = curry(_getFieldFromParent)
 
-const _pullMissingFields = (getFieldFromParent, prods, validatedProduct) => {
+const _pullFieldsFromParent = (getFieldFromParent, prods, validatedProduct) => {
   const {missingFields} = validatedProduct.validationSummary
 
   const pulledFields = missingFields
@@ -342,15 +377,15 @@ const _pullMissingFields = (getFieldFromParent, prods, validatedProduct) => {
   return pulledFields
 }
 
-const curriedPullMissingFields = curry(_pullMissingFields)
-export const pullMissingFields = curriedPullMissingFields(getFieldFromParent)
+const curriedPullFieldsFromParent = curry(_pullFieldsFromParent)
+export const pullFieldsFromParent = curriedPullFieldsFromParent(getFieldFromParent)
 
-const _pullAndAddMissingFields = (pullMissingFields, prods, product) => {
-  const pulledFields = pullMissingFields(prods, product)
+const _pullAndAddFieldsFromParent = (pullFieldsFromParent, prods, product) => {
+  const pulledFields = pullFieldsFromParent(prods, product)
   return {...product, ...pulledFields}
 }
 
-const curriedPullAndAddMissingFields = curry(_pullAndAddMissingFields)
-export const pullAndAddMissingFields = curriedPullAndAddMissingFields(
-  pullMissingFields
+const curriedPullAndAddFieldsFromParent = curry(_pullAndAddFieldsFromParent)
+export const pullAndAddFieldsFromParent = curriedPullAndAddFieldsFromParent(
+  pullFieldsFromParent
 )

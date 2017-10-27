@@ -26,5 +26,10 @@
   "processing-names": "filetiert",
   "processing-values": "1",
   "packaging-names": "Dose",
-  "packaging-values": "1"
+  "packaging-values": "1",
+  "contains": [{
+    "substance": "soy",
+    "percentage": 4
+  }
+  ]
 }
