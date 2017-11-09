@@ -1,5 +1,4 @@
 import {ipcMain, dialog} from 'electron'
-import jsonfile from 'jsonfile'
 import {pipe} from 'ramda'
 import {
   loadAllProducts,
@@ -9,23 +8,18 @@ import {
   loadProductSchema,
   saveProduct,
   saveAllProducts,
-  saveAllProductsToCsv
-} from '../validator/helpers/helpers'
-import {
+  saveAllProductsToCsv,
   orderProduct,
   removeEmptyArrays,
   removeEmptyObjectsFromArrays,
   schemaValidate,
   addParentProduct,
-  addMissingFields,
+  fillValidationSummary,
   validateNutritionId,
   validateNutrChangeId,
   classify,
-  pullAndAddMissingFields
-} from '../validator/validator'
-
-// set indentation for jsonfile
-jsonfile.spaces = 2
+  pullAndAddFieldsFromParent
+} from 'edb-solution-validator'
 
 // choose the _data directory
 ipcMain.on('choose-data-dir', event => {
@@ -68,7 +62,7 @@ ipcMain.on('fetch-all-products', (event, dataDir) => {
     const validateProduct = pipe(
       schemaValidate(productSchema),
       addParentProduct(prods),
-      addMissingFields,
+      fillValidationSummary,
       validateNutritionId(nutrs),
       validateNutrChangeId(nutrChange),
       classify
@@ -129,7 +123,7 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
       orderProduct(enhancedKeys),
       schemaValidate(productSchema),
       addParentProduct(products),
-      addMissingFields,
+      fillValidationSummary,
       validateNutritionId(nutrs),
       validateNutrChangeId(nutrChange),
       classify
@@ -140,7 +134,7 @@ ipcMain.on('save-all-products', (event, dataDir, products) => {
 
     // pull all fields from parent and save as prods.all.json
     const enhancedProds = validatedProducts.map(prod =>
-      pullAndAddMissingFields(products, prod)
+      pullAndAddFieldsFromParent(products, prod)
     )
 
     saveAllProducts(dataDir, enhancedProds)

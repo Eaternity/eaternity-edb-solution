@@ -14,13 +14,13 @@ const InvalidTable = props => {
   const renderTableRows = () => {
     const {products} = props
     return products.map(prod => {
-      const {id, name, brokenLinks, missingFields, validationErrors} = prod
+      const {id, name, brokenLinks, missingMandatoryFields, validationErrors} = prod
       return (
         <Tr key={id}>
           <Td column='Id' data={id} />
           <Td column='Name' data={name} />
           <Td column='Broken Links' data={brokenLinks} />
-          <Td column='Missing Fields' data={missingFields} />
+          <Td column='Missing Fields' data={missingMandatoryFields} />
           <Td column='Validation Errors' data={validationErrors} />
           <Td column='Actions'>
             <Button

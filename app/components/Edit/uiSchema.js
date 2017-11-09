@@ -146,6 +146,15 @@ const uiSchema = {
       orderable: false
     }
   },
+  contains: {
+    items: {
+      'ui:widget': 'text',
+      'ui:order': ['substance', 'percentage']
+    },
+    'ui:options': {
+      orderable: false
+    }
+  },
   'co2-calculation-parameters': {
     'ui:widget': 'text'
   },

@@ -1,7 +1,7 @@
 {
   "name": "EDB-Solution",
   "productName": "EDB-Solution",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description":
     "Electron application for editing of eaternity database json files. Based on elecron-react-boilerplate",
   "main": "./app/main.js",
@@ -144,10 +144,11 @@
   },
   "dependencies": {
     "bootstrap": "4.0.0-alpha.5",
+    "edb-solution-validator":
+      "git+https://github.com/Eaternity/edb-solution-validator.git#feature/contains",
     "electron-debug": "^1.1.0",
     "history": "^4.5.1",
     "json2csv": "^3.7.3",
-    "jsonfile": "^2.4.0",
     "jsonschema": "^1.1.1",
     "prop-types": "^15.5.6",
     "ramda": "^0.23.0",
