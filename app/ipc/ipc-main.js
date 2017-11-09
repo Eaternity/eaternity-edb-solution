@@ -1,5 +1,4 @@
 import {ipcMain, dialog} from 'electron'
-import jsonfile from 'jsonfile'
 import {pipe} from 'ramda'
 import {
   loadAllProducts,
@@ -21,9 +20,6 @@ import {
   classify,
   pullAndAddFieldsFromParent
 } from 'edb-solution-validator'
-
-// set indentation for jsonfile
-jsonfile.spaces = 2
 
 // choose the _data directory
 ipcMain.on('choose-data-dir', event => {
