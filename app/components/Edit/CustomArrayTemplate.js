@@ -6,20 +6,20 @@ import styles from './Edit.css'
 const CustomArrayTemplate = props => {
   const { items, onAddClick } = props
 
-  const processes = items.map((item, index) => {
+  const arrayItems = items.map((item, index) => {
     const { children, onDropIndexClick } = item
     return (
-      <div key={index} className={styles.processContainer} >
-        <div className={styles.process}>
+      <div key={index} className={styles.itemContainer} >
+        <div className={styles.item}>
           {children}
         </div>
-        <div className={styles.processRemoveBtn}>
+        <div className={styles.itemRemoveBtn}>
           <Button
             size='sm'
             outline
             color='warning'
             onClick={onDropIndexClick(index)}>
-            Remove process
+            Remove item
           </Button>
         </div>
       </div>
@@ -27,15 +27,15 @@ const CustomArrayTemplate = props => {
   })
 
   return (
-    <div className={styles.processesContainer} >
-      {processes}
+    <div className={styles.arrayContainer} >
+      {arrayItems}
       <Col sm={{ size: 'auto', offset: 10 }}>
         <Button
           size='sm'
           outline
           color='success'
           onClick={onAddClick} >
-        Add process
+        Add item
       </Button>
       </Col>
     </div>
