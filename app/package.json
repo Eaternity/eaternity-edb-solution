@@ -1,8 +1,7 @@
 {
   "name": "EDB-Solution",
-  "version": "1.2.1",
-  "description":
-    "Electron application for editing of eaternity database json files. Based on elecron-react-boilerplate.",
+  "version": "1.3.0",
+  "description": "Electron application for editing of eaternity database json files. Based on elecron-react-boilerplate.",
   "main": "./main.js",
   "author": {
     "name": "mcmunder",
